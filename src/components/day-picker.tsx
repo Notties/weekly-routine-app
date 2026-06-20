@@ -32,7 +32,7 @@ export function DayPicker({
                 "flex flex-col items-center gap-1 rounded-xl border py-2 transition-colors",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 active
-                  ? "border-foreground bg-foreground text-background"
+                  ? "border-primary bg-primary text-primary-foreground"
                   : "border-transparent text-muted-foreground hover:bg-muted"
               )}
             >

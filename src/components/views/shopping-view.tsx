@@ -47,7 +47,7 @@ export function ShoppingView() {
       {/* สรุปงบ */}
       <div className="rounded-2xl border border-border bg-card p-4">
         <div className="grid grid-cols-2 gap-3">
-          <div className="rounded-xl border border-foreground bg-foreground p-3 text-background">
+          <div className="rounded-xl border border-primary bg-primary p-3 text-primary-foreground">
             <p className="flex items-center gap-1.5 text-xs opacity-80">
               <CalendarRange className="size-3.5" />
               งบสัปดาห์ถัดไป

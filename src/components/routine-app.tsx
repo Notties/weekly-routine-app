@@ -70,7 +70,7 @@ export function RoutineApp() {
               <TabsTrigger
                 key={value}
                 value={value}
-                className="flex-col gap-1 rounded-none border-0 px-0.5 py-2.5 text-[11px] data-active:bg-transparent data-active:font-semibold"
+                className="flex-col gap-1 rounded-none border-0 border-b-2 border-transparent px-0.5 py-2.5 text-[11px] data-active:border-primary data-active:bg-transparent data-active:font-semibold data-active:text-primary"
               >
                 <Icon className="size-4" />
                 {label}

@@ -36,10 +36,9 @@ export function TimelineView({ day }: { day: Day }) {
         {timeline.map((entry, i) => {
           const Icon = entryIcon(entry, day.type);
           const isLast = i === timeline.length - 1;
+          const isWorkout = entry.kind === "workout";
           const emphasized =
-            entry.kind === "workout" ||
-            entry.kind === "wake" ||
-            entry.kind === "bedtime";
+            entry.kind === "wake" || entry.kind === "bedtime";
 
           return (
             <li key={i} className="relative flex gap-3 pb-5 last:pb-0">
@@ -48,9 +47,11 @@ export function TimelineView({ day }: { day: Day }) {
                 <span
                   className={cn(
                     "z-10 flex size-8 shrink-0 items-center justify-center rounded-full border",
-                    emphasized
-                      ? "border-foreground bg-foreground text-background"
-                      : "border-border bg-background text-muted-foreground"
+                    isWorkout
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : emphasized
+                        ? "border-foreground bg-foreground text-background"
+                        : "border-border bg-background text-muted-foreground"
                   )}
                 >
                   <Icon className="size-4" />
