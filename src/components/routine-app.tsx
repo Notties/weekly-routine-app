@@ -149,7 +149,7 @@ export function RoutineApp() {
         )}
 
         <TabsContent value="routine">
-          <TimelineView day={day} />
+          <TimelineView day={day} isToday={selected === today} />
         </TabsContent>
         <TabsContent value="workout">
           <WorkoutView day={day} />

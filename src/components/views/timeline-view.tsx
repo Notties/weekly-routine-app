@@ -1,37 +1,22 @@
-import * as React from "react";
-import {
-  Sunrise,
-  Moon,
-  UtensilsCrossed,
-  Dumbbell,
-  HeartPulse,
-  Wind,
-} from "lucide-react";
 import type { Day } from "@/data/types";
-import { buildTimeline, type TimelineEntry } from "@/lib/timeline";
+import { buildTimeline } from "@/lib/timeline";
 import { StepList, TagRow } from "@/components/blocks";
+import { NowNextCard } from "@/components/now-next-card";
+import { entryIcon } from "@/components/entry-icon";
 import { cn } from "@/lib/utils";
 
-function entryIcon(entry: TimelineEntry, dayType: Day["type"]) {
-  switch (entry.kind) {
-    case "wake":
-      return Sunrise;
-    case "bedtime":
-      return Moon;
-    case "winddown":
-      return Wind;
-    case "meal":
-      return UtensilsCrossed;
-    case "workout":
-      return dayType === "cardio" ? HeartPulse : Dumbbell;
-  }
-}
-
-export function TimelineView({ day }: { day: Day }) {
+export function TimelineView({
+  day,
+  isToday = false,
+}: {
+  day: Day;
+  isToday?: boolean;
+}) {
   const timeline = buildTimeline(day);
 
   return (
     <div className="px-4 py-4">
+      {isToday && <NowNextCard day={day} />}
       <ol className="relative">
         {timeline.map((entry, i) => {
           const Icon = entryIcon(entry, day.type);
