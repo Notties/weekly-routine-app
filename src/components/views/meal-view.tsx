@@ -1,6 +1,7 @@
 import { Droplets } from "lucide-react";
 import type { ResolvedDay } from "@/data/types";
-import { waterTip } from "@/data";
+import { waterTip, water } from "@/data";
+import { bottlesPerDay } from "@/lib/cost";
 import { MealCard } from "@/components/meal-card";
 import { toMinutes } from "@/lib/timeline";
 
@@ -16,11 +17,20 @@ export function MealView({
     .map((meal, index) => ({ meal, index }))
     .sort((a, b) => toMinutes(a.meal.time) - toMinutes(b.meal.time));
 
+  const bpd = bottlesPerDay(water.litersPerDay, water.pack.literEach);
+
   return (
     <div className="space-y-4 px-4 py-4">
       <div className="flex items-start gap-3 rounded-2xl border border-border bg-muted p-3">
         <Droplets className="mt-0.5 size-5 shrink-0" />
-        <p className="text-sm leading-snug">{waterTip}</p>
+        <div>
+          <p className="text-sm font-semibold tnum">
+            ดื่มน้ำ ~{water.litersPerDay} ลิตร/วัน ≈ {bpd} ขวด (1.5L)
+          </p>
+          <p className="mt-0.5 text-sm leading-snug text-muted-foreground">
+            {waterTip}
+          </p>
+        </div>
       </div>
 
       <div className="space-y-3">

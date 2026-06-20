@@ -1,8 +1,14 @@
 "use client";
 
 import * as React from "react";
-import { RotateCcw, CalendarRange, Repeat } from "lucide-react";
-import { week } from "@/data";
+import {
+  RotateCcw,
+  CalendarRange,
+  Repeat,
+  Wallet,
+  Droplet,
+} from "lucide-react";
+import { week, water } from "@/data";
 import { SHOP_CATEGORIES, type ShopItem } from "@/data/types";
 import {
   shoppingTotals,
@@ -10,6 +16,7 @@ import {
   itemKey,
   computeShoppingItems,
 } from "@/lib/shopping";
+import { monthlyCost, bottlesPerDay } from "@/lib/cost";
 import { getChecked, setChecked, clearChecked } from "@/lib/storage";
 import { baht } from "@/lib/format";
 import { ShopItemRow } from "@/components/shop-item-row";
@@ -47,6 +54,10 @@ export function ShoppingView({ swaps }: { swaps: Record<string, string> }) {
   const totals = shoppingTotals(shopping);
   const { weekly, longLasting } = splitRecurring(shopping);
   const checkedCount = Object.keys(checked).length;
+
+  // ค่าใช้จ่ายรายเดือน (ค่ากิน + ค่าน้ำดื่ม)
+  const cost = monthlyCost(shopping, water);
+  const bpd = bottlesPerDay(water.litersPerDay, water.pack.literEach);
 
   return (
     <div className="space-y-5 px-4 py-4">
@@ -95,6 +106,55 @@ export function ShoppingView({ swaps }: { swaps: Record<string, string> }) {
             </Button>
           )}
         </div>
+      </div>
+
+      {/* ค่าใช้จ่ายรายเดือน */}
+      <div className="rounded-2xl border border-border bg-card p-4">
+        <h3 className="flex items-center gap-1.5 text-sm font-bold">
+          <Wallet className="size-4" />
+          ค่าใช้จ่ายรายเดือน (ประมาณ)
+        </h3>
+
+        <div className="mt-3 grid grid-cols-2 gap-3">
+          <div className="rounded-xl border border-border p-3">
+            <p className="text-xs text-muted-foreground">ค่ากิน</p>
+            <p className="tnum mt-1 text-xl font-bold">
+              {baht(cost.foodPerMonth)}
+            </p>
+          </div>
+          <div className="rounded-xl border border-border p-3">
+            <p className="flex items-center gap-1 text-xs text-muted-foreground">
+              <Droplet className="size-3" />
+              ค่าน้ำดื่ม
+            </p>
+            <p className="tnum mt-1 text-xl font-bold">
+              {baht(cost.waterPerMonth)}
+            </p>
+            <p className="tnum mt-0.5 text-[11px] text-muted-foreground">
+              {cost.waterPacksPerMonth} แพ็ก ({cost.waterBottlesPerMonth} ขวด)
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-3 flex items-center justify-between rounded-xl border border-primary bg-primary px-3 py-2.5 text-primary-foreground">
+          <span className="text-sm font-medium">รวมต่อเดือน</span>
+          <span className="tnum text-xl font-bold">
+            {baht(cost.totalPerMonth)}
+          </span>
+        </div>
+
+        <p className="mt-2 text-xs leading-relaxed text-muted-foreground tnum">
+          ≈ {baht(cost.perDay)}/วัน · ของสด {baht(cost.freshPerMonth)} +
+          ของใช้นาน {baht(cost.stockPerMonth)} (ตุน ~เดือนละครั้ง บางอย่างอยู่ได้
+          นานกว่า เดือนถัดไปถูกลง)
+        </p>
+        <p className="mt-1 flex items-center gap-1.5 rounded-lg bg-muted px-2.5 py-2 text-xs text-foreground">
+          <Droplet className="size-3.5 shrink-0" />
+          <span className="tnum">
+            ควรดื่มน้ำ ~{water.litersPerDay} ลิตร/วัน ≈ {bpd} ขวด (ขวด 1.5L) ·
+            เดือนละ ~{cost.waterBottlesPerMonth} ขวด
+          </span>
+        </p>
       </div>
 
       {/* ของรายสัปดาห์ */}
