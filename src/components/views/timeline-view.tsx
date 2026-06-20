@@ -2,6 +2,7 @@ import type { Day } from "@/data/types";
 import { buildTimeline } from "@/lib/timeline";
 import { StepList, TagRow } from "@/components/blocks";
 import { NowNextCard } from "@/components/now-next-card";
+import { EquipmentBadges } from "@/components/equipment-badges";
 import { entryIcon } from "@/components/entry-icon";
 import { cn } from "@/lib/utils";
 
@@ -60,6 +61,7 @@ export function TimelineView({
                 {entry.kind === "meal" && entry.meal && (
                   <div className="mt-1 rounded-xl border border-border bg-card p-3">
                     <p className="text-sm font-medium">{entry.meal.menu}</p>
+                    <EquipmentBadges equipment={entry.meal.equipment} />
                     <StepList steps={entry.meal.steps} />
                     <TagRow tags={entry.meal.tags} />
                   </div>

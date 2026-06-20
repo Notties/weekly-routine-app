@@ -43,6 +43,7 @@ export const shopping: ShopItem[] = [
   { name: "น้ำมันรำข้าว", qty: "1 ขวด", price: 80, category: "เครื่องปรุง", recurring: true },
   { name: "ซีอิ๊ว/น้ำปลา", qty: "อย่างละ 1 ขวด", price: 70, category: "เครื่องปรุง", recurring: true },
   { name: "เกลือ/พริกไทย", qty: "ชุด", price: 50, category: "เครื่องปรุง", recurring: true },
+  { name: "กาแฟดำ/ผงกาแฟ", qty: "1 ถุง", price: 120, category: "เครื่องปรุง", recurring: true },
   { name: "กระเทียม/หอม", qty: "ชุด", price: 50, category: "เครื่องปรุง", recurring: false },
 ];
 

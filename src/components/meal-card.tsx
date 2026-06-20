@@ -1,5 +1,6 @@
 import type { Meal } from "@/data/types";
 import { StepList, TagRow } from "@/components/blocks";
+import { EquipmentBadges } from "@/components/equipment-badges";
 
 export function MealCard({ meal }: { meal: Meal }) {
   return (
@@ -11,6 +12,7 @@ export function MealCard({ meal }: { meal: Meal }) {
         </time>
       </div>
       <p className="mt-1 text-sm">{meal.menu}</p>
+      <EquipmentBadges equipment={meal.equipment} />
       <StepList steps={meal.steps} />
       <TagRow tags={meal.tags} />
     </article>
