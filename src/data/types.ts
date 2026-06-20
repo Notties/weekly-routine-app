@@ -42,18 +42,69 @@ export type Appliance =
   | "หม้อหุงข้าว"
   | "ไม่ต้องปรุง";
 
-export type Meal = {
-  /** เวลา รูปแบบ "HH:MM" */
-  time: string;
-  /** ชื่อมื้อ เช่น "มื้อเช้า" */
+/** หมวดมื้อ — ใช้กรองเมนูตอนสลับ (สลับได้เฉพาะเมนูหมวดเดียวกัน) */
+export type MealSlot =
+  | "breakfast"
+  | "lunch"
+  | "preworkout"
+  | "postworkout"
+  | "snack"
+  | "dinner";
+
+/** ป้ายไทยของแต่ละหมวดมื้อ */
+export const MEAL_SLOT_LABEL: Record<MealSlot, string> = {
+  breakfast: "มื้อเช้า",
+  lunch: "มื้อกลางวัน",
+  preworkout: "ก่อนเล่น",
+  postworkout: "หลังเล่น",
+  snack: "ของว่าง",
+  dinner: "มื้อเย็น",
+};
+
+/**
+ * เมนูในคลัง (recipe library) — มีวิธีทำ + วัตถุดิบติดมาด้วย
+ * เพิ่มเมนูใหม่ได้ที่ src/data/recipes.ts (วัตถุดิบอ้างชื่อจาก ingredients.ts)
+ */
+export type Recipe = {
+  id: string;
+  /** ชื่อเมนู/จานอาหาร เช่น "ข้าวกล้อง + อกไก่ทอดกระทะ + ผัก" */
   name: string;
-  /** เมนู */
-  menu: string;
-  /** อุปกรณ์ที่ต้องใช้ทำมื้อนี้ */
-  equipment?: Appliance[];
-  /** ขั้นตอนวิธีทำสั้น ๆ 1-2-3 (เขียนแบบมือใหม่ทำตามได้) */
+  /** หมวดมื้อ (สลับได้เฉพาะเมนูหมวดเดียวกัน) */
+  slot: MealSlot;
+  /** อุปกรณ์ที่ต้องใช้ */
+  equipment: Appliance[];
+  /** ชื่อวัตถุดิบ (อ้างอิง ingredientCatalog) — ใช้คำนวณรายการซื้อของ */
+  ingredients: string[];
+  /** ขั้นตอนวิธีทำแบบมือใหม่ทำตามได้ */
   steps: string[];
-  /** ป้ายกำกับ เช่น "ก่อนเล่น", "หลังเล่น = ซ่อมกล้าม" */
+  /** ป้ายกำกับเริ่มต้น เช่น "โปรตีนสูง" */
+  tags?: string[];
+};
+
+/** ช่องมื้อในแต่ละวัน — ชี้ไปยังเมนูในคลังด้วย recipeId */
+export type DayMeal = {
+  /** เวลา "HH:MM" */
+  time: string;
+  slot: MealSlot;
+  /** เมนูเริ่มต้นของช่องนี้ (id จากคลังเมนู) */
+  recipeId: string;
+  /** ป้ายกำกับเฉพาะช่องนี้ เช่น "ก่อนเล่น", "หลังเล่น = ซ่อมกล้าม" (ทับของเมนู) */
+  tags?: string[];
+};
+
+/** มื้อที่ resolve แล้วพร้อมแสดงผล (รวมข้อมูลจากเมนูที่เลือก) */
+export type Meal = {
+  /** เวลา "HH:MM" */
+  time: string;
+  /** ป้ายมื้อ เช่น "มื้อเช้า" */
+  name: string;
+  /** ชื่อเมนูที่เลือก */
+  menu: string;
+  /** id ของเมนูที่กำลังใช้ (ไว้ทำปุ่มสลับ) */
+  recipeId: string;
+  slot: MealSlot;
+  equipment?: Appliance[];
+  steps: string[];
   tags: string[];
 };
 
@@ -86,9 +137,13 @@ export type Day = {
   title: string;
   /** ไม่มีในวันพัก */
   workout?: Workout;
-  meals: Meal[];
+  /** ช่องมื้อของวัน (ชี้ไปคลังเมนู) */
+  meals: DayMeal[];
   sleep: Sleep;
 };
+
+/** วันที่ resolve เมนูแล้ว (meals เป็น Meal พร้อมแสดง) — ใช้ในหน้าจอ */
+export type ResolvedDay = Omit<Day, "meals"> & { meals: Meal[] };
 
 export type ShopCategory =
   | "โปรตีน"
@@ -108,6 +163,12 @@ export type ShopItem = {
   /** true = ของซื้อครั้งเดียวใช้ได้นาน (ข้าว/น้ำมัน/เครื่องปรุง) */
   recurring: boolean;
 };
+
+/**
+ * รายการในคลังวัตถุดิบ (ingredient catalog) — กำหนดปริมาณ/ราคาต่อสัปดาห์ของวัตถุดิบ 1 ชนิด
+ * รายการซื้อของจะหยิบเฉพาะวัตถุดิบที่เมนูในสัปดาห์นั้นใช้จริง
+ */
+export type CatalogItem = ShopItem;
 
 /** ลำดับหมวดที่จะแสดงในแท็บซื้อของ */
 export const SHOP_CATEGORIES: ShopCategory[] = [

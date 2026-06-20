@@ -2,19 +2,20 @@
 
 import * as React from "react";
 import { RotateCcw, CalendarRange, Repeat } from "lucide-react";
-import { shopping } from "@/data";
+import { week } from "@/data";
 import { SHOP_CATEGORIES, type ShopItem } from "@/data/types";
 import {
   shoppingTotals,
   splitRecurring,
   itemKey,
+  computeShoppingItems,
 } from "@/lib/shopping";
 import { getChecked, setChecked, clearChecked } from "@/lib/storage";
 import { baht } from "@/lib/format";
 import { ShopItemRow } from "@/components/shop-item-row";
 import { Button } from "@/components/ui/button";
 
-export function ShoppingView() {
+export function ShoppingView({ swaps }: { swaps: Record<string, string> }) {
   const [checked, setCheckedState] = React.useState<Record<string, boolean>>(
     {}
   );
@@ -38,6 +39,11 @@ export function ShoppingView() {
     setCheckedState({});
   };
 
+  // วัตถุดิบคำนวณจากเมนูที่ใช้จริงในสัปดาห์ (เปลี่ยนตามการสลับเมนู)
+  const shopping = React.useMemo(
+    () => computeShoppingItems(week, swaps),
+    [swaps]
+  );
   const totals = shoppingTotals(shopping);
   const { weekly, longLasting } = splitRecurring(shopping);
   const checkedCount = Object.keys(checked).length;

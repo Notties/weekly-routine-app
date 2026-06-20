@@ -1,9 +1,9 @@
 import { Moon, Sunrise, Lightbulb, Clock } from "lucide-react";
-import type { Day } from "@/data/types";
+import type { ResolvedDay } from "@/data/types";
 import { sleepTips } from "@/data";
 import { SectionTitle } from "@/components/blocks";
 
-export function SleepView({ day }: { day: Day }) {
+export function SleepView({ day }: { day: ResolvedDay }) {
   const { sleep } = day;
 
   return (

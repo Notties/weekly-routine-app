@@ -1,4 +1,6 @@
-import type { ShopItem, ShopCategory } from "@/data/types";
+import type { ShopItem, ShopCategory, CatalogItem, Day } from "@/data/types";
+import { ingredientCatalog, pantryStaples } from "@/data/ingredients";
+import { activeRecipeIds, getRecipe } from "./meals";
 
 export type ShoppingTotals = {
   /** ผลรวมราคาต่อหมวด */
@@ -64,6 +66,40 @@ export function splitRecurring(items: ShopItem[]): {
 /** คีย์เฉพาะของแต่ละรายการ (ใช้จำสถานะติ๊กใน localStorage) */
 export function itemKey(item: ShopItem): string {
   return `${item.category}:${item.name}`;
+}
+
+/**
+ * สร้างรายการซื้อของจากชื่อวัตถุดิบที่ต้องใช้ (map กับ catalog)
+ * + เติมของครัวพื้นฐาน (pantry) ที่ต้องมีเสมอ
+ */
+export function buildShoppingItems(
+  ingredientNames: Set<string>,
+  catalog: CatalogItem[],
+  pantry: CatalogItem[]
+): ShopItem[] {
+  const byName = new Map(catalog.map((c) => [c.name, c] as const));
+  const items: ShopItem[] = [];
+  for (const name of ingredientNames) {
+    const found = byName.get(name);
+    if (found) items.push(found);
+  }
+  const have = new Set(items.map((i) => i.name));
+  for (const p of pantry) {
+    if (!have.has(p.name)) items.push(p);
+  }
+  return items;
+}
+
+/** รายการซื้อของที่คำนวณจากเมนูที่ใช้จริงในสัปดาห์ (ตามค่าเริ่มต้น + การสลับ) */
+export function computeShoppingItems(
+  week: Day[],
+  swaps: Record<string, string>
+): ShopItem[] {
+  const names = new Set<string>();
+  for (const id of activeRecipeIds(week, swaps)) {
+    getRecipe(id)?.ingredients.forEach((n) => names.add(n));
+  }
+  return buildShoppingItems(names, ingredientCatalog, pantryStaples);
 }
 
 export type { ShopCategory };

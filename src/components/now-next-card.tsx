@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { Moon, ArrowRight } from "lucide-react";
-import type { Day } from "@/data/types";
+import type { ResolvedDay } from "@/data/types";
 import { buildTimeline, type TimelineEntry } from "@/lib/timeline";
 import { entryIcon } from "@/components/entry-icon";
 
@@ -11,7 +11,7 @@ function entryName(entry: TimelineEntry): string {
   return entry.label ?? "";
 }
 
-export function NowNextCard({ day }: { day: Day }) {
+export function NowNextCard({ day }: { day: ResolvedDay }) {
   const [nowMin, setNowMin] = React.useState<number | null>(null);
 
   // อัปเดตเวลาปัจจุบันทุกนาที (หลัง mount เพื่อเลี่ยง hydration mismatch)

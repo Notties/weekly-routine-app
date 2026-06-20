@@ -1,8 +1,8 @@
 import { describe, it, expect } from "bun:test";
 import { toMinutes, buildTimeline } from "./timeline";
-import type { Day } from "@/data/types";
+import type { ResolvedDay } from "@/data/types";
 
-const weightDay: Day = {
+const weightDay: ResolvedDay = {
   key: "mon",
   label: "จันทร์",
   short: "จ",
@@ -17,12 +17,14 @@ const weightDay: Day = {
     cooldown: ["y"],
   },
   meals: [
-    { time: "07:00", name: "เช้า", menu: "a", steps: ["1"], tags: [] },
-    { time: "12:30", name: "กลางวัน", menu: "b", steps: ["1"], tags: [] },
+    { time: "07:00", name: "เช้า", menu: "a", recipeId: "r1", slot: "breakfast", steps: ["1"], tags: [] },
+    { time: "12:30", name: "กลางวัน", menu: "b", recipeId: "r2", slot: "lunch", steps: ["1"], tags: [] },
     {
       time: "20:30",
       name: "หลังเล่น",
       menu: "c",
+      recipeId: "r3",
+      slot: "postworkout",
       steps: ["1"],
       tags: ["หลังเล่น = ซ่อมกล้าม"],
     },
@@ -30,7 +32,7 @@ const weightDay: Day = {
   sleep: { bedtime: "23:00", wake: "06:30", hours: 7.5, note: "n" },
 };
 
-const restDay: Day = {
+const restDay: ResolvedDay = {
   ...weightDay,
   type: "rest",
   title: "วันพัก",

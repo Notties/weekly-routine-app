@@ -1,4 +1,4 @@
-import type { Day, Meal, Workout } from "@/data/types";
+import type { ResolvedDay, Meal, Workout } from "@/data/types";
 
 export type TimelineKind =
   | "wake"
@@ -38,7 +38,7 @@ function subtractMinutes(hhmm: string, delta: number): string {
  * ตื่น → มื้อต่าง ๆ → (บล็อกออกกำลังเฉพาะวันเวต/คาร์ดิโอ) → ผ่อนคลายก่อนนอน → เข้านอน
  * การเรียงใช้เวลา (นาที) เป็นหลัก จึงแทรกบล็อกออกกำลังก่อนมื้อหลังเล่นโดยอัตโนมัติ
  */
-export function buildTimeline(day: Day): TimelineEntry[] {
+export function buildTimeline(day: ResolvedDay): TimelineEntry[] {
   const entries: TimelineEntry[] = [];
 
   // ตื่นนอน

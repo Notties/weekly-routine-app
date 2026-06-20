@@ -1,4 +1,4 @@
-import type { Day } from "@/data/types";
+import type { ResolvedDay } from "@/data/types";
 import { buildTimeline } from "@/lib/timeline";
 import { StepList, TagRow } from "@/components/blocks";
 import { NowNextCard } from "@/components/now-next-card";
@@ -10,7 +10,7 @@ export function TimelineView({
   day,
   isToday = false,
 }: {
-  day: Day;
+  day: ResolvedDay;
   isToday?: boolean;
 }) {
   const timeline = buildTimeline(day);

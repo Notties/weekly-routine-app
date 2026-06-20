@@ -1,10 +1,10 @@
 import { Clock, Flame, Snowflake, Moon } from "lucide-react";
-import type { Day } from "@/data/types";
+import type { ResolvedDay } from "@/data/types";
 import { ExerciseCard } from "@/components/exercise-card";
 import { SectionTitle, BulletList } from "@/components/blocks";
 import { dayTypeInfo } from "@/components/day-type-badge";
 
-export function WorkoutView({ day }: { day: Day }) {
+export function WorkoutView({ day }: { day: ResolvedDay }) {
   if (day.type === "rest" || !day.workout) {
     return (
       <div className="px-4 py-10">
