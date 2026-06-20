@@ -15,7 +15,7 @@ export function DayPicker({
   return (
     <nav
       aria-label="เลือกวัน"
-      className="sticky top-[57px] z-20 border-b border-border bg-background/85 backdrop-blur-md"
+      className="sticky top-[65px] z-20 border-b border-border bg-background/85 backdrop-blur-md"
     >
       <div className="mx-auto grid max-w-2xl grid-cols-7 gap-1 px-2 py-2">
         {week.map((day) => {

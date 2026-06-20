@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# รูทีนฟิตเนสรายสัปดาห์ (knot-gym)
 
-## Getting Started
+เว็บแอปส่วนตัวดูตารางออกกำลัง · อาหาร · การนอน · รายการซื้อของรายสัปดาห์
+เปิดบนมือถือเป็นหลัก · ดีไซน์มินิมอลขาว-ดำ · มีโหมดสว่าง/มืด
 
-First, run the development server:
+## รันในเครื่อง
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+bun install
+bun run dev      # เปิด http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## คำสั่งอื่น ๆ
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+bun test         # รันยูนิตเทสต์ตรรกะ (timeline + shopping)
+bun run build    # สร้าง static export ลงโฟลเดอร์ out/
+bun run serve    # เสิร์ฟไฟล์ใน out/ (หลัง build) เปิดบนมือถือในวง LAN ได้
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+build แล้วได้เป็นไฟล์ static ในโฟลเดอร์ `out/` นำไปวางบน Vercel/Netlify/GitHub Pages
+หรือเปิดในเครื่องก็ได้ (ไม่ต้องมีเซิร์ฟเวอร์ ไม่มีฐานข้อมูล)
 
-## Learn More
+## แก้ไขเนื้อหาเอง
 
-To learn more about Next.js, take a look at the following resources:
+ข้อมูลทั้งหมดแยกเป็นไฟล์ในโฟลเดอร์ `src/data/` แก้เพิ่ม-ลดได้อิสระ:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| ไฟล์ | เนื้อหา |
+| --- | --- |
+| `src/data/profile.ts` | โปรไฟล์ (เพศ/อายุ/ส่วนสูง/เป้าหมาย/เวลาออกกำลัง) |
+| `src/data/week.ts` | แผน 7 วัน — ท่า เซ็ต ครั้ง เวลาพัก มื้ออาหาร ขั้นตอน การนอน |
+| `src/data/shopping.ts` | รายการซื้อของ (ชื่อ/ปริมาณ/ราคา/หมวด/ของใช้นาน) + ทิปน้ำ/การนอน |
+| `src/data/types.ts` | โครงสร้างข้อมูล (type) — ไม่ต้องแก้ถ้าไม่เพิ่มฟิลด์ใหม่ |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+ตัวอย่างการเพิ่มท่าใน `week.ts`:
 
-## Deploy on Vercel
+```ts
+{ name: "Lat Pulldown", muscle: "ปีก/หลัง", sets: 4, reps: "10-12", rest: "90 วิ" }
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+`recurring: true` ในรายการซื้อของ = ของซื้อครั้งเดียวใช้นาน (ข้าว/น้ำมัน/เครื่องปรุง)
+จะถูกแยกออกจาก "งบสัปดาห์ถัดไป" โดยอัตโนมัติ
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## โครงสร้างโค้ด
+
+- `src/data/` — ข้อมูล (แก้ที่นี่)
+- `src/lib/` — ตรรกะคำนวณ: `timeline.ts` (เรียงไทม์ไลน์), `shopping.ts` (รวมเงิน), `storage.ts` (จำติ๊ก/ธีม)
+- `src/components/` — UI: แท็บ, การ์ด, ไทม์ไลน์, day picker, ปุ่มสลับธีม
+- `src/components/views/` — 5 แท็บ: รูทีน / ออกกำลัง / อาหาร / นอน / ซื้อของ
+
+## เทคโนโลยี
+
+Next.js · TypeScript · Tailwind CSS · shadcn/ui · Bun

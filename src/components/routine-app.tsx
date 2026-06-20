@@ -47,6 +47,14 @@ export function RoutineApp() {
     setSelectedDay(key);
   };
 
+  const handleTab = (value: string) => {
+    setTab(value);
+    // เปลี่ยนแท็บแล้วเลื่อนกลับขึ้นบนสุด
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0 });
+    }
+  };
+
   const day = week.find((d) => d.key === selected) ?? week[0];
 
   return (
@@ -55,9 +63,9 @@ export function RoutineApp() {
       <DayPicker selected={selected} onSelect={handleSelect} />
 
       <main className="mx-auto w-full max-w-2xl flex-1 pb-safe">
-        <Tabs value={tab} onValueChange={setTab} className="gap-0">
+        <Tabs value={tab} onValueChange={handleTab} className="gap-0">
           {/* แถบแท็บ (ติดบน) */}
-          <TabsList className="sticky top-[105px] z-10 grid h-auto w-full grid-cols-5 rounded-none border-b border-border bg-background/85 p-0 backdrop-blur-md">
+          <TabsList className="sticky top-[132px] z-10 grid h-auto w-full grid-cols-5 rounded-none border-b border-border bg-background/85 p-0 backdrop-blur-md">
             {TABS.map(({ value, label, Icon }) => (
               <TabsTrigger
                 key={value}
