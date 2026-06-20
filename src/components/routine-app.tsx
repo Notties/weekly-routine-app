@@ -7,10 +7,12 @@ import {
   Salad,
   BedDouble,
   ShoppingCart,
+  CalendarCheck,
 } from "lucide-react";
 import { week } from "@/data";
 import type { DayKey } from "@/data/types";
 import { getSelectedDay, setSelectedDay } from "@/lib/storage";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ProfileHeader } from "@/components/profile-header";
 import { DayPicker } from "@/components/day-picker";
@@ -33,13 +35,16 @@ const TABS = [
 
 export function RoutineApp() {
   const [selected, setSelected] = React.useState<DayKey>("mon");
+  const [today, setToday] = React.useState<DayKey | null>(null);
   const [tab, setTab] = React.useState<string>("routine");
+  const touchStart = React.useRef<{ x: number; y: number } | null>(null);
 
-  // หลัง mount: ใช้วันที่เลือกล่าสุด ไม่งั้นใช้วันนี้
+  // หลัง mount: รู้ "วันนี้" + ใช้วันที่เลือกล่าสุด ไม่งั้นใช้วันนี้
   React.useEffect(() => {
     const stored = getSelectedDay() as DayKey | null;
-    const today = DAY_ORDER[new Date().getDay()];
-    setSelected(stored ?? today);
+    const t = DAY_ORDER[new Date().getDay()];
+    setToday(t);
+    setSelected(stored ?? t);
   }, []);
 
   const handleSelect = (key: DayKey) => {
@@ -55,6 +60,31 @@ export function RoutineApp() {
     }
   };
 
+  // ปัดซ้าย/ขวาเพื่อเปลี่ยนวัน (เฉพาะแท็บที่ผูกกับวัน)
+  const changeDayBy = (dir: number) => {
+    const idx = week.findIndex((d) => d.key === selected);
+    const next = (idx + dir + week.length) % week.length;
+    handleSelect(week[next].key);
+  };
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    const t = e.touches[0];
+    touchStart.current = { x: t.clientX, y: t.clientY };
+  };
+
+  const onTouchEnd = (e: React.TouchEvent) => {
+    const start = touchStart.current;
+    touchStart.current = null;
+    if (!start || tab === "shopping") return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - start.x;
+    const dy = t.clientY - start.y;
+    // เป็นการปัดแนวนอนชัดเจน (ไม่ใช่เลื่อนขึ้นลง)
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+      changeDayBy(dx < 0 ? 1 : -1);
+    }
+  };
+
   const day = week.find((d) => d.key === selected) ?? week[0];
 
   return (
@@ -66,7 +96,11 @@ export function RoutineApp() {
       {/* บล็อกหัวติดบน — พื้นทึบชั้นเดียว (header + เลือกวัน + แท็บ) */}
       <div className="sticky top-0 z-30 border-b border-border bg-background">
         <ProfileHeader />
-        <DayPicker selected={selected} onSelect={handleSelect} />
+        <DayPicker
+          selected={selected}
+          today={today}
+          onSelect={handleSelect}
+        />
         <TabsList className="mx-auto grid h-auto w-full max-w-2xl grid-cols-5 rounded-none bg-background p-0 group-data-horizontal/tabs:h-auto">
           {TABS.map(({ value, label, Icon }) => (
             <TabsTrigger
@@ -81,16 +115,33 @@ export function RoutineApp() {
         </TabsList>
       </div>
 
-      <main className="mx-auto w-full max-w-2xl flex-1 pb-safe">
+      <main
+        className="mx-auto w-full max-w-2xl flex-1 pb-safe"
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+      >
         {/* แถบบอกวัน (ซ่อนในแท็บซื้อของ เพราะเป็นระดับสัปดาห์) */}
         {tab !== "shopping" && (
           <div className="flex items-center justify-between gap-2 border-b border-border px-4 py-2.5">
-            <h2 className="text-sm font-bold">
-              {day.label}
-              {day.type !== "rest" && (
-                <span className="ml-2 font-medium text-muted-foreground">
-                  {day.title}
-                </span>
+            <h2 className="flex items-center gap-2 text-sm font-bold">
+              <span>
+                {day.label}
+                {day.type !== "rest" && (
+                  <span className="ml-2 font-medium text-muted-foreground">
+                    {day.title}
+                  </span>
+                )}
+              </span>
+              {today && selected !== today && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleSelect(today)}
+                  className="h-6 gap-1 px-2 text-xs font-medium text-primary hover:text-primary"
+                >
+                  <CalendarCheck className="size-3.5" />
+                  วันนี้
+                </Button>
               )}
             </h2>
             <DayTypeBadge type={day.type} />
