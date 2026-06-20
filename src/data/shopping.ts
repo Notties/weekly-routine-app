@@ -8,10 +8,9 @@ import type { ShopItem } from "./types";
 
 export const shopping: ShopItem[] = [
   // ── โปรตีน ──
-  { name: "อกไก่", qty: "2 กก.", price: 200, category: "โปรตีน", recurring: false },
+  { name: "อกไก่", qty: "3 กก.", price: 300, category: "โปรตีน", recurring: false },
   { name: "ไข่ไก่", qty: "30 ฟอง", price: 140, category: "โปรตีน", recurring: false },
-  { name: "ปลานิล/ปลาทู", qty: "1 กก.", price: 130, category: "โปรตีน", recurring: false },
-  { name: "เนื้อ/หมูสันใน", qty: "1 กก.", price: 200, category: "โปรตีน", recurring: false },
+  { name: "หมูสันใน (สลับกับอกไก่)", qty: "1 กก.", price: 200, category: "โปรตีน", recurring: false },
   { name: "กรีกโยเกิร์ต", qty: "4 ถ้วย", price: 160, category: "โปรตีน", recurring: false },
   { name: "นมจืด", qty: "2 ลิตร", price: 120, category: "โปรตีน", recurring: false },
   { name: "เวย์โปรตีน", qty: "1 กระปุก (~2 กก.)", price: 900, category: "โปรตีน", recurring: true },
