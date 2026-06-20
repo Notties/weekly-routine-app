@@ -58,58 +58,61 @@ export function RoutineApp() {
   const day = week.find((d) => d.key === selected) ?? week[0];
 
   return (
-    <div className="flex min-h-full flex-col">
-      <ProfileHeader />
-      <DayPicker selected={selected} onSelect={handleSelect} />
+    <Tabs
+      value={tab}
+      onValueChange={handleTab}
+      className="flex min-h-full flex-col gap-0"
+    >
+      {/* บล็อกหัวติดบน — พื้นทึบชั้นเดียว (header + เลือกวัน + แท็บ) */}
+      <div className="sticky top-0 z-30 border-b border-border bg-background">
+        <ProfileHeader />
+        <DayPicker selected={selected} onSelect={handleSelect} />
+        <TabsList className="mx-auto grid h-auto w-full max-w-2xl grid-cols-5 rounded-none bg-background p-0 group-data-horizontal/tabs:h-auto">
+          {TABS.map(({ value, label, Icon }) => (
+            <TabsTrigger
+              key={value}
+              value={value}
+              className="h-auto flex-col gap-1 rounded-none border-0 border-b-2 border-transparent bg-transparent px-0.5 py-2.5 text-[11px] shadow-none data-active:border-primary data-active:bg-transparent data-active:font-semibold data-active:text-primary data-active:shadow-none dark:data-active:border-primary dark:data-active:bg-transparent dark:data-active:text-primary"
+            >
+              <Icon className="size-4" />
+              {label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </div>
 
       <main className="mx-auto w-full max-w-2xl flex-1 pb-safe">
-        <Tabs value={tab} onValueChange={handleTab} className="gap-0">
-          {/* แถบแท็บ (ติดบน) */}
-          <TabsList className="sticky top-[132px] z-10 grid h-auto w-full grid-cols-5 rounded-none border-b border-border bg-background/85 p-0 backdrop-blur-md">
-            {TABS.map(({ value, label, Icon }) => (
-              <TabsTrigger
-                key={value}
-                value={value}
-                className="flex-col gap-1 rounded-none border-0 border-b-2 border-transparent px-0.5 py-2.5 text-[11px] data-active:border-primary data-active:bg-transparent data-active:font-semibold data-active:text-primary"
-              >
-                <Icon className="size-4" />
-                {label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
+        {/* แถบบอกวัน (ซ่อนในแท็บซื้อของ เพราะเป็นระดับสัปดาห์) */}
+        {tab !== "shopping" && (
+          <div className="flex items-center justify-between gap-2 border-b border-border px-4 py-2.5">
+            <h2 className="text-sm font-bold">
+              {day.label}
+              {day.type !== "rest" && (
+                <span className="ml-2 font-medium text-muted-foreground">
+                  {day.title}
+                </span>
+              )}
+            </h2>
+            <DayTypeBadge type={day.type} />
+          </div>
+        )}
 
-          {/* แถบบอกวัน (ซ่อนในแท็บซื้อของ เพราะเป็นระดับสัปดาห์) */}
-          {tab !== "shopping" && (
-            <div className="flex items-center justify-between gap-2 border-b border-border px-4 py-2.5">
-              <h2 className="text-sm font-bold">
-                {day.label}
-                {day.type !== "rest" && (
-                  <span className="ml-2 font-medium text-muted-foreground">
-                    {day.title}
-                  </span>
-                )}
-              </h2>
-              <DayTypeBadge type={day.type} />
-            </div>
-          )}
-
-          <TabsContent value="routine">
-            <TimelineView day={day} />
-          </TabsContent>
-          <TabsContent value="workout">
-            <WorkoutView day={day} />
-          </TabsContent>
-          <TabsContent value="meal">
-            <MealView day={day} />
-          </TabsContent>
-          <TabsContent value="sleep">
-            <SleepView day={day} />
-          </TabsContent>
-          <TabsContent value="shopping">
-            <ShoppingView />
-          </TabsContent>
-        </Tabs>
+        <TabsContent value="routine">
+          <TimelineView day={day} />
+        </TabsContent>
+        <TabsContent value="workout">
+          <WorkoutView day={day} />
+        </TabsContent>
+        <TabsContent value="meal">
+          <MealView day={day} />
+        </TabsContent>
+        <TabsContent value="sleep">
+          <SleepView day={day} />
+        </TabsContent>
+        <TabsContent value="shopping">
+          <ShoppingView />
+        </TabsContent>
       </main>
-    </div>
+    </Tabs>
   );
 }
