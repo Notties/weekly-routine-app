@@ -43,7 +43,7 @@ describe("computeShoppingItems (วัตถุดิบเปลี่ยนต
     const items = computeShoppingItems(week, {});
     const names = items.map((i) => i.name);
     expect(names).toContain("อกไก่");
-    expect(names).toContain("น้ำมัน (มะกอก/รำข้าว)");
+    expect(names).toContain("น้ำมันรำข้าว");
     expect(names).not.toContain("หมูสันใน");
   });
 
