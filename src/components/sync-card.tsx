@@ -1,18 +1,22 @@
 "use client";
 
 import * as React from "react";
-import { Cloud, CloudOff, LogOut, Check, Mail } from "lucide-react";
+import { Cloud, CloudOff, LogOut, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getSupabase, isSyncConfigured } from "@/lib/supabase";
 import { useAppStore } from "@/lib/store";
 import { runMigrationOnce } from "@/lib/api/run-migration";
 
+type Mode = "login" | "signup";
+
 export function SyncCard() {
   const [email, setEmail] = React.useState<string | null>(null);
-  const [input, setInput] = React.useState("");
-  const [sent, setSent] = React.useState(false);
+  const [inputEmail, setInputEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [mode, setMode] = React.useState<Mode>("login");
   const [busy, setBusy] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const [notice, setNotice] = React.useState<string | null>(null);
   const syncError = useAppStore((s) => s.syncError);
 
   React.useEffect(() => {
@@ -42,19 +46,33 @@ export function SyncCard() {
     );
   }
 
-  const send = async () => {
-    const e = input.trim();
-    if (!e) return;
+  const submit = async () => {
+    const mail = inputEmail.trim();
+    if (!mail || !password) return;
+    if (password.length < 6) {
+      setError("รหัสผ่านต้องยาวอย่างน้อย 6 ตัวอักษร");
+      return;
+    }
     setBusy(true);
     setError(null);
+    setNotice(null);
     const sb = getSupabase()!;
-    const { error: err } = await sb.auth.signInWithOtp({
-      email: e,
-      options: { emailRedirectTo: window.location.origin },
-    });
+    if (mode === "login") {
+      const { error: err } = await sb.auth.signInWithPassword({ email: mail, password });
+      if (err) setError(err.message);
+      // สำเร็จ → onAuthStateChange จัดการ hydrate ให้เอง
+    } else {
+      const { data, error: err } = await sb.auth.signUp({ email: mail, password });
+      if (err) setError(err.message);
+      else if (!data.session) {
+        // ไม่มี session = Supabase เปิด "ยืนยันอีเมล" อยู่
+        setNotice(
+          "สมัครแล้ว — ถ้าระบบเปิดยืนยันอีเมล ให้ยืนยันในอีเมลก่อน (หรือปิด Confirm email ใน Supabase แล้วเข้าสู่ระบบได้เลย)"
+        );
+      }
+      // ถ้ามี session → onAuthStateChange จัดการ hydrate ให้เอง
+    }
     setBusy(false);
-    if (err) setError(err.message);
-    else setSent(true);
   };
 
   const signOut = async () => {
@@ -87,26 +105,56 @@ export function SyncCard() {
             </Button>
           </div>
         </>
-      ) : sent ? (
-        <p className="mt-2 flex items-start gap-1.5 rounded-lg bg-primary/10 px-2 py-2 text-xs leading-snug">
-          <Mail className="mt-0.5 size-3.5 shrink-0 text-primary" />
-          <span>ส่งลิงก์เข้าระบบไปที่อีเมลแล้ว — เปิดลิงก์บนเครื่องนี้เพื่อเข้าระบบ</span>
-        </p>
       ) : (
         <>
           <p className="mt-1 text-xs text-muted-foreground">
-            เข้าระบบด้วยอีเมลเพื่อใช้งานและซิงค์ข้อมูล (ส่งลิงก์เข้าอีเมล ไม่มีรหัสผ่าน)
+            {mode === "login"
+              ? "เข้าสู่ระบบด้วยอีเมล + รหัสผ่านเพื่อใช้งานและซิงค์ข้อมูล"
+              : "สมัครด้วยอีเมล + รหัสผ่าน (อย่างน้อย 6 ตัวอักษร)"}
           </p>
-          <div className="mt-3 flex items-center gap-2">
+          <form
+            className="mt-3 flex flex-col gap-2"
+            onSubmit={(e) => {
+              e.preventDefault();
+              void submit();
+            }}
+          >
             <input
-              type="email" inputMode="email" autoComplete="email"
-              value={input} onChange={(e) => setInput(e.target.value)}
+              type="email"
+              inputMode="email"
+              autoComplete="email"
+              value={inputEmail}
+              onChange={(e) => setInputEmail(e.target.value)}
               placeholder="you@email.com"
               className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm"
             />
-            <Button size="sm" onClick={() => void send()} disabled={busy}>ส่งลิงก์</Button>
-          </div>
+            <input
+              type="password"
+              autoComplete={mode === "login" ? "current-password" : "new-password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="รหัสผ่าน"
+              className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm"
+            />
+            <Button type="submit" size="sm" disabled={busy}>
+              {mode === "login" ? "เข้าสู่ระบบ" : "สมัครสมาชิก"}
+            </Button>
+          </form>
+
+          <button
+            type="button"
+            className="mt-2 text-xs text-muted-foreground underline underline-offset-2"
+            onClick={() => {
+              setMode((m) => (m === "login" ? "signup" : "login"));
+              setError(null);
+              setNotice(null);
+            }}
+          >
+            {mode === "login" ? "ยังไม่มีบัญชี? สมัครสมาชิก" : "มีบัญชีแล้ว? เข้าสู่ระบบ"}
+          </button>
+
           {error && <p className="mt-1 text-xs text-destructive">{error}</p>}
+          {notice && <p className="mt-1 text-xs text-muted-foreground">{notice}</p>}
         </>
       )}
     </section>
