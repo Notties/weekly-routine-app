@@ -1,5 +1,6 @@
-import { Droplets, Minus, Plus } from "lucide-react";
+import { Droplets, Minus, Plus, UtensilsCrossed } from "lucide-react";
 import type { Profile, ResolvedDay, DayLog } from "@/data/types";
+import { SectionTitle } from "@/components/blocks";
 import { waterTip, water } from "@/data";
 import { bottlesPerDay } from "@/lib/cost";
 import { sumMacros, dailyTarget } from "@/lib/nutrition";
@@ -94,18 +95,23 @@ export function MealView({
         </div>
       </div>
 
-      <div className="space-y-3">
-        {meals.map(({ meal, index }) => (
-          <MealCard
-            key={index}
-            meal={meal}
-            onSwap={(recipeId) => onSwap(index, recipeId)}
-            showDone={isToday}
-            done={!!dateLog?.meals?.[index]}
-            onToggleDone={() => onToggleMeal(index)}
-          />
-        ))}
-      </div>
+      <section>
+        <SectionTitle icon={<UtensilsCrossed className="size-4" />}>
+          มื้ออาหารวันนี้
+        </SectionTitle>
+        <div className="mt-2 space-y-3">
+          {meals.map(({ meal, index }) => (
+            <MealCard
+              key={index}
+              meal={meal}
+              onSwap={(recipeId) => onSwap(index, recipeId)}
+              showDone={isToday}
+              done={!!dateLog?.meals?.[index]}
+              onToggleDone={() => onToggleMeal(index)}
+            />
+          ))}
+        </div>
+      </section>
     </div>
   );
 }
