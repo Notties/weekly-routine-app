@@ -62,7 +62,8 @@ export type MealSlot =
   | "preworkout"
   | "postworkout"
   | "snack"
-  | "dinner";
+  | "dinner"
+  | "dessert";
 
 /** ป้ายไทยของแต่ละหมวดมื้อ */
 export const MEAL_SLOT_LABEL: Record<MealSlot, string> = {
@@ -72,6 +73,7 @@ export const MEAL_SLOT_LABEL: Record<MealSlot, string> = {
   postworkout: "หลังเล่น",
   snack: "ของว่าง",
   dinner: "มื้อเย็น",
+  dessert: "ของหวาน",
 };
 
 /**

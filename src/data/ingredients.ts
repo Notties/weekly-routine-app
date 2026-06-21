@@ -36,6 +36,10 @@ export const ingredientCatalog: CatalogItem[] = [
 
   // ── เครื่องดื่ม ──
   { name: "กาแฟดำ", qty: "กาแฟคั่วบด/ผงกาแฟดำ 1 ถุง", price: 130, category: "เครื่องปรุง", recurring: true, macrosPer100g: { kcal: 0, protein: 0, carb: 0, fat: 0 } },
+
+  // ── ของหวาน/เบเกอรี่ ──
+  { name: "ผงโกโก้", qty: "ผงโกโก้แท้ไม่ใส่น้ำตาล 1 กระปุก", price: 90, category: "เครื่องปรุง", recurring: true, macrosPer100g: { kcal: 230, protein: 20, carb: 58, fat: 14 } },
+  { name: "อบเชย", qty: "อบเชยป่น 1 ขวดเล็ก", price: 35, category: "เครื่องปรุง", recurring: true, macrosPer100g: { kcal: 247, protein: 4, carb: 81, fat: 1 } },
 ];
 
 /** ของครัวพื้นฐานที่ต้องมีติดบ้านเสมอ (ใส่ในรายการซื้อของตลอด ไม่ขึ้นกับเมนู) */
