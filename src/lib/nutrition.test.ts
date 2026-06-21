@@ -1,7 +1,8 @@
 import { describe, it, expect } from "bun:test";
 import { macrosOf, sumMacros, dailyTarget, recipeMacros } from "./nutrition";
 import { profile } from "@/data/profile";
-import { getRecipe } from "./meals";
+import { getRecipe, resolveDay } from "./meals";
+import { week } from "@/data/week";
 
 describe("macrosOf", () => {
   it("อกไก่ 200 ก. = 2 เท่าของต่อ 100 ก.", () => {
@@ -56,4 +57,17 @@ describe("dailyTarget (ชาย 75 กก./167/25)", () => {
   it("วันพัก", () => {
     expect(dailyTarget(profile, "rest")).toEqual({ kcal: 1850, protein: 150, carb: 178, fat: 60 });
   });
+});
+
+describe("สมดุลทั้งสัปดาห์ — แต่ละวันใกล้เป้า", () => {
+  for (const day of week) {
+    it(`${day.label}: kcal อยู่ใน ±6% และโปรตีน ≥ 145 ก.`, () => {
+      const rd = resolveDay(day, {});
+      const total = sumMacros(rd.meals.map((m) => m.macros));
+      const target = dailyTarget(profile, day.type);
+      expect(total.kcal).toBeGreaterThanOrEqual(target.kcal * 0.94);
+      expect(total.kcal).toBeLessThanOrEqual(target.kcal * 1.06);
+      expect(total.protein).toBeGreaterThanOrEqual(145);
+    });
+  }
 });

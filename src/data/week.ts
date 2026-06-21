@@ -164,6 +164,7 @@ export const week: Day[] = [
     meals: [
       { time: "08:00", slot: "breakfast", recipeId: "bf-bread" },
       { time: "12:30", slot: "lunch", recipeId: "ln-chicken" },
+      { time: "16:00", slot: "snack", recipeId: "sn-yogurt" },
       { time: "18:30", slot: "dinner", recipeId: "dn-yogurt" },
     ],
     sleep: { bedtime: "23:30", wake: "07:30", hours: 8, note: "วันพักจริง เดินเล่น/ยืดเหยียดเบา ๆ ได้ ฟื้นกล้ามให้พร้อมสัปดาห์หน้า" },
@@ -177,8 +178,9 @@ export const week: Day[] = [
     type: "rest",
     title: "วันพัก",
     meals: [
-      { time: "08:00", slot: "breakfast", recipeId: "bf-oat" },
+      { time: "08:00", slot: "breakfast", recipeId: "bf-bread" },
       { time: "12:30", slot: "lunch", recipeId: "ln-chicken" },
+      { time: "16:00", slot: "snack", recipeId: "sn-yogurt" },
       { time: "18:30", slot: "dinner", recipeId: "dn-yogurt" },
     ],
     sleep: { bedtime: "23:00", wake: "06:30", hours: 7.5, note: "คืนก่อนเริ่มสัปดาห์ใหม่ นอนให้ตรงเวลา ตื่นสดชื่นพร้อมเล่น Full Body A" },
