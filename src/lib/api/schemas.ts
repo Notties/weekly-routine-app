@@ -23,3 +23,20 @@ export const LiftSetsSchema = z.object({
 export type LiftSetsInput = z.infer<typeof LiftSetsSchema>;
 
 export const SwapSchema = z.object({ recipeId: z.string().min(1) });
+
+// ── MigrateSchema: validate SyncSlice ทั้งก้อนจาก localStorage เดิม ──────────
+const SetSchema = z.object({ kg: z.number(), reps: z.number().int() });
+const DayLogSchema = z.object({
+  weightKg: z.number().optional(),
+  meals: z.record(z.string(), z.literal(true)).optional(),
+  workoutDone: z.boolean().optional(),
+  waterMl: z.number().optional(),
+  extra: z.object({ kcal: z.number(), protein: z.number() }).optional(),
+  lifts: z.record(z.string(), z.array(SetSchema)).optional(),
+});
+export const MigrateSchema = z.object({
+  swaps: z.record(z.string(), z.string()),
+  checked: z.record(z.string(), z.boolean()),
+  log: z.record(z.string(), DayLogSchema),
+  profileOverride: ProfileSchema,
+});
