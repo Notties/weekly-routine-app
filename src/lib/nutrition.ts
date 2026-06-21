@@ -50,7 +50,9 @@ export function recipeMacros(recipe: Recipe): Macros {
 }
 
 // ── เป้าหมายต่อวัน ──
+/** ตัวคูณกิจกรรมต่อ BMR ตามชนิดวัน (เล่นเวตเผาเยอะสุด, พักน้อยสุด) */
 const ACTIVITY: Record<DayType, number> = { weights: 1.5, cardio: 1.45, rest: 1.3 };
+/** แคลอรี่ขาดดุลต่อวัน (หักจาก TDEE) — จูนให้แต่ละวันลงในกรอบเป้า */
 const DEFICIT: Record<DayType, number> = { weights: 310, cardio: 380, rest: 325 };
 const PROTEIN_PER_KG = 2.0; // รักษากล้ามระหว่างลดไขมัน
 const FAT_PER_KG = 0.8;
