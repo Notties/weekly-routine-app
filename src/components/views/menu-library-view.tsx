@@ -22,7 +22,7 @@ function RecipeCard({ recipe }: { recipe: Recipe }) {
         <span className="text-xs font-semibold text-muted-foreground">
           วัตถุดิบ:{" "}
         </span>
-        {recipe.ingredients.join(" · ")}
+        {recipe.ingredients.map((i) => `${i.name} ${i.grams} ก.`).join(" · ")}
       </p>
       <StepList steps={recipe.steps} />
       {recipe.tags && <TagRow tags={recipe.tags} />}

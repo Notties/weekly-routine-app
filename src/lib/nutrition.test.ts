@@ -1,6 +1,7 @@
 import { describe, it, expect } from "bun:test";
-import { macrosOf, sumMacros, dailyTarget } from "./nutrition";
+import { macrosOf, sumMacros, dailyTarget, recipeMacros } from "./nutrition";
 import { profile } from "@/data/profile";
+import { getRecipe } from "./meals";
 
 describe("macrosOf", () => {
   it("อกไก่ 200 ก. = 2 เท่าของต่อ 100 ก.", () => {
@@ -30,6 +31,18 @@ describe("sumMacros", () => {
 
   it("ลิสต์ว่าง = 0", () => {
     expect(sumMacros([])).toEqual({ kcal: 0, protein: 0, carb: 0, fat: 0 });
+  });
+});
+
+describe("recipeMacros", () => {
+  it("ln-chicken = 624/55/71/11 (ปัดเศษ)", () => {
+    const r = getRecipe("ln-chicken")!;
+    expect(recipeMacros(r)).toEqual({ kcal: 624, protein: 55, carb: 71, fat: 11 });
+  });
+
+  it("po-whey-rice โปรตีนสูง (= 72 ก.)", () => {
+    const r = getRecipe("po-whey-rice")!;
+    expect(recipeMacros(r).protein).toBe(72);
   });
 });
 

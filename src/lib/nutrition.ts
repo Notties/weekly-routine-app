@@ -1,5 +1,5 @@
 import { ingredientCatalog, pantryStaples } from "@/data/ingredients";
-import type { DayType, Macros, Profile } from "@/data/types";
+import type { DayType, Macros, Profile, Recipe } from "@/data/types";
 
 // แผนที่ชื่อวัตถุดิบ → มาโครต่อ 100 ก. (รวมทั้ง catalog + ของครัวพื้นฐาน)
 const macroByName = new Map<string, Macros>(
@@ -34,6 +34,19 @@ export function sumMacros(list: Macros[]): Macros {
     }),
     { ...ZERO }
   );
+}
+
+/** มาโครรวมของเมนู (ปัดเศษเป็นจำนวนเต็มทุกฟิลด์) */
+export function recipeMacros(recipe: Recipe): Macros {
+  const total = sumMacros(
+    recipe.ingredients.map((i) => macrosOf(i.name, i.grams))
+  );
+  return {
+    kcal: Math.round(total.kcal),
+    protein: Math.round(total.protein),
+    carb: Math.round(total.carb),
+    fat: Math.round(total.fat),
+  };
 }
 
 // ── เป้าหมายต่อวัน ──

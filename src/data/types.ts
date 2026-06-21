@@ -86,10 +86,12 @@ export type Recipe = {
   slot: MealSlot;
   /** อุปกรณ์ที่ต้องใช้ */
   equipment: Appliance[];
-  /** ชื่อวัตถุดิบ (อ้างอิง ingredientCatalog) — ใช้คำนวณรายการซื้อของ */
-  ingredients: string[];
+  /** วัตถุดิบ + กรัมต่อ 1 ที่ (อ้างอิง ingredientCatalog/pantryStaples) */
+  ingredients: RecipeItem[];
   /** ขั้นตอนวิธีทำแบบมือใหม่ทำตามได้ */
   steps: string[];
+  /** ประโยชน์: เมนูนี้ให้อะไร/ช่วยอะไร */
+  benefit: string;
   /** ป้ายกำกับเริ่มต้น เช่น "โปรตีนสูง" */
   tags?: string[];
 };
@@ -119,6 +121,10 @@ export type Meal = {
   equipment?: Appliance[];
   steps: string[];
   tags: string[];
+  /** มาโครของเมนูที่เลือก (คำนวณจากวัตถุดิบ) */
+  macros: Macros;
+  /** ประโยชน์ของเมนูที่เลือก */
+  benefit: string;
 };
 
 export type Workout = {

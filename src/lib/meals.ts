@@ -8,6 +8,9 @@ import type {
   Recipe,
   ResolvedDay,
 } from "@/data/types";
+import { recipeMacros } from "./nutrition";
+
+const ZERO_MACROS = { kcal: 0, protein: 0, carb: 0, fat: 0 } as const;
 
 const recipeById = new Map(recipes.map((r) => [r.id, r] as const));
 
@@ -54,6 +57,8 @@ export function resolveMeal(
     equipment: recipe?.equipment,
     steps: recipe?.steps ?? [],
     tags: dm.tags ?? recipe?.tags ?? [],
+    macros: recipe ? recipeMacros(recipe) : { ...ZERO_MACROS },
+    benefit: recipe?.benefit ?? "",
   };
 }
 
