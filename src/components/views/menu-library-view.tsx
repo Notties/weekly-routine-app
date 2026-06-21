@@ -1,7 +1,9 @@
-import { Info } from "lucide-react";
+import { Info, Sparkles } from "lucide-react";
 import { recipes } from "@/data";
 import { MEAL_SLOT_LABEL, type MealSlot, type Recipe } from "@/data/types";
 import { SectionTitle, StepList, TagRow } from "@/components/blocks";
+import { recipeMacros } from "@/lib/nutrition";
+import { NutritionStrip } from "@/components/nutrition-strip";
 import { EquipmentBadges } from "@/components/equipment-badges";
 
 const SLOT_ORDER: MealSlot[] = [
@@ -18,12 +20,19 @@ function RecipeCard({ recipe }: { recipe: Recipe }) {
     <article className="rounded-2xl border border-border bg-card p-4">
       <h3 className="text-sm font-bold">{recipe.name}</h3>
       <EquipmentBadges equipment={recipe.equipment} />
+      <NutritionStrip macros={recipeMacros(recipe)} />
       <p className="mt-2 text-sm">
         <span className="text-xs font-semibold text-muted-foreground">
           วัตถุดิบ:{" "}
         </span>
         {recipe.ingredients.map((i) => `${i.name} ${i.grams} ก.`).join(" · ")}
       </p>
+      {recipe.benefit && (
+        <p className="mt-2 flex gap-1.5 text-xs leading-snug text-muted-foreground">
+          <Sparkles className="mt-0.5 size-3.5 shrink-0 text-primary" />
+          <span>{recipe.benefit}</span>
+        </p>
+      )}
       <StepList steps={recipe.steps} />
       {recipe.tags && <TagRow tags={recipe.tags} />}
     </article>
