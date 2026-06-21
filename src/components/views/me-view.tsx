@@ -18,6 +18,7 @@ import { AdherenceHeatmap } from "@/components/adherence-heatmap";
 import { dailyTarget } from "@/lib/nutrition";
 import { WeightTrend } from "@/components/weight-trend";
 import { NutritionStrip } from "@/components/nutrition-strip";
+import { SyncCard } from "@/components/sync-card";
 import { Button } from "@/components/ui/button";
 
 const DAY_TYPE_LABEL: Record<string, string> = {
@@ -89,6 +90,9 @@ export function MeView({
         </div>
         <WeightTrend series={series} />
       </section>
+
+      {/* ซิงค์คลาวด์ */}
+      <SyncCard />
 
       {/* ความสม่ำเสมอ */}
       <section className="rounded-2xl border border-border bg-card p-4">
