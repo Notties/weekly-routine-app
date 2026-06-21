@@ -1,10 +1,15 @@
+"use client";
+
+import * as React from "react";
 import { Info, Sparkles } from "lucide-react";
 import { recipes } from "@/data";
 import { MEAL_SLOT_LABEL, type MealSlot, type Recipe } from "@/data/types";
-import { SectionTitle, StepList, TagRow } from "@/components/blocks";
 import { recipeMacros } from "@/lib/nutrition";
-import { NutritionStrip } from "@/components/nutrition-strip";
+import { RECIPE_FILTERS, filterRecipes } from "@/lib/recipe-filter";
+import { SectionTitle, StepList, TagRow } from "@/components/blocks";
 import { EquipmentBadges } from "@/components/equipment-badges";
+import { NutritionStrip } from "@/components/nutrition-strip";
+import { cn } from "@/lib/utils";
 
 const SLOT_ORDER: MealSlot[] = [
   "breakfast",
@@ -13,6 +18,7 @@ const SLOT_ORDER: MealSlot[] = [
   "snack",
   "postworkout",
   "dinner",
+  "dessert",
 ];
 
 function RecipeCard({ recipe }: { recipe: Recipe }) {
@@ -39,19 +45,63 @@ function RecipeCard({ recipe }: { recipe: Recipe }) {
   );
 }
 
+function FilterChip({
+  label,
+  active,
+  onClick,
+}: {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        "shrink-0 rounded-full border px-3 py-1 text-xs font-medium transition-colors",
+        active
+          ? "border-primary bg-primary text-primary-foreground"
+          : "border-border bg-muted text-foreground hover:bg-muted/70"
+      )}
+    >
+      {label}
+    </button>
+  );
+}
+
 export function MenuLibraryView() {
+  const [active, setActive] = React.useState<string | null>(null);
+  const filtered = filterRecipes(recipes, active);
+
   return (
     <div className="space-y-6 px-4 py-4">
       <div className="flex items-start gap-3 rounded-2xl border border-border bg-muted p-3">
         <Info className="mt-0.5 size-5 shrink-0" />
         <p className="text-sm leading-snug">
-          คลังเมนูทั้งหมด พร้อมวัตถุดิบและวิธีทำ — กด “สลับ” ในแท็บ 🍱 อาหาร
+          คลังเมนูทั้งหมด พร้อมวัตถุดิบและวิธีทำ — กด "สลับ" ในแท็บ 🍱 อาหาร
           เพื่อเปลี่ยนเมนูของแต่ละมื้อ แล้วรายการซื้อของจะอัปเดตวัตถุดิบให้เอง
         </p>
       </div>
 
+      <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1">
+        <FilterChip
+          label="ทั้งหมด"
+          active={active === null}
+          onClick={() => setActive(null)}
+        />
+        {RECIPE_FILTERS.map((f) => (
+          <FilterChip
+            key={f.id}
+            label={f.label}
+            active={active === f.id}
+            onClick={() => setActive(active === f.id ? null : f.id)}
+          />
+        ))}
+      </div>
+
       {SLOT_ORDER.map((slot) => {
-        const items = recipes.filter((r) => r.slot === slot);
+        const items = filtered.filter((r) => r.slot === slot);
         if (items.length === 0) return null;
         return (
           <section key={slot}>
