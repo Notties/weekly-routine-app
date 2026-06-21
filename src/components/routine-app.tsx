@@ -149,7 +149,7 @@ export function RoutineApp() {
       className="flex min-h-full flex-col gap-0"
     >
       <div className="sticky top-0 z-30 border-b border-border bg-background">
-        <ProfileHeader profile={effProfile} onOpen={() => handleTab("me")} />
+        <ProfileHeader onOpen={() => handleTab("me")} />
         <DayPicker selected={selected} today={today} onSelect={handleSelect} />
         <TabsList className="mx-auto grid h-auto w-full max-w-2xl grid-cols-6 rounded-none bg-background p-0 group-data-horizontal/tabs:h-auto">
           {TABS.map(({ value, label, Icon }) => (
