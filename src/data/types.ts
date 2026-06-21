@@ -207,6 +207,9 @@ export const SHOP_CATEGORIES: ShopCategory[] = [
 /** วันที่รูปแบบ "YYYY-MM-DD" (เวลาท้องถิ่น) */
 export type ISODate = string;
 
+/** เซ็ตที่ทำได้จริง: น้ำหนัก (กก.) × จำนวนครั้ง */
+export type SetEntry = { kg: number; reps: number };
+
 /** บันทึกของวันหนึ่ง */
 export type DayLog = {
   weightKg?: number;
@@ -216,6 +219,8 @@ export type DayLog = {
   waterMl?: number;
   /** อาหารนอกแผน (ยอดสะสมต่อวัน) */
   extra?: { kcal: number; protein: number };
+  /** เซ็ตที่บันทึกต่อท่า (key = ชื่อท่า ตรงกับ week.ts) */
+  lifts?: Record<string, SetEntry[]>;
 };
 
 /** ค่าโปรไฟล์ที่ผู้ใช้แก้เอง (น้ำหนักไม่อยู่ที่นี่ — อยู่ใน log) */

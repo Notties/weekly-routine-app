@@ -9,6 +9,9 @@ type AppState = {
   checked: Record<string, boolean>;
   log: Record<ISODate, DayLog>;
   profileOverride: ProfileOverride;
+  /** rest timer (ชั่วคราว ไม่ persist): timestamp ที่พักจะครบ + เวลาทั้งหมด (วิ) */
+  restEndsAt: number | null;
+  restTotal: number | null;
 
   setHasHydrated: (v: boolean) => void;
   setSelectedDay: (k: DayKey) => void;
@@ -22,6 +25,17 @@ type AppState = {
   addWater: (date: ISODate, deltaMl: number) => void;
   addExtra: (date: ISODate, kcal: number, protein: number) => void;
   clearExtra: (date: ISODate) => void;
+  logSet: (
+    date: ISODate,
+    exercise: string,
+    index: number,
+    kg: number,
+    reps: number
+  ) => void;
+  clearLift: (date: ISODate, exercise: string) => void;
+  startRest: (seconds: number) => void;
+  addRest: (seconds: number) => void;
+  stopRest: () => void;
   setProfileField: <K extends keyof ProfileOverride>(
     field: K,
     value: ProfileOverride[K]
@@ -46,6 +60,8 @@ export const useAppStore = create<AppState>()(
       checked: {},
       log: {},
       profileOverride: {},
+      restEndsAt: null,
+      restTotal: null,
 
       setHasHydrated: (v) => set({ hasHydrated: v }),
       setSelectedDay: (k) => set({ selectedDay: k }),
@@ -108,6 +124,38 @@ export const useAppStore = create<AppState>()(
             return next;
           }),
         })),
+      logSet: (date, exercise, index, kg, reps) =>
+        set((s) => ({
+          log: patchDay(s.log, date, (d) => {
+            const lifts = { ...(d.lifts ?? {}) };
+            const arr = [...(lifts[exercise] ?? [])];
+            while (arr.length <= index) arr.push({ kg: 0, reps: 0 });
+            arr[index] = { kg, reps };
+            lifts[exercise] = arr;
+            return { ...d, lifts };
+          }),
+        })),
+      clearLift: (date, exercise) =>
+        set((s) => ({
+          log: patchDay(s.log, date, (d) => {
+            if (!d.lifts?.[exercise]) return d;
+            const lifts = { ...d.lifts };
+            delete lifts[exercise];
+            return { ...d, lifts };
+          }),
+        })),
+      startRest: (seconds) =>
+        set({ restEndsAt: Date.now() + seconds * 1000, restTotal: seconds }),
+      addRest: (seconds) =>
+        set((s) =>
+          s.restEndsAt
+            ? {
+                restEndsAt: s.restEndsAt + seconds * 1000,
+                restTotal: (s.restTotal ?? 0) + seconds,
+              }
+            : {}
+        ),
+      stopRest: () => set({ restEndsAt: null, restTotal: null }),
       setProfileField: (field, value) =>
         set((s) => ({
           profileOverride: { ...s.profileOverride, [field]: value },
