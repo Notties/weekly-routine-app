@@ -1,63 +1,36 @@
-# ตั้งค่า Supabase Cloud Sync
+# ตั้งค่า Supabase + Prisma backend
 
-sync ข้อมูล (`log`, `swaps`, `checked`, `profileOverride`) ข้ามอุปกรณ์แบบ offline-first
-ถ้าไม่ตั้งค่า แอปจะทำงานออฟไลน์ (localStorage) เหมือนเดิมทุกอย่าง
+แอปเก็บข้อมูล (`log`, `swaps`, `checked`, `profileOverride`) บน Postgres ผ่าน Prisma
+ใช้งาน **ต้องเข้าสู่ระบบ + ออนไลน์** (ไม่ใช่ offline-first แล้ว)
 
 ## 1) สร้าง Supabase project
+1. https://supabase.com → New project (จด database password ไว้)
+2. Settings → API → คัดลอก **Project URL** + **publishable key** (`sb_publishable_...`)
+3. Settings → Database → Connection string → คัดลอกทั้ง **pooler (6543)** และ **direct (5432)**
 
-1. ไปที่ https://supabase.com → New project
-2. Settings → API Keys → คัดลอก **Project URL** และ **publishable key** (`sb_publishable_...`)
-   หรือ anon key เดิม (`eyJ...`) ก็ได้
-
-## 2) ใส่ env
-
-คัดลอก `.env.example` เป็น `.env.local` แล้วเติมค่า:
-
+## 2) ใส่ env (`.env` ตอน dev, แดชบอร์ด host ตอน deploy)
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
-# หรือใช้คีย์เดิม: NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
+DATABASE_URL=postgresql://...pooler...:6543/postgres?pgbouncer=true
+DIRECT_URL=postgresql://...:5432/postgres
 ```
 
-> ค่าเหล่านี้ inlined ตอน `bun run build` (static export) — anon key เปิดเผยได้ ความปลอดภัยมาจาก RLS ด้านล่าง
-> ตอน deploy (Vercel/Netlify) ให้ตั้ง env สองตัวนี้ในแดชบอร์ดของผู้ให้บริการด้วย
-
-## 3) สร้างตาราง + RLS
-
-Supabase → SQL Editor → รัน:
-
-```sql
-create table if not exists public.user_state (
-  user_id uuid primary key references auth.users on delete cascade,
-  data jsonb not null default '{}'::jsonb,
-  updated_at timestamptz not null default now()
-);
-
-alter table public.user_state enable row level security;
-
-create policy "own row - select" on public.user_state
-  for select using (auth.uid() = user_id);
-create policy "own row - insert" on public.user_state
-  for insert with check (auth.uid() = user_id);
-create policy "own row - update" on public.user_state
-  for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
+## 3) สร้างตาราง (Prisma migrate)
+```bash
+bunx prisma migrate deploy   # production
+# หรือ dev: bunx prisma migrate dev
 ```
 
 ## 4) ตั้ง Auth (magic link)
+- Authentication → Providers → เปิด Email (ค่าเริ่มต้นเปิด)
+- Authentication → URL Configuration → ใส่ Site URL + Redirect URLs ให้ตรงกับ dev/prod
 
-- Supabase → Authentication → Providers → เปิด **Email** (ค่าเริ่มต้นเปิดอยู่)
-- Authentication → URL Configuration → ใส่ **Site URL** และ **Redirect URLs** ให้ตรงกับที่ deploy
-  (เช่น `http://localhost:3000` ตอน dev และโดเมนจริงตอน production)
+## 5) Deploy (Vercel)
+- ไม่ใช่ static export แล้ว — Vercel จะรันเป็น Next.js server อัตโนมัติ
+- ตั้ง env ทั้ง 4 ตัวในแดชบอร์ด Vercel
+- build command รัน `prisma generate` ผ่าน `postinstall` อยู่แล้ว
 
-## 5) ใช้งาน
-
-เปิดแอป → แท็บโปรไฟล์ (แตะรูปโปรไฟล์มุมบน) → การ์ด **"ซิงค์คลาวด์"** → กรอกอีเมล → กด "ส่งลิงก์"
-เปิดลิงก์ในอีเมลบนเครื่องเดียวกัน → เข้าระบบและซิงค์อัตโนมัติ
-ทำซ้ำบนอีกเครื่องด้วยอีเมลเดียวกัน → ข้อมูลจะ merge เข้าหากัน
-
-## การ merge (offline-first)
-
-- local (localStorage) เป็นหลักเสมอ → ใช้ในยิมที่เน็ตไม่ดีได้
-- ตอนซิงค์: ดึงของคลาวด์มา **union-merge** กับของในเครื่อง (ไม่ทำของฝั่งใดหาย)
-  - คีย์ที่ชนกันใช้ฝั่งที่แก้ล่าสุด; `log` ราย "วัน" จะ union `meals`/`lifts` ไม่ทับทั้งวัน
-- push ขึ้นคลาวด์อัตโนมัติหลังข้อมูลเปลี่ยน ~1.5 วิ และตอนเปิดแอป
+## การย้ายข้อมูลเดิม
+ผู้ใช้ที่เคยใช้เวอร์ชัน offline เดิม: เมื่อ login ครั้งแรก ข้อมูลใน localStorage
+จะถูกย้ายขึ้น backend อัตโนมัติครั้งเดียว (idempotent)
