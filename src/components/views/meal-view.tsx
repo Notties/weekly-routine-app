@@ -1,6 +1,6 @@
 import { Droplets } from "lucide-react";
-import type { ResolvedDay } from "@/data/types";
-import { waterTip, water, profile } from "@/data";
+import type { Profile, ResolvedDay } from "@/data/types";
+import { waterTip, water } from "@/data";
 import { bottlesPerDay } from "@/lib/cost";
 import { sumMacros, dailyTarget } from "@/lib/nutrition";
 import { MealCard } from "@/components/meal-card";
@@ -9,9 +9,11 @@ import { DailyNutritionSummary } from "@/components/daily-nutrition-summary";
 
 export function MealView({
   day,
+  profile,
   onSwap,
 }: {
   day: ResolvedDay;
+  profile: Profile;
   onSwap: (mealIndex: number, recipeId: string) => void;
 }) {
   // เรียงตามเวลา แต่คงดัชนีเดิมไว้ (ใช้สลับเมนูให้ตรงช่อง)

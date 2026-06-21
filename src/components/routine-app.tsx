@@ -10,10 +10,10 @@ import {
   BookOpen,
   CalendarCheck,
 } from "lucide-react";
-import { week } from "@/data";
+import { profile, week } from "@/data";
 import type { DayKey } from "@/data/types";
 import { useAppStore } from "@/lib/store";
-import { DAY_ORDER } from "@/lib/tracking";
+import { DAY_ORDER, effectiveProfile, toISODate } from "@/lib/tracking";
 import { resolveDay, swapKey } from "@/lib/meals";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -26,6 +26,7 @@ import { MealView } from "@/components/views/meal-view";
 import { SleepView } from "@/components/views/sleep-view";
 import { ShoppingView } from "@/components/views/shopping-view";
 import { MenuLibraryView } from "@/components/views/menu-library-view";
+import { MeView } from "@/components/views/me-view";
 
 const TABS = [
   { value: "routine", label: "รูทีน", Icon: ClipboardList },
@@ -43,6 +44,8 @@ export function RoutineApp() {
   const hasHydrated = useAppStore((s) => s.hasHydrated);
   const selected = useAppStore((s) => s.selectedDay);
   const swaps = useAppStore((s) => s.swaps);
+  const profileOverride = useAppStore((s) => s.profileOverride);
+  const log = useAppStore((s) => s.log);
   const setSelectedDay = useAppStore((s) => s.setSelectedDay);
   const setSwap = useAppStore((s) => s.setSwap);
 
@@ -104,6 +107,8 @@ export function RoutineApp() {
 
   const day = week.find((d) => d.key === selected) ?? week[0];
   const resolvedDay = resolveDay(day, swaps);
+  const effProfile = effectiveProfile(profile, profileOverride, log);
+  const todayISO = toISODate(new Date());
 
   return (
     <Tabs
@@ -112,7 +117,7 @@ export function RoutineApp() {
       className="flex min-h-full flex-col gap-0"
     >
       <div className="sticky top-0 z-30 border-b border-border bg-background">
-        <ProfileHeader />
+        <ProfileHeader profile={effProfile} onOpen={() => handleTab("me")} />
         <DayPicker selected={selected} today={today} onSelect={handleSelect} />
         <TabsList className="mx-auto grid h-auto w-full max-w-2xl grid-cols-6 rounded-none bg-background p-0 group-data-horizontal/tabs:h-auto">
           {TABS.map(({ value, label, Icon }) => (
@@ -167,7 +172,7 @@ export function RoutineApp() {
           <WorkoutView day={resolvedDay} />
         </TabsContent>
         <TabsContent value="meal">
-          <MealView day={resolvedDay} onSwap={applySwap} />
+          <MealView day={resolvedDay} profile={effProfile} onSwap={applySwap} />
         </TabsContent>
         <TabsContent value="sleep">
           <SleepView day={resolvedDay} />
@@ -178,6 +183,9 @@ export function RoutineApp() {
         <TabsContent value="menu">
           <MenuLibraryView />
         </TabsContent>
+        {tab === "me" && (
+          <MeView todayISO={todayISO} onBack={() => handleTab("routine")} />
+        )}
       </main>
     </Tabs>
   );
