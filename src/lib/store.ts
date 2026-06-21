@@ -2,6 +2,7 @@ import { create } from "zustand";
 import type { DayLog, ISODate, ProfileOverride } from "@/data/types";
 import { apiGet, apiSend, AuthError, NetworkError } from "@/lib/api/client";
 import type { SyncSlice } from "@/lib/api/types";
+import { toast } from "@/lib/toast";
 
 type AppState = {
   hasHydrated: boolean;
@@ -59,9 +60,18 @@ export const useAppStore = create<AppState>()((set, get) => {
       .then(() => set({ online: true }))
       .catch((e) => {
         set({ ...snapshot });
-        if (e instanceof AuthError) set({ syncError: "ต้องเข้าสู่ระบบใหม่" });
-        else if (e instanceof NetworkError) set({ online: false, syncError: "ออฟไลน์ ยังไม่บันทึก" });
-        else set({ syncError: "บันทึกไม่สำเร็จ" });
+        let msg: string;
+        if (e instanceof AuthError) {
+          msg = "ต้องเข้าสู่ระบบใหม่";
+          set({ syncError: msg });
+        } else if (e instanceof NetworkError) {
+          msg = "ออฟไลน์ ยังไม่บันทึก";
+          set({ online: false, syncError: msg });
+        } else {
+          msg = "บันทึกไม่สำเร็จ";
+          set({ syncError: msg });
+        }
+        toast.error(msg);
       });
   }
 

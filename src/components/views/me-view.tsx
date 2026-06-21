@@ -25,6 +25,7 @@ import {
 } from "@/lib/tracking";
 import { AdherenceHeatmap } from "@/components/adherence-heatmap";
 import { useSessionEmail, initialsFromEmail } from "@/lib/use-session";
+import { toast } from "@/lib/toast";
 import { dailyTarget } from "@/lib/nutrition";
 import { WeightTrend } from "@/components/weight-trend";
 import { NutritionStrip } from "@/components/nutrition-strip";
@@ -68,7 +69,10 @@ export function MeView({
 
   const saveWeight = () => {
     const kg = parseFloat(weightInput);
-    if (!Number.isNaN(kg) && kg > 0) logWeight(todayISO, kg);
+    if (!Number.isNaN(kg) && kg > 0) {
+      logWeight(todayISO, kg);
+      toast.success("บันทึกน้ำหนักแล้ว");
+    }
   };
 
   return (
@@ -154,6 +158,7 @@ export function MeView({
             value={weightInput}
             onChange={(e) => setWeightInput(e.target.value)}
             placeholder="น้ำหนักวันนี้ (กก.)"
+            aria-label="น้ำหนักวันนี้ (กก.)"
             className="tnum h-10 w-full rounded-xl border border-border bg-background px-3 text-sm"
           />
           <Button onClick={saveWeight} className="h-10 shrink-0 rounded-xl px-5">
@@ -308,7 +313,13 @@ function ProfileField({
         type={type}
         inputMode={type === "number" ? "numeric" : undefined}
         defaultValue={value}
-        onBlur={(e) => onCommit(e.target.value)}
+        aria-label={label}
+        onBlur={(e) => {
+          if (e.target.value !== value) {
+            onCommit(e.target.value);
+            toast.success("บันทึกแล้ว");
+          }
+        }}
         className="tnum mt-1 h-10 w-full rounded-xl border border-border bg-background px-3 text-sm"
       />
     </label>

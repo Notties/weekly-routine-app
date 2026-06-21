@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Cloud, CloudOff, LogOut, Check } from "lucide-react";
+import { Cloud, CloudOff, LogOut, Check, Eye, EyeOff, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getSupabase, isSyncConfigured } from "@/lib/supabase";
 import { useAppStore } from "@/lib/store";
@@ -15,6 +15,7 @@ export function SyncCard() {
   const [password, setPassword] = React.useState("");
   const [mode, setMode] = React.useState<Mode>("login");
   const [busy, setBusy] = React.useState(false);
+  const [showPw, setShowPw] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [notice, setNotice] = React.useState<string | null>(null);
   const syncError = useAppStore((s) => s.syncError);
@@ -126,18 +127,37 @@ export function SyncCard() {
               value={inputEmail}
               onChange={(e) => setInputEmail(e.target.value)}
               placeholder="you@email.com"
+              aria-label="อีเมล"
               className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm"
             />
-            <input
-              type="password"
-              autoComplete={mode === "login" ? "current-password" : "new-password"}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="รหัสผ่าน"
-              className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm"
-            />
-            <Button type="submit" disabled={busy} className="h-10 rounded-xl">
-              {mode === "login" ? "เข้าสู่ระบบ" : "สมัครสมาชิก"}
+            <div className="relative">
+              <input
+                type={showPw ? "text" : "password"}
+                autoComplete={mode === "login" ? "current-password" : "new-password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="รหัสผ่าน"
+                aria-label="รหัสผ่าน"
+                className="h-10 w-full rounded-xl border border-border bg-background pl-3 pr-10 text-sm"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPw((v) => !v)}
+                aria-label={showPw ? "ซ่อนรหัสผ่าน" : "แสดงรหัสผ่าน"}
+                className="absolute inset-y-0 right-0 grid w-10 place-items-center text-muted-foreground"
+              >
+                {showPw ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+              </button>
+            </div>
+            <Button type="submit" disabled={busy} className="h-10 gap-1.5 rounded-xl">
+              {busy && <Loader2 className="size-4 animate-spin" />}
+              {busy
+                ? mode === "login"
+                  ? "กำลังเข้าสู่ระบบ…"
+                  : "กำลังสมัคร…"
+                : mode === "login"
+                  ? "เข้าสู่ระบบ"
+                  : "สมัครสมาชิก"}
             </Button>
           </form>
 

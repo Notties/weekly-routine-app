@@ -9,6 +9,7 @@ import {
   ShoppingCart,
   BookOpen,
   CalendarCheck,
+  Loader2,
 } from "lucide-react";
 import { profile, week } from "@/data";
 import type { DayKey } from "@/data/types";
@@ -29,6 +30,7 @@ import { MenuLibraryView } from "@/components/views/menu-library-view";
 import { MeView } from "@/components/views/me-view";
 import { RestTimerBar } from "@/components/rest-timer-bar";
 import { SyncCard } from "@/components/sync-card";
+import { Toaster } from "@/components/toaster";
 
 const TABS = [
   { value: "routine", label: "รูทีน", Icon: ClipboardList },
@@ -109,9 +111,9 @@ export function RoutineApp() {
     }
   };
 
-  // gate: กัน hydration mismatch (static export)
+  // gate: กำลังโหลด state จาก backend
   if (!hasHydrated) {
-    return <div className="min-h-full" />;
+    return <LoadingScreen />;
   }
 
   // gate: ยังไม่ได้ login — แสดงหน้าเข้าระบบแทน routine
@@ -126,7 +128,7 @@ export function RoutineApp() {
   }
 
   if (!selected) {
-    return <div className="min-h-full" />;
+    return <LoadingScreen />;
   }
 
   const day = week.find((d) => d.key === selected) ?? week[0];
@@ -237,6 +239,16 @@ export function RoutineApp() {
       </main>
     </Tabs>
     <RestTimerBar />
+    <Toaster />
     </>
+  );
+}
+
+/** จอกำลังโหลด — ระหว่างดึง state จาก backend */
+function LoadingScreen() {
+  return (
+    <div className="flex min-h-full items-center justify-center">
+      <Loader2 className="size-6 animate-spin text-muted-foreground" />
+    </div>
   );
 }
