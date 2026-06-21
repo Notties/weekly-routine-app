@@ -21,7 +21,7 @@ localStorage เป็น source of truth, ซิงค์ขึ้น Supabase 
 | สถาปัตยกรรม | Server + Prisma เต็มรูปแบบ (เลิก static export) |
 | โฮสต์ | Vercel serverless |
 | ฐานข้อมูล + auth | Supabase Postgres (ผ่าน pooler) + Supabase Auth magic-link เดิม |
-| Cache | Next.js Data Cache (`unstable_cache` + `revalidateTag`) |
+| Cache | Next.js **Cache Components** (`use cache` directive + `cacheTag` + `revalidateTag`) — `unstable_cache` ถูก deprecate ใน Next 16 |
 | โมเดล sync | online-required, Postgres เป็น source of truth, CRUD API, ตัด sync engine |
 | Schema | relational เต็มรูปแบบ (ทุกเซ็ตเวต = 1 row) |
 
@@ -34,8 +34,9 @@ localStorage เป็น source of truth, ซิงค์ขึ้น Supabase 
 Next.js Route Handlers (/api/*)  ← Vercel serverless
   │  1. verify token → userId   (supabase.auth.getUser(token))
   │  2. Prisma query/mutation    (บังคับ where userId เสมอ)
-  │  3. read: ห่อ unstable_cache tag `state:{userId}`
-  │     write: revalidateTag(`state:{userId}`)
+  │  3. read: getCachedState(userId) ที่มี 'use cache' + cacheTag(`state:{userId}`)
+  │           (verify token นอก scope แล้วส่ง userId เข้า function — cache เข้า headers ไม่ได้)
+  │     write: revalidateTag(`state:{userId}`, 'max')
   ▼
 Supabase Postgres  ← Prisma ต่อผ่าน pooler (6543, pgbouncer=true)
 ```
@@ -135,7 +136,7 @@ async function requireUser(req): Promise<{ userId: string } | 401>
 
 | Method + path | แทน action เดิม |
 |---|---|
-| `GET /api/state` | โหลดครั้งแรก → ประกอบ `SyncSlice` จากทุกตาราง (ห่อ `unstable_cache`) |
+| `GET /api/state` | โหลดครั้งแรก → ประกอบ `SyncSlice` จากทุกตาราง (อ่านผ่าน `getCachedState(userId)` ที่มี `'use cache'`) |
 | `PUT /api/profile` | `setProfileField` (ส่งทั้ง object) |
 | `PUT /api/days/[date]` | `logWeight`/`setWorkoutDone`/`addWater`/`addExtra`/`clearExtra` (patch scalar) |
 | `PUT /api/days/[date]/meals/[i]` · `DELETE` | `toggleMeal` |
@@ -145,8 +146,13 @@ async function requireUser(req): Promise<{ userId: string } | 401>
 
 **กติการ่วม:**
 - ทุก handler: `requireUser` → validate body (zod) → Prisma (filter `userId` เสมอ) →
-  `revalidateTag('state:'+userId)` ถ้าเป็น write
-- `GET /api/state` ห่อด้วย `unstable_cache(fn, ['state', userId], { tags: ['state:'+userId] })`
+  `revalidateTag('state:'+userId, 'max')` ถ้าเป็น write
+- `GET /api/state`: verify token (นอก cache) → เรียก `getCachedState(userId)` ซึ่งเป็น
+  async function แยกไฟล์ที่ขึ้นต้นด้วย `'use cache'` + `cacheTag('state:'+userId)`
+  (cache เข้า `headers()` ไม่ได้ จึงต้องส่ง `userId` เข้าเป็น argument)
+- **ต้องเปิด `cacheComponents: true`** ใน `next.config.ts` เพื่อใช้ `use cache`
+- หมายเหตุ: บน Vercel serverless in-memory cache มักไม่อยู่ข้าม request → ประโยชน์จริงน้อย
+  แต่โครงสร้างถูกต้องตาม Next 16 และจะได้ผลเต็มเมื่อย้ายไป self-host/`use cache: remote`
 - คืน status ตรงความหมาย: 200/204, 400 (validation), 401 (auth), 500
 - `logSet` ส่งทั้ง array ของท่านั้น → server ลบ-แล้ว-ใส่ใหม่ใน transaction
 - pure helper คู่ `rowsToSlice` / `sliceToRows` แยกไว้เทสต์ (จุดเสี่ยงสุด)
@@ -182,7 +188,7 @@ async function requireUser(req): Promise<{ userId: string } | 401>
 - เทสต์ logic เดิม (`nutrition`/`meals`/`tracking`/...) ไม่แตะ · ลบ `sync.test.ts`
 
 **Deployment & env:**
-- `next.config.ts`: เอา `output: "export"` ออก
+- `next.config.ts`: เอา `output: "export"` ออก + เพิ่ม `cacheComponents: true` (สำหรับ `use cache`)
 - env ใหม่: `DATABASE_URL` (pooler 6543, `pgbouncer=true`), `DIRECT_URL` (5432, สำหรับ migrate);
   คง `NEXT_PUBLIC_SUPABASE_URL` + publishable key (auth)
 - build: `prisma generate` (postinstall) + `prisma migrate deploy`
