@@ -1,9 +1,11 @@
 import { Droplets } from "lucide-react";
 import type { ResolvedDay } from "@/data/types";
-import { waterTip, water } from "@/data";
+import { waterTip, water, profile } from "@/data";
 import { bottlesPerDay } from "@/lib/cost";
+import { sumMacros, dailyTarget } from "@/lib/nutrition";
 import { MealCard } from "@/components/meal-card";
 import { toMinutes } from "@/lib/timeline";
+import { DailyNutritionSummary } from "@/components/daily-nutrition-summary";
 
 export function MealView({
   day,
@@ -18,9 +20,13 @@ export function MealView({
     .sort((a, b) => toMinutes(a.meal.time) - toMinutes(b.meal.time));
 
   const bpd = bottlesPerDay(water.litersPerDay, water.pack.literEach);
+  const total = sumMacros(day.meals.map((m) => m.macros));
+  const target = dailyTarget(profile, day.type);
 
   return (
     <div className="space-y-4 px-4 py-4">
+      <DailyNutritionSummary total={total} target={target} />
+
       <div className="flex items-start gap-3 rounded-2xl border border-border bg-muted p-3">
         <Droplets className="mt-0.5 size-5 shrink-0" />
         <div>
