@@ -50,6 +50,8 @@ export function RoutineApp() {
   const setSwap = useAppStore((s) => s.setSwap);
   const toggleMeal = useAppStore((s) => s.toggleMeal);
   const addWater = useAppStore((s) => s.addWater);
+  const addExtra = useAppStore((s) => s.addExtra);
+  const clearExtra = useAppStore((s) => s.clearExtra);
   const setWorkoutDone = useAppStore((s) => s.setWorkoutDone);
 
   const [today, setToday] = React.useState<DayKey | null>(null);
@@ -190,6 +192,8 @@ export function RoutineApp() {
             isToday={isToday}
             onToggleMeal={(i) => toggleMeal(todayISO, i)}
             onAddWater={(d) => addWater(todayISO, d)}
+            onAddExtra={(k, p) => addExtra(todayISO, k, p)}
+            onClearExtra={() => clearExtra(todayISO)}
           />
         </TabsContent>
         <TabsContent value="sleep">
