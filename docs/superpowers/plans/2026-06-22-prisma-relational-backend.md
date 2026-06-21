@@ -197,18 +197,41 @@ export default nextConfig;
 Run: `bunx prisma migrate dev --name init`
 Expected: สร้างโฟลเดอร์ `prisma/migrations/<ts>_init/`, ตารางถูกสร้างใน Supabase, ขึ้น `✔ Generated Prisma Client`
 
-- [ ] **Step 7: ยืนยันตารางถูกสร้างจริง**
+- [ ] **Step 7: เปิด RLS deny-all บนทุกตาราง (ปิดช่องโหว่ PostgREST)**
 
-Run: `curl -s -o /dev/null -w "%{http_code}\n" "https://ydwjgehmmlcvzgawsyxi.supabase.co/rest/v1/Profile?select=userId&limit=1" -H "apikey: sb_publishable_O89uUSO3kEL4Xv5mJSM08g_V9LozHvO" -H "Authorization: Bearer sb_publishable_O89uUSO3kEL4Xv5mJSM08g_V9LozHvO"`
-Expected: HTTP `200` (ตารางมีแล้ว แม้ RLS อาจให้ผลว่าง — ขอแค่ไม่ใช่ 404 PGRST205)
+> **ทำไม:** Supabase เปิดตาราง schema `public` ให้ PostgREST เข้าถึงด้วย publishable key (ซึ่ง public) อัตโนมัติ ถ้าไม่เปิด RLS = ใครก็อ่าน/เขียนตารางได้ตรงๆ ข้าม API auth เรา
+> เปิด RLS **แบบไม่มี policy** = บล็อก anon/authenticated หมด; ส่วน Prisma ต่อด้วย role `postgres` ที่ bypass RLS อยู่แล้ว จึงทำงานปกติ
 
-> หมายเหตุ: Prisma สร้างตารางชื่อ `Profile` (PascalCase ตาม model) — ตอน query ผ่าน PostgREST ใช้ชื่อตรงนั้น
+สร้าง migration เปล่าแล้วเติม SQL เอง (เพื่อให้ deploy ซ้ำได้):
 
-- [ ] **Step 8: Commit**
+Run: `bunx prisma migrate dev --create-only --name enable_rls`
+
+แก้ไฟล์ `prisma/migrations/<ts>_enable_rls/migration.sql` ให้มีเนื้อหา:
+
+```sql
+alter table "Profile" enable row level security;
+alter table "Swap" enable row level security;
+alter table "CheckedItem" enable row level security;
+alter table "DayLog" enable row level security;
+alter table "MealCheck" enable row level security;
+alter table "LiftSet" enable row level security;
+```
+
+แล้ว apply: `bunx prisma migrate dev`
+Expected: ขึ้น `Applying migration ..._enable_rls` สำเร็จ
+
+- [ ] **Step 8: ยืนยันตารางถูกสร้าง + RLS บล็อก anon**
+
+Run: `curl -s -w "\n%{http_code}\n" "https://ydwjgehmmlcvzgawsyxi.supabase.co/rest/v1/Profile?select=userId&limit=1" -H "apikey: sb_publishable_O89uUSO3kEL4Xv5mJSM08g_V9LozHvO" -H "Authorization: Bearer sb_publishable_O89uUSO3kEL4Xv5mJSM08g_V9LozHvO"`
+Expected: HTTP `200` กับ body `[]` (ตารางมี + RLS บล็อก = อ่านไม่เห็น row) — ต้องไม่ใช่ 404 PGRST205 และต้องไม่เห็นข้อมูลจริง
+
+> หมายเหตุ: Prisma สร้างตารางชื่อ `Profile` (PascalCase ตาม model) — query ผ่าน PostgREST ใช้ชื่อตรงนั้น
+
+- [ ] **Step 9: Commit**
 
 ```bash
 git add prisma package.json bun.lock next.config.ts .env.example
-git commit -m "feat(backend): add Prisma schema, migration, drop static export"
+git commit -m "feat(backend): add Prisma schema, migration, RLS lockdown, drop static export"
 ```
 
 > `.env` มักอยู่ใน `.gitignore` แล้ว — อย่า commit ค่าจริง ถ้า `.env` ไม่ถูก ignore ให้เพิ่มเข้าไป
@@ -1386,13 +1409,17 @@ git commit -m "feat(client): api fetch wrapper with token + error classification
 
 ---
 
-## Task 9: Rewrite store — online + optimistic, drop persist
+## Task 9: Rewrite store (online+optimistic) + remove sync engine + rewire app
+
+> รวม Task 9+10 เดิมเป็น task เดียว เพื่อให้ commit นี้ build เขียว (เขียน store ใหม่ทำให้ `use-sync.ts` พังจนกว่าจะลบ จึงต้องทำพร้อมกัน)
 
 **Files:**
-- Modify: `src/lib/store.ts`
+- Modify: `src/lib/store.ts`, `src/components/routine-app.tsx`, `src/lib/supabase.ts`
+- Delete: `src/lib/sync.ts`, `src/lib/sync.test.ts`, `src/lib/use-sync.ts`
 
 **Interfaces:**
 - Consumes: `apiSend`, `apiGet` จาก `@/lib/api/client`; `SyncSlice` จาก `@/lib/api/types`
+- Produces: `useAppStore.hydrate()`; app root เรียก `hydrate()` ตอน mount; ไม่มีการอ้าง `useSyncEngine`/`sync.ts`/`applyRemoteState` เหลือ
 - Produces:
   - store ไม่มี `persist` แล้ว
   - `hydrate(): Promise<void>` — `apiGet('/api/state')` → set ลง store
@@ -1637,39 +1664,13 @@ export const useAppStore = create<AppState>()((set, get) => {
 });
 ```
 
-- [ ] **Step 2: type-check**
-
-Run: `bunx tsc --noEmit`
-Expected: ไม่มี error (ถ้ามี error เรื่อง `applyRemoteState` หาย → จะแก้ตอน Task 11 ที่ลบ `use-sync.ts`; ตอนนี้ `use-sync.ts` ยัง import store อยู่ — ปล่อยให้ error ชั่วคราวได้ แต่ห้าม commit จนกว่าจะเขียวใน Task 11)
-
-> เพื่อให้ task นี้ commit ได้แบบ build ผ่าน: ทำ Task 11 (ลบ sync files) ติดกันก่อน type-check สุดท้าย — ดู Step 3
-
-- [ ] **Step 3: Commit (store เท่านั้น; build เขียวจะมาใน Task 11)**
-
-```bash
-git add src/lib/store.ts
-git commit -m "feat(store): online optimistic store, drop localStorage persist"
-```
-
----
-
-## Task 10: Remove sync engine + wire app to new store
-
-**Files:**
-- Delete: `src/lib/sync.ts`, `src/lib/sync.test.ts`, `src/lib/use-sync.ts`
-- Modify: `src/components/routine-app.tsx`, `src/lib/supabase.ts`
-
-**Interfaces:**
-- Consumes: `useAppStore.hydrate`, `useAppStore` fields `hasHydrated`/`online`/`syncError`
-- Produces: app root เรียก `hydrate()` ตอน mount; ไม่มีการอ้าง `useSyncEngine`/`sync.ts` แล้ว
-
-- [ ] **Step 1: ลบไฟล์ sync engine**
+- [ ] **Step 2: ลบไฟล์ sync engine**
 
 ```bash
 git rm src/lib/sync.ts src/lib/sync.test.ts src/lib/use-sync.ts
 ```
 
-- [ ] **Step 2: แก้ `src/lib/supabase.ts` — อัปเดตคอมเมนต์ (เลิกพูดเรื่อง sync, คงไว้เพื่อ auth)**
+- [ ] **Step 3: แก้ `src/lib/supabase.ts` — อัปเดตคอมเมนต์ + ลบ STATE_TABLE**
 
 แทนบล็อกคอมเมนต์หัวไฟล์ด้วย:
 
@@ -1681,14 +1682,11 @@ git rm src/lib/sync.ts src/lib/sync.test.ts src/lib/use-sync.ts
 // ───────────────────────────────────────────────────────────
 ```
 
-และลบ `export const STATE_TABLE = "user_state";` (ไม่ใช้แล้ว)
+และลบบรรทัด `export const STATE_TABLE = "user_state";` (ไม่ใช้แล้ว)
 
-- [ ] **Step 3: แก้ `src/components/routine-app.tsx` — เปลี่ยน sync→hydrate**
+- [ ] **Step 4: แก้ `src/components/routine-app.tsx` — เปลี่ยน sync→hydrate**
 
-ลบ import:
-```ts
-import { useSyncEngine } from "@/lib/use-sync";
-```
+ลบ import `import { useSyncEngine } from "@/lib/use-sync";`
 
 ลบบรรทัด:
 ```ts
@@ -1706,17 +1704,23 @@ import { useSyncEngine } from "@/lib/use-sync";
   }, []);
 ```
 
-- [ ] **Step 4: type-check + lint + เทสต์ทั้งหมด**
+- [ ] **Step 5: type-check + lint + เทสต์ทั้งหมด (ต้องเขียวก่อน commit)**
 
 Run: `bunx tsc --noEmit && bun run lint && bun test src/lib`
-Expected: ไม่มี type error, lint ผ่าน, เทสต์ผ่านทั้งหมด (ไม่มี `sync.test.ts` แล้ว)
+Expected: ไม่มี type error, lint ผ่าน, เทสต์ผ่านทั้งหมด (ไม่มี `sync.test.ts` แล้ว ไม่มีการอ้าง `applyRemoteState`)
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 6: Commit**
 
 ```bash
 git add -A
-git commit -m "refactor: remove sync engine, hydrate store from /api/state"
+git commit -m "feat(store): online optimistic store, remove sync engine, hydrate from /api/state"
 ```
+
+---
+
+## Task 10: ~~Remove sync engine + wire app~~ — MERGED INTO TASK 9
+
+> รวมเข้า Task 9 แล้ว (เพื่อให้ commit build เขียว) — **ไม่ต้อง dispatch task นี้** ข้ามไป Task 11
 
 ---
 
@@ -2007,5 +2011,6 @@ git commit -m "docs: rewrite setup guide for Prisma backend"
 - **Spec coverage:** ทุกส่วนของสเปค (schema 6 ตาราง, endpoints ทั้ง 7 กลุ่ม, auth, cache `use cache`, online-required store, migration, error handling, testing, deploy) มี task รองรับครบ
 - **`use cache` / Next 16:** ใช้ `use cache` + `cacheTag` + `revalidateTag(tag,'max')`, `await params`, `cacheComponents:true` — ตรงตาม docs ที่อ่าน
 - **Type consistency:** `SyncSlice`/`StateRows`/`SeedRows` นิยามใน Task 2 ใช้ตรงกันใน Task 4/7; action signatures ของ store (Task 9) ตรงกับที่ `routine-app.tsx`/views เรียกอยู่เดิม จึงไม่ต้องแก้ component อื่น
-- **ลำดับ build เขียว:** Task 9 (store) ทำให้ `use-sync.ts` พังชั่วคราว — Task 10 ลบทิ้งทันที จึงควรทำ 9→10→11 ติดกันก่อน verify build เต็มใน Task 11/12
+- **ลำดับ build เขียว:** Task 9 รวม (store + ลบ sync engine + rewire app) ไว้ใน commit เดียว ทุก commit จึง build เขียว; Task 10 เดิมถูก merge เข้า Task 9 (ข้าม)
+- **ความปลอดภัย:** Task 1 เปิด RLS deny-all ทุกตาราง ปิดช่องที่ PostgREST เปิด public schema ให้ publishable key — Prisma (role postgres) bypass RLS จึงยังทำงาน
 ```
