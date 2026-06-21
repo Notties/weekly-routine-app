@@ -8,6 +8,7 @@ import {
   dayAdherence,
   computeStreak,
   daysHitInLast,
+  adherenceHistory,
   WATER_TARGET_ML,
 } from "./tracking";
 import type { DayLog, ISODate } from "@/data/types";
@@ -78,5 +79,29 @@ describe("computeStreak / daysHitInLast", () => {
   });
   it("ทำครบใน 7 วันล่าสุด", () => {
     expect(daysHitInLast(log, week, "2026-06-21", 7, WATER_TARGET_ML)).toBe(2);
+  });
+});
+
+describe("adherenceHistory", () => {
+  const full = { meals: { 0: true, 1: true, 2: true, 3: true }, waterMl: 3000 };
+  const log = { "2026-06-21": full };
+  const cells = adherenceHistory(log, week, "2026-06-21", 8);
+
+  it("ความยาว = weeks*7", () => {
+    expect(cells.length).toBe(56);
+  });
+  it("เริ่มที่วันอาทิตย์", () => {
+    expect(dayKeyForDate(cells[0].date)).toBe("sun");
+  });
+  it("วันนี้อยู่ index 49 และ pct ตามจริง (อา เต็มวัน = 100)", () => {
+    expect(cells[49].date).toBe("2026-06-21");
+    expect(cells[49].pct).toBe(100);
+  });
+  it("วันอนาคต (หลังวันนี้) = null", () => {
+    expect(cells[50].pct).toBeNull();
+    expect(cells[55].pct).toBeNull();
+  });
+  it("วันก่อนหน้าที่ไม่มี log = 0 (ไม่ใช่ null)", () => {
+    expect(cells[0].pct).toBe(0);
   });
 });

@@ -20,6 +20,8 @@ type AppState = {
   toggleMeal: (date: ISODate, index: number) => void;
   setWorkoutDone: (date: ISODate, done: boolean) => void;
   addWater: (date: ISODate, deltaMl: number) => void;
+  addExtra: (date: ISODate, kcal: number, protein: number) => void;
+  clearExtra: (date: ISODate) => void;
   setProfileField: <K extends keyof ProfileOverride>(
     field: K,
     value: ProfileOverride[K]
@@ -84,6 +86,27 @@ export const useAppStore = create<AppState>()(
             ...d,
             waterMl: Math.max(0, (d.waterMl ?? 0) + deltaMl),
           })),
+        })),
+      addExtra: (date, kcal, protein) =>
+        set((s) => ({
+          log: patchDay(s.log, date, (d) => {
+            const cur = d.extra ?? { kcal: 0, protein: 0 };
+            return {
+              ...d,
+              extra: {
+                kcal: Math.max(0, cur.kcal + kcal),
+                protein: Math.max(0, cur.protein + protein),
+              },
+            };
+          }),
+        })),
+      clearExtra: (date) =>
+        set((s) => ({
+          log: patchDay(s.log, date, (d) => {
+            const next = { ...d };
+            delete next.extra;
+            return next;
+          }),
         })),
       setProfileField: (field, value) =>
         set((s) => ({

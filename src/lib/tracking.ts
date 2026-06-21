@@ -118,3 +118,34 @@ export function daysHitInLast(
   }
   return hit;
 }
+
+export type HeatCell = { date: ISODate; pct: number | null };
+
+/** ประวัติ adherence จัดเป็นตารางตามวันในสัปดาห์ (อา..ส), ยาว weeks*7
+ *  วันอนาคต (หลัง todayISO) → pct = null */
+export function adherenceHistory(
+  log: Record<ISODate, DayLog>,
+  weekDays: Day[],
+  todayISO: ISODate,
+  weeks: number,
+  waterTargetMl: number = WATER_TARGET_ML
+): HeatCell[] {
+  const [ty, tm, td] = todayISO.split("-").map(Number);
+  const todayDow = new Date(ty, tm - 1, td).getDay(); // 0=อาทิตย์
+  // เริ่มที่วันอาทิตย์ของสัปดาห์เมื่อ (weeks-1) สัปดาห์ก่อน
+  const gridStart = addDays(todayISO, -todayDow - (weeks - 1) * 7);
+  const cells: HeatCell[] = [];
+  for (let i = 0; i < weeks * 7; i++) {
+    const date = addDays(gridStart, i);
+    if (date > todayISO) {
+      cells.push({ date, pct: null });
+    } else {
+      const day = dayForDate(weekDays, date);
+      cells.push({
+        date,
+        pct: day ? dayAdherence(day, log[date], waterTargetMl).pct : 0,
+      });
+    }
+  }
+  return cells;
+}

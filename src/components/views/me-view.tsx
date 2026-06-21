@@ -11,8 +11,10 @@ import {
   computeStreak,
   daysHitInLast,
   dayKeyForDate,
+  adherenceHistory,
   WATER_TARGET_ML,
 } from "@/lib/tracking";
+import { AdherenceHeatmap } from "@/components/adherence-heatmap";
 import { dailyTarget } from "@/lib/nutrition";
 import { WeightTrend } from "@/components/weight-trend";
 import { NutritionStrip } from "@/components/nutrition-strip";
@@ -43,6 +45,7 @@ export function MeView({
   const adh = dayAdherence(todayDay, log[todayISO], WATER_TARGET_ML);
   const streak = computeStreak(log, week, todayISO);
   const hit7 = daysHitInLast(log, week, todayISO, 7);
+  const heat = adherenceHistory(log, week, todayISO, 8);
   const target = dailyTarget(eff, todayDay.type);
 
   const [weightInput, setWeightInput] = React.useState<string>(
@@ -105,6 +108,14 @@ export function MeView({
         <div className="mt-3 flex gap-4 text-xs text-muted-foreground tnum">
           <span>🔥 สตรีค {streak} วัน</span>
           <span>ทำครบ {hit7}/7 วันล่าสุด</span>
+        </div>
+      </section>
+
+      {/* ประวัติ heatmap */}
+      <section className="rounded-2xl border border-border bg-card p-4">
+        <h3 className="text-sm font-bold">ประวัติความสม่ำเสมอ (8 สัปดาห์)</h3>
+        <div className="mt-3">
+          <AdherenceHeatmap cells={heat} log={log} todayISO={todayISO} />
         </div>
       </section>
 
