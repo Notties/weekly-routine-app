@@ -1,8 +1,9 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 // ───────────────────────────────────────────────────────────
-// Supabase client (null-safe) — ไม่ตั้ง env = sync ปิด แอปทำงานออฟไลน์ปกติ
-// env inlined ตอน build (static export): NEXT_PUBLIC_SUPABASE_URL / _ANON_KEY
+// Supabase client — ใช้สำหรับ "auth" (magic-link) ฝั่ง client เท่านั้น
+// ข้อมูลแอปไปผ่าน /api/* (Prisma) ไม่ผ่าน client นี้แล้ว
+// ไม่ตั้ง env = ปุ่มเข้าสู่ระบบจะถูกซ่อน (ดู isSyncConfigured)
 // ───────────────────────────────────────────────────────────
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -26,6 +27,3 @@ export function getSupabase(): SupabaseClient | null {
   }
   return client;
 }
-
-/** ชื่อตารางที่เก็บ state ก้อนเดียวต่อผู้ใช้ */
-export const STATE_TABLE = "user_state";

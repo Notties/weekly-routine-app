@@ -28,7 +28,6 @@ import { ShoppingView } from "@/components/views/shopping-view";
 import { MenuLibraryView } from "@/components/views/menu-library-view";
 import { MeView } from "@/components/views/me-view";
 import { RestTimerBar } from "@/components/rest-timer-bar";
-import { useSyncEngine } from "@/lib/use-sync";
 
 const TABS = [
   { value: "routine", label: "รูทีน", Icon: ClipboardList },
@@ -60,12 +59,9 @@ export function RoutineApp() {
   const [tab, setTab] = React.useState<string>("routine");
   const touchStart = React.useRef<{ x: number; y: number } | null>(null);
 
-  // cloud sync (no-op ถ้าไม่ได้ตั้ง env / ไม่ล็อกอิน)
-  useSyncEngine();
-
-  // mount: rehydrate store + รู้ "วันนี้"
+  // mount: โหลด state จาก backend + รู้ "วันนี้"
   React.useEffect(() => {
-    useAppStore.persist.rehydrate();
+    void useAppStore.getState().hydrate();
     setToday(DAY_ORDER[new Date().getDay()]);
   }, []);
 

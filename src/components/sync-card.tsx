@@ -1,45 +1,58 @@
 "use client";
 
 import * as React from "react";
-import { Cloud, CloudOff, RefreshCw, LogOut, Check, Mail } from "lucide-react";
+import { Cloud, CloudOff, LogOut, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  useSyncStore,
-  signIn,
-  signOut,
-  syncNow,
-  type SyncStatus,
-} from "@/lib/use-sync";
+import { useAppStore } from "@/lib/store";
+import { getSupabase, isSyncConfigured } from "@/lib/supabase";
 
-const STATUS_LABEL: Record<SyncStatus, string> = {
-  offline: "ใช้งานออฟไลน์",
-  idle: "พร้อมซิงค์",
-  syncing: "กำลังซิงค์…",
-  synced: "ซิงค์แล้ว",
-  error: "ซิงค์ไม่สำเร็จ",
-};
+// ───────────────────────────────────────────────────────────
+// SyncCard — แสดงสถานะ auth + online/syncError จาก store ใหม่
+// ───────────────────────────────────────────────────────────
 
-function timeAgo(ms: number | null): string {
-  if (!ms) return "—";
-  const diff = Math.round((Date.now() - ms) / 1000);
-  if (diff < 60) return "เมื่อสักครู่";
-  if (diff < 3600) return `${Math.floor(diff / 60)} นาทีก่อน`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)} ชม.ก่อน`;
-  return `${Math.floor(diff / 86400)} วันก่อน`;
+/** ส่ง magic-link เข้าอีเมล — คืน true ถ้าส่งสำเร็จ */
+async function signIn(email: string): Promise<boolean> {
+  const sb = getSupabase();
+  if (!sb) return false;
+  const { error } = await sb.auth.signInWithOtp({
+    email,
+    options: {
+      emailRedirectTo:
+        typeof window !== "undefined" ? window.location.origin : undefined,
+    },
+  });
+  return !error;
+}
+
+async function signOut(): Promise<void> {
+  const sb = getSupabase();
+  if (!sb) return;
+  await sb.auth.signOut();
 }
 
 export function SyncCard() {
-  const configured = useSyncStore((s) => s.configured);
-  const email = useSyncStore((s) => s.email);
-  const status = useSyncStore((s) => s.status);
-  const lastSyncedAt = useSyncStore((s) => s.lastSyncedAt);
-  const error = useSyncStore((s) => s.error);
+  const online = useAppStore((s) => s.online);
+  const syncError = useAppStore((s) => s.syncError);
 
+  const [email, setEmail] = React.useState<string | null>(null);
   const [input, setInput] = React.useState("");
   const [sent, setSent] = React.useState(false);
   const [busy, setBusy] = React.useState(false);
 
-  if (!configured) {
+  // ฟังสถานะ auth session (ครั้งแรก + เปลี่ยน)
+  React.useEffect(() => {
+    const sb = getSupabase();
+    if (!sb) return;
+    void sb.auth.getSession().then(({ data }) => {
+      setEmail(data.session?.user?.email ?? null);
+    });
+    const { data: sub } = sb.auth.onAuthStateChange((_event, session) => {
+      setEmail(session?.user?.email ?? null);
+    });
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
+  if (!isSyncConfigured) {
     return (
       <section className="rounded-2xl border border-border bg-card p-4">
         <h3 className="flex items-center gap-2 text-sm font-bold">
@@ -78,34 +91,20 @@ export function SyncCard() {
             <span
               className={
                 "inline-flex items-center gap-1 rounded-md px-2 py-0.5 font-medium " +
-                (status === "synced"
-                  ? "bg-primary/10 text-foreground"
-                  : status === "error"
+                (!online
+                  ? "bg-destructive/10 text-destructive"
+                  : syncError
                     ? "bg-destructive/10 text-destructive"
-                    : "bg-muted text-muted-foreground")
+                    : "bg-primary/10 text-foreground")
               }
             >
-              {status === "synced" && <Check className="size-3" />}
-              {STATUS_LABEL[status]}
-            </span>
-            <span className="tnum text-muted-foreground">
-              ซิงค์ล่าสุด {timeAgo(lastSyncedAt)}
+              {!online ? "ออฟไลน์" : syncError ? "ซิงค์ไม่สำเร็จ" : "พร้อมใช้งาน"}
             </span>
           </div>
-          {error && (
-            <p className="mt-1 text-xs text-destructive">{error}</p>
+          {syncError && (
+            <p className="mt-1 text-xs text-destructive">{syncError}</p>
           )}
           <div className="mt-3 flex gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              className="gap-1.5"
-              onClick={() => void syncNow()}
-              disabled={status === "syncing"}
-            >
-              <RefreshCw className="size-3.5" />
-              ซิงค์เดี๋ยวนี้
-            </Button>
             <Button
               size="sm"
               variant="ghost"
@@ -143,7 +142,6 @@ export function SyncCard() {
               ส่งลิงก์
             </Button>
           </div>
-          {error && <p className="mt-1 text-xs text-destructive">{error}</p>}
         </>
       )}
     </section>
