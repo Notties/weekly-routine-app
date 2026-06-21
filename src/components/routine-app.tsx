@@ -27,6 +27,7 @@ import { SleepView } from "@/components/views/sleep-view";
 import { ShoppingView } from "@/components/views/shopping-view";
 import { MenuLibraryView } from "@/components/views/menu-library-view";
 import { MeView } from "@/components/views/me-view";
+import { RestTimerBar } from "@/components/rest-timer-bar";
 
 const TABS = [
   { value: "routine", label: "รูทีน", Icon: ClipboardList },
@@ -118,6 +119,7 @@ export function RoutineApp() {
   const dateLog = log[todayISO];
 
   return (
+    <>
     <Tabs
       value={tab}
       onValueChange={handleTab}
@@ -180,6 +182,7 @@ export function RoutineApp() {
             day={resolvedDay}
             done={!!dateLog?.workoutDone}
             isToday={isToday}
+            todayISO={todayISO}
             onToggleDone={() => setWorkoutDone(todayISO, !dateLog?.workoutDone)}
           />
         </TabsContent>
@@ -210,5 +213,7 @@ export function RoutineApp() {
         )}
       </main>
     </Tabs>
+    <RestTimerBar />
+    </>
   );
 }

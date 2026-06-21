@@ -10,11 +10,13 @@ export function WorkoutView({
   day,
   done = false,
   isToday = false,
+  todayISO,
   onToggleDone,
 }: {
   day: ResolvedDay;
   done?: boolean;
   isToday?: boolean;
+  todayISO?: string;
   onToggleDone?: () => void;
 }) {
   if (day.type === "rest" || !day.workout) {
@@ -72,7 +74,13 @@ export function WorkoutView({
         <SectionTitle>รายการท่า ({workout.exercises.length})</SectionTitle>
         <div className="mt-2 space-y-2">
           {workout.exercises.map((ex, i) => (
-            <ExerciseCard key={i} exercise={ex} index={i} />
+            <ExerciseCard
+              key={i}
+              exercise={ex}
+              index={i}
+              isToday={isToday}
+              todayISO={todayISO}
+            />
           ))}
         </div>
       </section>
