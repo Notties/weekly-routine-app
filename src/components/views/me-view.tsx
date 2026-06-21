@@ -24,6 +24,7 @@ import {
   WATER_TARGET_ML,
 } from "@/lib/tracking";
 import { AdherenceHeatmap } from "@/components/adherence-heatmap";
+import { useSessionEmail, initialsFromEmail } from "@/lib/use-session";
 import { dailyTarget } from "@/lib/nutrition";
 import { WeightTrend } from "@/components/weight-trend";
 import { NutritionStrip } from "@/components/nutrition-strip";
@@ -47,6 +48,9 @@ export function MeView({
   const profileOverride = useAppStore((s) => s.profileOverride);
   const logWeight = useAppStore((s) => s.logWeight);
   const setProfileField = useAppStore((s) => s.setProfileField);
+  const sessionEmail = useSessionEmail();
+  const displayName = sessionEmail ? sessionEmail.split("@")[0] : "โปรไฟล์ของฉัน";
+  const initials = sessionEmail ? initialsFromEmail(sessionEmail) : null;
 
   const eff = effectiveProfile(profile, profileOverride, log);
   const series = weightSeries(log);
@@ -82,10 +86,17 @@ export function MeView({
       <section className="overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-primary/15 via-primary/5 to-transparent p-5">
         <div className="flex items-center gap-4">
           <div className="grid size-14 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground shadow-sm">
-            <User className="size-7" />
+            {initials ? (
+              <span className="text-lg font-bold tracking-wide">{initials}</span>
+            ) : (
+              <User className="size-7" />
+            )}
           </div>
           <div className="min-w-0">
-            <h2 className="text-lg font-bold leading-tight">โปรไฟล์ของฉัน</h2>
+            <h2 className="truncate text-lg font-bold leading-tight">{displayName}</h2>
+            {sessionEmail && (
+              <p className="truncate text-xs text-muted-foreground">{sessionEmail}</p>
+            )}
             <p className="mt-0.5 truncate text-xs text-muted-foreground tnum">
               {eff.sex} · {eff.age} ปี · {eff.goal}
             </p>
