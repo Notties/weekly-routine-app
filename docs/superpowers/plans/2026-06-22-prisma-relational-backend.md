@@ -19,6 +19,8 @@
 - Path alias: `@/*` → `./src/*`
 - เทสต์ด้วย `bun test` (`import { describe, it, expect } from "bun:test"`), วางไฟล์เทสต์ข้างไฟล์จริง `*.test.ts`
 - เก็บ `date` เป็น string `"YYYY-MM-DD"` (ไม่ใช้ Postgres date/timestamp) — กัน timezone เพี้ยน
+- **Prisma 7.8** (ติดมาจริง, ไม่ใช่ 6): runtime ใช้ driver adapter `@prisma/adapter-pg`; URL อยู่ใน `prisma.config.ts` (migrate=DIRECT_URL) ไม่ใช่ใน schema
+- **tsc baseline:** มี 7 pre-existing errors ใน `src/lib/timeline.test.ts` + `src/lib/tracking.test.ts` (test fixtures type หลวม ไม่เกี่ยวงานนี้) — gate ของทุก task = "ไม่มี error **ใหม่** เกิน 7 ตัวนี้" (อย่าแก้ไฟล์เทสต์เดิมนอกสโคป)
 - ภาษาในคอมเมนต์/UI: ไทย (ตามโค้ดเดิม)
 - Commit บ่อย ทีละ task
 
@@ -532,30 +534,48 @@ git commit -m "feat(backend): pure state-mapper rows<->slice with round-trip tes
 
 ## Task 3: Server infra — Prisma singleton, http helpers, requireUser
 
+> **Prisma 7 note:** runtime client ต้องใช้ **driver adapter** (`new PrismaClient()` เปล่าๆ ใช้ไม่ได้แล้ว — `PrismaClientOptions` เป็น `adapter` XOR `accelerateUrl`) ใช้ `@prisma/adapter-pg` ต่อ **DATABASE_URL (pooled, 6543)** ที่ runtime; ส่วน migrate ใช้ `prisma.config.ts` (DIRECT_URL) อยู่แล้ว
+
 **Files:**
 - Create: `src/lib/prisma.ts`, `src/lib/api/http.ts`, `src/lib/api/auth.ts`, `src/lib/api/auth.test.ts`
 
 **Interfaces:**
-- Consumes: `getSupabase`-style client creation จาก `@supabase/supabase-js`; env เดิม `NEXT_PUBLIC_SUPABASE_URL` + publishable key
+- Consumes: `getSupabase`-style client creation จาก `@supabase/supabase-js`; env `NEXT_PUBLIC_SUPABASE_URL` + publishable key + `DATABASE_URL`
 - Produces:
-  - `prisma: PrismaClient` (singleton, import จาก `@/lib/prisma`)
+  - `prisma: PrismaClient` (singleton via pg adapter, import จาก `@/lib/prisma`)
   - `class ApiError extends Error { status: number }`
   - `function json(data: unknown, status?: number): Response`
   - `function handle(fn: () => Promise<Response>): Promise<Response>` — จับ `ApiError`→status, `ZodError`→400, อื่น→500
   - `function requireUser(req: Request): Promise<string>` — คืน `userId`, ไม่ผ่าน throw `ApiError(401)`
 
-- [ ] **Step 1: Prisma singleton — `src/lib/prisma.ts`**
+- [ ] **Step 0: ติดตั้ง driver adapter deps**
+
+```bash
+bun add @prisma/adapter-pg pg
+bun add -d @types/pg
+```
+
+- [ ] **Step 1: Prisma singleton (pg adapter) — `src/lib/prisma.ts`**
 
 ```ts
 import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
 
+// Prisma 7: runtime ต้องผ่าน driver adapter — ต่อ pooled DATABASE_URL (6543, pgbouncer)
 // กัน hot-reload ตอน dev สร้าง client ซ้ำจน connection หมด
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
-export const prisma = globalForPrisma.prisma ?? new PrismaClient();
+function makeClient(): PrismaClient {
+  const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
+  return new PrismaClient({ adapter });
+}
+
+export const prisma = globalForPrisma.prisma ?? makeClient();
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 ```
+
+> หมายเหตุ: ถ้า generate ด้วย generator `prisma-client-js` แล้ว type ของ `PrismaClient({ adapter })` ฟ้อง ให้ตรวจว่า `@prisma/adapter-pg` เวอร์ชันตรงกับ `prisma`/`@prisma/client` (7.8.x) — adapter เป็น GA ใน Prisma 7 ไม่ต้องเปิด preview flag
 
 - [ ] **Step 2: http helpers — `src/lib/api/http.ts`**
 
