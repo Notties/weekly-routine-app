@@ -68,7 +68,7 @@ describe("dayAdherence", () => {
 });
 
 describe("computeStreak / daysHitInLast", () => {
-  const full = { meals: { 0: true, 1: true, 2: true, 3: true }, waterMl: 3000 };
+  const full: DayLog = { meals: { 0: true, 1: true, 2: true, 3: true }, waterMl: 3000 };
   const log: Record<ISODate, DayLog> = {
     "2026-06-21": full, // อา (rest, total 5) 100%
     "2026-06-20": full, // ส (rest) 100%
@@ -83,7 +83,7 @@ describe("computeStreak / daysHitInLast", () => {
 });
 
 describe("adherenceHistory", () => {
-  const full = { meals: { 0: true, 1: true, 2: true, 3: true }, waterMl: 3000 };
+  const full: DayLog = { meals: { 0: true, 1: true, 2: true, 3: true }, waterMl: 3000 };
   const log = { "2026-06-21": full };
   const cells = adherenceHistory(log, week, "2026-06-21", 8);
 

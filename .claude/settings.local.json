@@ -3,7 +3,11 @@
     "allow": [
       "Bash(git init *)",
       "Bash(git add *)",
-      "Bash(git -c user.name=\"knot-gym\" -c user.email=\"local@knot-gym\" commit -q -m \"docs: add weekly fitness routine design spec\")"
+      "Bash(git -c user.name=\"knot-gym\" -c user.email=\"local@knot-gym\" commit -q -m \"docs: add weekly fitness routine design spec\")",
+      "Bash(echo \"=== Auth health ===\")",
+      "Bash(curl -s -o /dev/null -w '%{http_code}\\\\n' https://ydwjgehmmlcvzgawsyxi.supabase.co/auth/v1/health -H 'apikey: sb_publishable_O89uUSO3kEL4Xv5mJSM08g_V9LozHvO')",
+      "Bash(echo \"=== REST: user_state table check ===\")",
+      "Bash(curl -s -w '\\\\nHTTP %{http_code}\\\\n' 'https://ydwjgehmmlcvzgawsyxi.supabase.co/rest/v1/user_state?select=user_id&limit=1' -H 'apikey: sb_publishable_O89uUSO3kEL4Xv5mJSM08g_V9LozHvO' -H 'Authorization: Bearer sb_publishable_O89uUSO3kEL4Xv5mJSM08g_V9LozHvO')"
     ]
   }
 }

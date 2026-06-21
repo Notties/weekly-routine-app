@@ -67,6 +67,8 @@ export function RoutineApp() {
   // mount: โหลด state จาก backend + รู้ "วันนี้"
   React.useEffect(() => {
     void useAppStore.getState().hydrate();
+    // ตั้ง "วันนี้" หลัง mount (อิง Date ฝั่ง client) เพื่อเลี่ยง hydration mismatch
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setToday(DAY_ORDER[new Date().getDay()]);
   }, []);
 

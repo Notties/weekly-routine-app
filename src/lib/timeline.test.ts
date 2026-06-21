@@ -17,8 +17,8 @@ const weightDay: ResolvedDay = {
     cooldown: ["y"],
   },
   meals: [
-    { time: "07:00", name: "เช้า", menu: "a", recipeId: "r1", slot: "breakfast", steps: ["1"], tags: [] },
-    { time: "12:30", name: "กลางวัน", menu: "b", recipeId: "r2", slot: "lunch", steps: ["1"], tags: [] },
+    { time: "07:00", name: "เช้า", menu: "a", recipeId: "r1", slot: "breakfast", steps: ["1"], tags: [], macros: { kcal: 0, protein: 0, carb: 0, fat: 0 }, benefit: "" },
+    { time: "12:30", name: "กลางวัน", menu: "b", recipeId: "r2", slot: "lunch", steps: ["1"], tags: [], macros: { kcal: 0, protein: 0, carb: 0, fat: 0 }, benefit: "" },
     {
       time: "20:30",
       name: "หลังเล่น",
@@ -27,6 +27,8 @@ const weightDay: ResolvedDay = {
       slot: "postworkout",
       steps: ["1"],
       tags: ["หลังเล่น = ซ่อมกล้าม"],
+      macros: { kcal: 0, protein: 0, carb: 0, fat: 0 },
+      benefit: "",
     },
   ],
   sleep: { bedtime: "23:00", wake: "06:30", hours: 7.5, note: "n" },

@@ -38,14 +38,14 @@ export function NowNextCard({ day }: { day: ResolvedDay }) {
     }
   }
 
-  const CurrentIcon = current ? entryIcon(current, day.type) : Moon;
-  const NextIcon = next ? entryIcon(next, day.type) : Moon;
+  const currentIcon = current ? entryIcon(current, day.type) : Moon;
+  const nextIcon = next ? entryIcon(next, day.type) : Moon;
 
   return (
     <div className="mb-5 overflow-hidden rounded-2xl border border-border bg-card">
       {/* ตอนนี้ — เน้นด้วยสี primary */}
       <div className="flex items-center gap-3 border-b border-border bg-primary px-4 py-3 text-primary-foreground">
-        <CurrentIcon className="size-5 shrink-0" />
+        {React.createElement(currentIcon, { className: "size-5 shrink-0" })}
         <div className="min-w-0 flex-1">
           <p className="text-[11px] font-medium uppercase tracking-wider opacity-80">
             ตอนนี้
@@ -62,7 +62,7 @@ export function NowNextCard({ day }: { day: ResolvedDay }) {
       {/* ถัดไป */}
       <div className="flex items-center gap-3 px-4 py-2.5 text-muted-foreground">
         <ArrowRight className="size-4 shrink-0" />
-        <NextIcon className="size-4 shrink-0" />
+        {React.createElement(nextIcon, { className: "size-4 shrink-0" })}
         <div className="min-w-0 flex-1">
           <span className="text-[11px] font-medium uppercase tracking-wider">
             ถัดไป{" · "}

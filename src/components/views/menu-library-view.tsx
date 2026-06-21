@@ -79,7 +79,7 @@ export function MenuLibraryView() {
       <div className="flex items-start gap-3 rounded-2xl border border-border bg-muted p-3">
         <Info className="mt-0.5 size-5 shrink-0" />
         <p className="text-sm leading-snug">
-          คลังเมนูทั้งหมด พร้อมวัตถุดิบและวิธีทำ — กด "สลับ" ในแท็บ 🍱 อาหาร
+          คลังเมนูทั้งหมด พร้อมวัตถุดิบและวิธีทำ — กด &quot;สลับ&quot; ในแท็บ 🍱 อาหาร
           เพื่อเปลี่ยนเมนูของแต่ละมื้อ แล้วรายการซื้อของจะอัปเดตวัตถุดิบให้เอง
         </p>
       </div>
