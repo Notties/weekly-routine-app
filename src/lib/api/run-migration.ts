@@ -1,0 +1,32 @@
+import { apiSend } from "@/lib/api/client";
+
+const LEGACY_KEY = "knot-gym";
+const MIGRATED_FLAG = "knot-gym-migrated";
+
+/**
+ * ย้ายข้อมูล localStorage เดิม (zustand persist) ขึ้น backend ครั้งเดียว
+ * เรียกหลัง login สำเร็จ — idempotent ด้วย flag
+ */
+export async function runMigrationOnce(): Promise<void> {
+  if (typeof window === "undefined") return;
+  if (localStorage.getItem(MIGRATED_FLAG)) return;
+  const raw = localStorage.getItem(LEGACY_KEY);
+  if (!raw) {
+    localStorage.setItem(MIGRATED_FLAG, "1");
+    return;
+  }
+  try {
+    const parsed = JSON.parse(raw) as { state?: Record<string, unknown> };
+    const s = parsed.state ?? {};
+    const slice = {
+      swaps: s.swaps ?? {},
+      checked: s.checked ?? {},
+      log: s.log ?? {},
+      profileOverride: s.profileOverride ?? {},
+    };
+    await apiSend("POST", "/api/migrate", slice);
+    localStorage.setItem(MIGRATED_FLAG, "1");
+  } catch {
+    // ปล่อยให้ flag ยังไม่ตั้ง → ลองใหม่ครั้งหน้า
+  }
+}

@@ -54,6 +54,7 @@ export function RoutineApp() {
   const addExtra = useAppStore((s) => s.addExtra);
   const clearExtra = useAppStore((s) => s.clearExtra);
   const setWorkoutDone = useAppStore((s) => s.setWorkoutDone);
+  const syncError = useAppStore((s) => s.syncError);
 
   const [today, setToday] = React.useState<DayKey | null>(null);
   const [tab, setTab] = React.useState<string>("routine");
@@ -120,6 +121,11 @@ export function RoutineApp() {
 
   return (
     <>
+      {syncError && (
+        <div className="bg-destructive/10 px-4 py-1.5 text-center text-xs text-destructive">
+          {syncError}
+        </div>
+      )}
     <Tabs
       value={tab}
       onValueChange={handleTab}
