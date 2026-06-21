@@ -11,7 +11,7 @@ export function ProfileHeader({ onOpen }: { onOpen?: () => void }) {
   return (
     <header className="border-b border-border pt-safe">
       <div className="mx-auto flex max-w-2xl items-center justify-between gap-3 px-4 py-3">
-        <h1 className="truncate text-base font-bold tracking-tight">Knot Gym</h1>
+        <h1 className="truncate text-base font-bold tracking-tight">Knot</h1>
         <div className="flex items-center gap-1.5">
           <button
             type="button"
