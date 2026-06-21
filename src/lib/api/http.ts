@@ -1,4 +1,5 @@
 import { ZodError } from "zod";
+import { unstable_rethrow } from "next/navigation";
 
 export class ApiError extends Error {
   constructor(public status: number, message: string) {
@@ -15,6 +16,8 @@ export async function handle(fn: () => Promise<Response>): Promise<Response> {
   try {
     return await fn();
   } catch (e) {
+    // อย่ากลืน control-flow ของ Next (prerender bail จาก request.headers, redirect, notFound)
+    unstable_rethrow(e);
     if (e instanceof ApiError) return json({ error: e.message }, e.status);
     if (e instanceof ZodError) return json({ error: "invalid body", issues: e.issues }, 400);
     console.error(e);
