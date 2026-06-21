@@ -17,34 +17,18 @@ import {
   computeShoppingItems,
 } from "@/lib/shopping";
 import { monthlyCost, bottlesPerDay } from "@/lib/cost";
-import { getChecked, setChecked, clearChecked } from "@/lib/storage";
+import { useAppStore } from "@/lib/store";
 import { baht } from "@/lib/format";
 import { ShopItemRow } from "@/components/shop-item-row";
 import { Button } from "@/components/ui/button";
 
 export function ShoppingView({ swaps }: { swaps: Record<string, string> }) {
-  const [checked, setCheckedState] = React.useState<Record<string, boolean>>(
-    {}
-  );
+  const checked = useAppStore((s) => s.checked);
+  const toggleChecked = useAppStore((s) => s.toggleChecked);
+  const clearChecked = useAppStore((s) => s.clearChecked);
 
-  React.useEffect(() => {
-    setCheckedState(getChecked());
-  }, []);
-
-  const toggle = (key: string, value: boolean) => {
-    setChecked(key, value);
-    setCheckedState((prev) => {
-      const next = { ...prev };
-      if (value) next[key] = true;
-      else delete next[key];
-      return next;
-    });
-  };
-
-  const reset = () => {
-    clearChecked();
-    setCheckedState({});
-  };
+  const toggle = (key: string, _value: boolean) => toggleChecked(key);
+  const reset = () => clearChecked();
 
   // วัตถุดิบคำนวณจากเมนูที่ใช้จริงในสัปดาห์ (เปลี่ยนตามการสลับเมนู)
   const shopping = React.useMemo(
