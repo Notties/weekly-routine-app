@@ -214,6 +214,8 @@ export type DayLog = {
   meals?: Record<number, true>;
   workoutDone?: boolean;
   waterMl?: number;
+  /** อาหารนอกแผน (ยอดสะสมต่อวัน) */
+  extra?: { kcal: number; protein: number };
 };
 
 /** ค่าโปรไฟล์ที่ผู้ใช้แก้เอง (น้ำหนักไม่อยู่ที่นี่ — อยู่ใน log) */
