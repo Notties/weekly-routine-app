@@ -4,3 +4,4 @@ export { week } from "./week";
 export { recipes } from "./recipes";
 export { ingredientCatalog, pantryStaples } from "./ingredients";
 export { waterTip, sleepTips, water } from "./tips";
+export { exerciseCues, progressionTips } from "./workout-guide";
