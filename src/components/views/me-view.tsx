@@ -10,6 +10,8 @@ import {
   Target,
   Activity,
   Pencil,
+  TrendingDown,
+  TrendingUp,
 } from "lucide-react";
 import { profile, week } from "@/data";
 import { useAppStore } from "@/lib/store";
@@ -55,6 +57,11 @@ export function MeView({
 
   const eff = effectiveProfile(profile, profileOverride, log);
   const series = weightSeries(log);
+  const hasLog = Object.keys(log).length > 0;
+  const weightDelta =
+    series.length >= 2
+      ? Math.round((series[series.length - 1].kg - series[0].kg) * 10) / 10
+      : null;
   const todayDay =
     week.find((d) => d.key === dayKeyForDate(todayISO)) ?? week[0];
   const adh = dayAdherence(todayDay, log[todayISO], WATER_TARGET_ML);
@@ -165,6 +172,24 @@ export function MeView({
             บันทึก
           </Button>
         </div>
+        {weightDelta != null && weightDelta !== 0 && (
+          <p
+            className={
+              "mt-3 flex items-center gap-1.5 text-xs font-medium " +
+              (weightDelta < 0 ? "text-primary" : "text-amber-500")
+            }
+          >
+            {weightDelta < 0 ? (
+              <TrendingDown className="size-3.5" />
+            ) : (
+              <TrendingUp className="size-3.5" />
+            )}
+            {weightDelta < 0
+              ? `ลดมา ${Math.abs(weightDelta)} กก.`
+              : `เพิ่มมา ${weightDelta} กก.`}{" "}
+            <span className="font-normal text-muted-foreground">จากที่เริ่มบันทึก</span>
+          </p>
+        )}
         <WeightTrend series={series} />
       </section>
 
@@ -180,6 +205,11 @@ export function MeView({
         <div className="mt-3">
           <AdherenceHeatmap cells={heat} log={log} todayISO={todayISO} />
         </div>
+        {!hasLog && (
+          <p className="mt-3 text-xs text-muted-foreground">
+            ยังไม่มีประวัติ — เริ่มติ๊กกิจกรรม/บันทึกน้ำหนักวันนี้ แล้วช่องจะค่อย ๆ เขียวขึ้น 🟦
+          </p>
+        )}
       </section>
 
       {/* ───── เป้าวันนี้ ───── */}

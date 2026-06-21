@@ -1,11 +1,12 @@
 "use client";
 
 import * as React from "react";
-import { Cloud, CloudOff, LogOut, Check, Eye, EyeOff, Loader2 } from "lucide-react";
+import { Cloud, CloudOff, LogOut, Check, Eye, EyeOff, Loader2, KeyRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getSupabase, isSyncConfigured } from "@/lib/supabase";
 import { useAppStore } from "@/lib/store";
 import { runMigrationOnce } from "@/lib/api/run-migration";
+import { toast } from "@/lib/toast";
 
 type Mode = "login" | "signup";
 
@@ -16,6 +17,8 @@ export function SyncCard() {
   const [mode, setMode] = React.useState<Mode>("login");
   const [busy, setBusy] = React.useState(false);
   const [showPw, setShowPw] = React.useState(false);
+  const [changing, setChanging] = React.useState(false);
+  const [newPw, setNewPw] = React.useState("");
   const [error, setError] = React.useState<string | null>(null);
   const [notice, setNotice] = React.useState<string | null>(null);
   const syncError = useAppStore((s) => s.syncError);
@@ -81,6 +84,23 @@ export function SyncCard() {
     setEmail(null);
   };
 
+  const changePassword = async () => {
+    if (newPw.length < 6) {
+      toast.error("รหัสผ่านต้องยาวอย่างน้อย 6 ตัวอักษร");
+      return;
+    }
+    setBusy(true);
+    const { error: err } = await getSupabase()!.auth.updateUser({ password: newPw });
+    setBusy(false);
+    if (err) {
+      toast.error(err.message);
+    } else {
+      toast.success("เปลี่ยนรหัสผ่านแล้ว");
+      setNewPw("");
+      setChanging(false);
+    }
+  };
+
   return (
     <section className="rounded-2xl border border-border bg-card p-4">
       <h3 className="flex items-center gap-2 text-sm font-bold">
@@ -100,11 +120,44 @@ export function SyncCard() {
             </span>
           </div>
           <div className="mt-3 flex gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              className="gap-1.5"
+              onClick={() => setChanging((v) => !v)}
+            >
+              <KeyRound className="size-3.5" />
+              เปลี่ยนรหัสผ่าน
+            </Button>
             <Button size="sm" variant="ghost" className="gap-1.5 text-muted-foreground" onClick={() => void signOut()}>
               <LogOut className="size-3.5" />
               ออกจากระบบ
             </Button>
           </div>
+
+          {changing && (
+            <form
+              className="mt-3 flex items-center gap-2"
+              onSubmit={(e) => {
+                e.preventDefault();
+                void changePassword();
+              }}
+            >
+              <input
+                type="password"
+                autoComplete="new-password"
+                value={newPw}
+                onChange={(e) => setNewPw(e.target.value)}
+                placeholder="รหัสผ่านใหม่ (≥6 ตัว)"
+                aria-label="รหัสผ่านใหม่"
+                className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm"
+              />
+              <Button type="submit" disabled={busy} className="h-10 shrink-0 gap-1.5 rounded-xl px-4">
+                {busy && <Loader2 className="size-4 animate-spin" />}
+                ยืนยัน
+              </Button>
+            </form>
+          )}
         </>
       ) : (
         <>
