@@ -40,6 +40,13 @@ type AppState = {
     field: K,
     value: ProfileOverride[K]
   ) => void;
+  /** ทับ state ที่ sync ได้ (จากผล merge cloud) */
+  applyRemoteState: (slice: {
+    swaps: Record<string, string>;
+    checked: Record<string, boolean>;
+    log: Record<ISODate, DayLog>;
+    profileOverride: ProfileOverride;
+  }) => void;
 };
 
 /** อัปเดต log ของวันเดียวแบบ immutable */
@@ -160,6 +167,13 @@ export const useAppStore = create<AppState>()(
         set((s) => ({
           profileOverride: { ...s.profileOverride, [field]: value },
         })),
+      applyRemoteState: (slice) =>
+        set({
+          swaps: slice.swaps,
+          checked: slice.checked,
+          log: slice.log,
+          profileOverride: slice.profileOverride,
+        }),
     }),
     {
       name: "knot-gym",
