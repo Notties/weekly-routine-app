@@ -6,7 +6,8 @@ sync ข้อมูล (`log`, `swaps`, `checked`, `profileOverride`) ข้า
 ## 1) สร้าง Supabase project
 
 1. ไปที่ https://supabase.com → New project
-2. Settings → API → คัดลอก **Project URL** และ **anon public key**
+2. Settings → API Keys → คัดลอก **Project URL** และ **publishable key** (`sb_publishable_...`)
+   หรือ anon key เดิม (`eyJ...`) ก็ได้
 
 ## 2) ใส่ env
 
@@ -14,7 +15,8 @@ sync ข้อมูล (`log`, `swaps`, `checked`, `profileOverride`) ข้า
 
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOi...
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
+# หรือใช้คีย์เดิม: NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
 ```
 
 > ค่าเหล่านี้ inlined ตอน `bun run build` (static export) — anon key เปิดเผยได้ ความปลอดภัยมาจาก RLS ด้านล่าง

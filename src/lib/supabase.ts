@@ -6,9 +6,12 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 // ───────────────────────────────────────────────────────────
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+// รองรับทั้งคีย์ใหม่ (sb_publishable_...) และ anon key เดิม
+const anonKey =
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-/** ตั้งค่าคลาวด์ครบหรือยัง (มี url + anon key) */
+/** ตั้งค่าคลาวด์ครบหรือยัง (มี url + key) */
 export const isSyncConfigured = Boolean(url && anonKey);
 
 let client: SupabaseClient | null = null;
