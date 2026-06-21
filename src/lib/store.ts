@@ -7,6 +7,8 @@ type AppState = {
   hasHydrated: boolean;
   online: boolean;
   syncError: string | null;
+  /** ต้องเข้าสู่ระบบก่อนใช้งาน (ไม่มี session) */
+  authRequired: boolean;
   selectedDay: import("@/data/types").DayKey | null;
   swaps: Record<string, string>;
   checked: Record<string, boolean>;
@@ -67,6 +69,7 @@ export const useAppStore = create<AppState>()((set, get) => {
     hasHydrated: false,
     online: true,
     syncError: null,
+    authRequired: false,
     selectedDay: null,
     swaps: {},
     checked: {},
@@ -82,14 +85,22 @@ export const useAppStore = create<AppState>()((set, get) => {
           swaps: slice.swaps, checked: slice.checked,
           log: slice.log, profileOverride: slice.profileOverride,
           hasHydrated: true, online: true, syncError: null,
+          // เข้าระบบสำเร็จ — ซ่อนหน้า login
+          authRequired: false,
         });
       } catch (e) {
-        // ยังถือว่า hydrate เสร็จ (จะโชว์หน้า login/offline ตาม error)
-        set({
-          hasHydrated: true,
-          online: !(e instanceof NetworkError),
-          syncError: e instanceof AuthError ? null : "โหลดข้อมูลไม่สำเร็จ",
-        });
+        // AuthError = ยังไม่ได้ login → แสดงหน้า login
+        if (e instanceof AuthError) {
+          set({ hasHydrated: true, authRequired: true, syncError: null });
+        } else {
+          // NetworkError หรืออื่น ๆ — ยังถือว่า hydrate เสร็จ
+          set({
+            hasHydrated: true,
+            authRequired: false,
+            online: !(e instanceof NetworkError),
+            syncError: "โหลดข้อมูลไม่สำเร็จ",
+          });
+        }
       }
     },
 
@@ -223,10 +234,10 @@ export const useAppStore = create<AppState>()((set, get) => {
     stopRest: () => set({ restEndsAt: null, restTotal: null }),
 
     setProfileField: (field, value) => {
-      const nextProfile = { ...get().profileOverride, [field]: value };
+      // ส่งเฉพาะ field ที่เปลี่ยน เพื่อป้องกัน lost-update เมื่อแก้หลาย field พร้อมกัน
       optimistic(
-        () => set({ profileOverride: nextProfile }),
-        () => apiSend("PUT", "/api/profile", nextProfile)
+        () => set((s) => ({ profileOverride: { ...s.profileOverride, [field]: value } })),
+        () => apiSend("PUT", "/api/profile", { [field]: value })
       );
     },
   };

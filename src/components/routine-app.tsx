@@ -28,6 +28,7 @@ import { ShoppingView } from "@/components/views/shopping-view";
 import { MenuLibraryView } from "@/components/views/menu-library-view";
 import { MeView } from "@/components/views/me-view";
 import { RestTimerBar } from "@/components/rest-timer-bar";
+import { SyncCard } from "@/components/sync-card";
 
 const TABS = [
   { value: "routine", label: "รูทีน", Icon: ClipboardList },
@@ -43,6 +44,7 @@ const WEEK_TABS = new Set(["shopping", "menu", "me"]);
 
 export function RoutineApp() {
   const hasHydrated = useAppStore((s) => s.hasHydrated);
+  const authRequired = useAppStore((s) => s.authRequired);
   const selected = useAppStore((s) => s.selectedDay);
   const swaps = useAppStore((s) => s.swaps);
   const profileOverride = useAppStore((s) => s.profileOverride);
@@ -108,7 +110,22 @@ export function RoutineApp() {
   };
 
   // gate: กัน hydration mismatch (static export)
-  if (!hasHydrated || !selected) {
+  if (!hasHydrated) {
+    return <div className="min-h-full" />;
+  }
+
+  // gate: ยังไม่ได้ login — แสดงหน้าเข้าระบบแทน routine
+  if (authRequired) {
+    return (
+      <div className="flex min-h-full items-center justify-center p-6">
+        <div className="w-full max-w-sm">
+          <SyncCard />
+        </div>
+      </div>
+    );
+  }
+
+  if (!selected) {
     return <div className="min-h-full" />;
   }
 

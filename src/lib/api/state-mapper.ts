@@ -60,9 +60,10 @@ export function sliceToRows(slice: SyncSlice): SeedRows {
     date,
     weightKg: d.weightKg ?? null,
     workoutDone: d.workoutDone ?? false,
-    waterMl: d.waterMl ?? 0,
-    extraKcal: d.extra?.kcal ?? null,
-    extraProtein: d.extra?.protein ?? null,
+    // ปัดเศษทศนิยมจาก localStorage เก่าเพื่อป้องกัน INTEGER column ใน DB
+    waterMl: d.waterMl != null ? Math.round(d.waterMl) : 0,
+    extraKcal: d.extra?.kcal != null ? Math.round(d.extra.kcal) : null,
+    extraProtein: d.extra?.protein != null ? Math.round(d.extra.protein) : null,
     meals: Object.entries(d.meals ?? {})
       .filter(([, v]) => v)
       .map(([i]) => Number(i)),
