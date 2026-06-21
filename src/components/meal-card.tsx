@@ -8,14 +8,21 @@ import { StepList, TagRow } from "@/components/blocks";
 import { EquipmentBadges } from "@/components/equipment-badges";
 import { NutritionStrip } from "@/components/nutrition-strip";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 
 export function MealCard({
   meal,
   onSwap,
+  done = false,
+  onToggleDone,
+  showDone = false,
 }: {
   meal: Meal;
   onSwap?: (recipeId: string) => void;
+  done?: boolean;
+  onToggleDone?: () => void;
+  showDone?: boolean;
 }) {
   const [open, setOpen] = React.useState(false);
   const alternatives = onSwap ? recipesForSlot(meal.slot) : [];
@@ -55,6 +62,15 @@ export function MealCard({
       )}
       <StepList steps={meal.steps} />
       <TagRow tags={meal.tags} />
+
+      {showDone && (
+        <label className="mt-3 flex cursor-pointer items-center gap-2 border-t border-border pt-3 text-sm">
+          <Checkbox checked={done} onCheckedChange={() => onToggleDone?.()} />
+          <span className={done ? "text-muted-foreground line-through" : ""}>
+            กินแล้ว
+          </span>
+        </label>
+      )}
 
       {canSwap && open && (
         <div className="mt-3 space-y-1 rounded-xl border border-border bg-muted/40 p-2">

@@ -48,6 +48,9 @@ export function RoutineApp() {
   const log = useAppStore((s) => s.log);
   const setSelectedDay = useAppStore((s) => s.setSelectedDay);
   const setSwap = useAppStore((s) => s.setSwap);
+  const toggleMeal = useAppStore((s) => s.toggleMeal);
+  const addWater = useAppStore((s) => s.addWater);
+  const setWorkoutDone = useAppStore((s) => s.setWorkoutDone);
 
   const [today, setToday] = React.useState<DayKey | null>(null);
   const [tab, setTab] = React.useState<string>("routine");
@@ -109,6 +112,8 @@ export function RoutineApp() {
   const resolvedDay = resolveDay(day, swaps);
   const effProfile = effectiveProfile(profile, profileOverride, log);
   const todayISO = toISODate(new Date());
+  const isToday = selected === today;
+  const dateLog = log[todayISO];
 
   return (
     <Tabs
@@ -169,10 +174,23 @@ export function RoutineApp() {
           <TimelineView day={resolvedDay} isToday={selected === today} />
         </TabsContent>
         <TabsContent value="workout">
-          <WorkoutView day={resolvedDay} />
+          <WorkoutView
+            day={resolvedDay}
+            done={!!dateLog?.workoutDone}
+            isToday={isToday}
+            onToggleDone={() => setWorkoutDone(todayISO, !dateLog?.workoutDone)}
+          />
         </TabsContent>
         <TabsContent value="meal">
-          <MealView day={resolvedDay} profile={effProfile} onSwap={applySwap} />
+          <MealView
+            day={resolvedDay}
+            profile={effProfile}
+            onSwap={applySwap}
+            dateLog={dateLog}
+            isToday={isToday}
+            onToggleMeal={(i) => toggleMeal(todayISO, i)}
+            onAddWater={(d) => addWater(todayISO, d)}
+          />
         </TabsContent>
         <TabsContent value="sleep">
           <SleepView day={resolvedDay} />
