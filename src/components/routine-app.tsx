@@ -28,6 +28,7 @@ import { ShoppingView } from "@/components/views/shopping-view";
 import { MenuLibraryView } from "@/components/views/menu-library-view";
 import { MeView } from "@/components/views/me-view";
 import { RestTimerBar } from "@/components/rest-timer-bar";
+import { SyncCard } from "@/components/sync-card";
 
 const TABS = [
   { value: "routine", label: "รูทีน", Icon: ClipboardList },
@@ -43,6 +44,7 @@ const WEEK_TABS = new Set(["shopping", "menu", "me"]);
 
 export function RoutineApp() {
   const hasHydrated = useAppStore((s) => s.hasHydrated);
+  const authRequired = useAppStore((s) => s.authRequired);
   const selected = useAppStore((s) => s.selectedDay);
   const swaps = useAppStore((s) => s.swaps);
   const profileOverride = useAppStore((s) => s.profileOverride);
@@ -54,14 +56,15 @@ export function RoutineApp() {
   const addExtra = useAppStore((s) => s.addExtra);
   const clearExtra = useAppStore((s) => s.clearExtra);
   const setWorkoutDone = useAppStore((s) => s.setWorkoutDone);
+  const syncError = useAppStore((s) => s.syncError);
 
   const [today, setToday] = React.useState<DayKey | null>(null);
   const [tab, setTab] = React.useState<string>("routine");
   const touchStart = React.useRef<{ x: number; y: number } | null>(null);
 
-  // mount: rehydrate store + รู้ "วันนี้"
+  // mount: โหลด state จาก backend + รู้ "วันนี้"
   React.useEffect(() => {
-    useAppStore.persist.rehydrate();
+    void useAppStore.getState().hydrate();
     setToday(DAY_ORDER[new Date().getDay()]);
   }, []);
 
@@ -107,7 +110,22 @@ export function RoutineApp() {
   };
 
   // gate: กัน hydration mismatch (static export)
-  if (!hasHydrated || !selected) {
+  if (!hasHydrated) {
+    return <div className="min-h-full" />;
+  }
+
+  // gate: ยังไม่ได้ login — แสดงหน้าเข้าระบบแทน routine
+  if (authRequired) {
+    return (
+      <div className="flex min-h-full items-center justify-center p-6">
+        <div className="w-full max-w-sm">
+          <SyncCard />
+        </div>
+      </div>
+    );
+  }
+
+  if (!selected) {
     return <div className="min-h-full" />;
   }
 
@@ -120,6 +138,11 @@ export function RoutineApp() {
 
   return (
     <>
+      {syncError && (
+        <div className="bg-destructive/10 px-4 py-1.5 text-center text-xs text-destructive">
+          {syncError}
+        </div>
+      )}
     <Tabs
       value={tab}
       onValueChange={handleTab}
