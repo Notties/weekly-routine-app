@@ -1,10 +1,21 @@
-import { Clock, Flame, Snowflake, Moon } from "lucide-react";
+import { Clock, Flame, Snowflake, Moon, Check } from "lucide-react";
 import type { ResolvedDay } from "@/data/types";
 import { ExerciseCard } from "@/components/exercise-card";
 import { SectionTitle, BulletList } from "@/components/blocks";
 import { dayTypeInfo } from "@/components/day-type-badge";
+import { Button } from "@/components/ui/button";
 
-export function WorkoutView({ day }: { day: ResolvedDay }) {
+export function WorkoutView({
+  day,
+  done = false,
+  isToday = false,
+  onToggleDone,
+}: {
+  day: ResolvedDay;
+  done?: boolean;
+  isToday?: boolean;
+  onToggleDone?: () => void;
+}) {
   if (day.type === "rest" || !day.workout) {
     return (
       <div className="px-4 py-10">
@@ -36,6 +47,17 @@ export function WorkoutView({ day }: { day: ResolvedDay }) {
             {workout.time.start}–{workout.time.end}
           </span>
         </p>
+        {isToday && (
+          <Button
+            variant={done ? "default" : "outline"}
+            size="sm"
+            className="mt-3 w-full gap-1.5"
+            onClick={onToggleDone}
+          >
+            <Check className="size-4" />
+            {done ? "เล่นเสร็จแล้ว" : "ทำเครื่องหมายว่าเล่นเสร็จ"}
+          </Button>
+        )}
       </div>
 
       {/* วอร์มอัพ */}

@@ -201,3 +201,20 @@ export const SHOP_CATEGORIES: ShopCategory[] = [
   "ไขมันดี",
   "เครื่องปรุง",
 ];
+
+/** วันที่รูปแบบ "YYYY-MM-DD" (เวลาท้องถิ่น) */
+export type ISODate = string;
+
+/** บันทึกของวันหนึ่ง */
+export type DayLog = {
+  weightKg?: number;
+  /** index มื้อที่ติ๊กว่าทำแล้ว */
+  meals?: Record<number, true>;
+  workoutDone?: boolean;
+  waterMl?: number;
+};
+
+/** ค่าโปรไฟล์ที่ผู้ใช้แก้เอง (น้ำหนักไม่อยู่ที่นี่ — อยู่ใน log) */
+export type ProfileOverride = Partial<
+  Pick<Profile, "goal" | "heightCm" | "age" | "workoutWindow">
+>;

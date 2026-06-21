@@ -10,14 +10,10 @@ import {
   BookOpen,
   CalendarCheck,
 } from "lucide-react";
-import { week } from "@/data";
+import { profile, week } from "@/data";
 import type { DayKey } from "@/data/types";
-import {
-  getSelectedDay,
-  setSelectedDay,
-  getSwaps,
-  setSwap,
-} from "@/lib/storage";
+import { useAppStore } from "@/lib/store";
+import { DAY_ORDER, effectiveProfile, toISODate } from "@/lib/tracking";
 import { resolveDay, swapKey } from "@/lib/meals";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -30,8 +26,7 @@ import { MealView } from "@/components/views/meal-view";
 import { SleepView } from "@/components/views/sleep-view";
 import { ShoppingView } from "@/components/views/shopping-view";
 import { MenuLibraryView } from "@/components/views/menu-library-view";
-
-const DAY_ORDER: DayKey[] = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+import { MeView } from "@/components/views/me-view";
 
 const TABS = [
   { value: "routine", label: "รูทีน", Icon: ClipboardList },
@@ -42,48 +37,51 @@ const TABS = [
   { value: "menu", label: "เมนู", Icon: BookOpen },
 ] as const;
 
-/** แท็บระดับสัปดาห์ (ไม่ผูกกับวันที่เลือก) */
-const WEEK_TABS = new Set(["shopping", "menu"]);
+/** แท็บที่ไม่ผูกกับวันที่เลือก (ซ่อนแถบวัน + ปิดปัดเปลี่ยนวัน) */
+const WEEK_TABS = new Set(["shopping", "menu", "me"]);
 
 export function RoutineApp() {
-  const [selected, setSelected] = React.useState<DayKey>("mon");
+  const hasHydrated = useAppStore((s) => s.hasHydrated);
+  const selected = useAppStore((s) => s.selectedDay);
+  const swaps = useAppStore((s) => s.swaps);
+  const profileOverride = useAppStore((s) => s.profileOverride);
+  const log = useAppStore((s) => s.log);
+  const setSelectedDay = useAppStore((s) => s.setSelectedDay);
+  const setSwap = useAppStore((s) => s.setSwap);
+  const toggleMeal = useAppStore((s) => s.toggleMeal);
+  const addWater = useAppStore((s) => s.addWater);
+  const setWorkoutDone = useAppStore((s) => s.setWorkoutDone);
+
   const [today, setToday] = React.useState<DayKey | null>(null);
   const [tab, setTab] = React.useState<string>("routine");
-  const [swaps, setSwaps] = React.useState<Record<string, string>>({});
   const touchStart = React.useRef<{ x: number; y: number } | null>(null);
 
-  // หลัง mount: รู้ "วันนี้" + ใช้วันที่เลือกล่าสุด + โหลดการสลับเมนู
+  // mount: rehydrate store + รู้ "วันนี้"
   React.useEffect(() => {
-    const stored = getSelectedDay() as DayKey | null;
-    const t = DAY_ORDER[new Date().getDay()];
-    setToday(t);
-    setSelected(stored ?? t);
-    setSwaps(getSwaps());
+    useAppStore.persist.rehydrate();
+    setToday(DAY_ORDER[new Date().getDay()]);
   }, []);
 
-  const handleSelect = (key: DayKey) => {
-    setSelected(key);
-    setSelectedDay(key);
-  };
+  // หลัง hydrate: ถ้ายังไม่เคยเลือกวัน ใช้วันนี้
+  React.useEffect(() => {
+    if (hasHydrated && !selected && today) setSelectedDay(today);
+  }, [hasHydrated, selected, today, setSelectedDay]);
 
-  // สลับเมนูของมื้อหนึ่ง (จำรายวันรายมื้อ)
+  const handleSelect = (key: DayKey) => setSelectedDay(key);
+
   const applySwap = (mealIndex: number, recipeId: string) => {
-    const key = swapKey(selected, mealIndex);
-    setSwap(key, recipeId);
-    setSwaps((prev) => ({ ...prev, [key]: recipeId }));
+    if (!selected) return;
+    setSwap(swapKey(selected, mealIndex), recipeId);
   };
 
   const handleTab = (value: string) => {
     setTab(value);
-    // เปลี่ยนแท็บแล้วเลื่อนกลับขึ้นบนสุด
-    if (typeof window !== "undefined") {
-      window.scrollTo({ top: 0 });
-    }
+    if (typeof window !== "undefined") window.scrollTo({ top: 0 });
   };
 
-  // ปัดซ้าย/ขวาเพื่อเปลี่ยนวัน (เฉพาะแท็บที่ผูกกับวัน)
   const changeDayBy = (dir: number) => {
-    const idx = week.findIndex((d) => d.key === selected);
+    const cur = selected ?? "mon";
+    const idx = week.findIndex((d) => d.key === cur);
     const next = (idx + dir + week.length) % week.length;
     handleSelect(week[next].key);
   };
@@ -100,17 +98,22 @@ export function RoutineApp() {
     const t = e.changedTouches[0];
     const dx = t.clientX - start.x;
     const dy = t.clientY - start.y;
-    // เป็นการปัดแนวนอนชัดเจน (ไม่ใช่เลื่อนขึ้นลง)
     if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
       changeDayBy(dx < 0 ? 1 : -1);
     }
   };
 
+  // gate: กัน hydration mismatch (static export)
+  if (!hasHydrated || !selected) {
+    return <div className="min-h-full" />;
+  }
+
   const day = week.find((d) => d.key === selected) ?? week[0];
-  const resolvedDay = React.useMemo(
-    () => resolveDay(day, swaps),
-    [day, swaps]
-  );
+  const resolvedDay = resolveDay(day, swaps);
+  const effProfile = effectiveProfile(profile, profileOverride, log);
+  const todayISO = toISODate(new Date());
+  const isToday = selected === today;
+  const dateLog = log[todayISO];
 
   return (
     <Tabs
@@ -118,14 +121,9 @@ export function RoutineApp() {
       onValueChange={handleTab}
       className="flex min-h-full flex-col gap-0"
     >
-      {/* บล็อกหัวติดบน — พื้นทึบชั้นเดียว (header + เลือกวัน + แท็บ) */}
       <div className="sticky top-0 z-30 border-b border-border bg-background">
-        <ProfileHeader />
-        <DayPicker
-          selected={selected}
-          today={today}
-          onSelect={handleSelect}
-        />
+        <ProfileHeader profile={effProfile} onOpen={() => handleTab("me")} />
+        <DayPicker selected={selected} today={today} onSelect={handleSelect} />
         <TabsList className="mx-auto grid h-auto w-full max-w-2xl grid-cols-6 rounded-none bg-background p-0 group-data-horizontal/tabs:h-auto">
           {TABS.map(({ value, label, Icon }) => (
             <TabsTrigger
@@ -145,7 +143,6 @@ export function RoutineApp() {
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
-        {/* แถบบอกวัน (ซ่อนในแท็บระดับสัปดาห์: ซื้อของ/เมนู) */}
         {!WEEK_TABS.has(tab) && (
           <div className="flex items-center justify-between gap-2 border-b border-border px-4 py-2.5">
             <h2 className="flex items-center gap-2 text-sm font-bold">
@@ -177,10 +174,23 @@ export function RoutineApp() {
           <TimelineView day={resolvedDay} isToday={selected === today} />
         </TabsContent>
         <TabsContent value="workout">
-          <WorkoutView day={resolvedDay} />
+          <WorkoutView
+            day={resolvedDay}
+            done={!!dateLog?.workoutDone}
+            isToday={isToday}
+            onToggleDone={() => setWorkoutDone(todayISO, !dateLog?.workoutDone)}
+          />
         </TabsContent>
         <TabsContent value="meal">
-          <MealView day={resolvedDay} onSwap={applySwap} />
+          <MealView
+            day={resolvedDay}
+            profile={effProfile}
+            onSwap={applySwap}
+            dateLog={dateLog}
+            isToday={isToday}
+            onToggleMeal={(i) => toggleMeal(todayISO, i)}
+            onAddWater={(d) => addWater(todayISO, d)}
+          />
         </TabsContent>
         <TabsContent value="sleep">
           <SleepView day={resolvedDay} />
@@ -191,6 +201,9 @@ export function RoutineApp() {
         <TabsContent value="menu">
           <MenuLibraryView />
         </TabsContent>
+        {tab === "me" && (
+          <MeView todayISO={todayISO} onBack={() => handleTab("routine")} />
+        )}
       </main>
     </Tabs>
   );
