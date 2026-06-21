@@ -126,7 +126,7 @@ export function SyncCard() {
               value={inputEmail}
               onChange={(e) => setInputEmail(e.target.value)}
               placeholder="you@email.com"
-              className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm"
+              className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm"
             />
             <input
               type="password"
@@ -134,9 +134,9 @@ export function SyncCard() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="รหัสผ่าน"
-              className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm"
+              className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm"
             />
-            <Button type="submit" size="sm" disabled={busy}>
+            <Button type="submit" disabled={busy} className="h-10 rounded-xl">
               {mode === "login" ? "เข้าสู่ระบบ" : "สมัครสมาชิก"}
             </Button>
           </form>
