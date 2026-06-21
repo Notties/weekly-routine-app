@@ -1,11 +1,12 @@
 "use client";
 
 import * as React from "react";
-import { Repeat, Check } from "lucide-react";
+import { Repeat, Check, Sparkles } from "lucide-react";
 import type { Meal } from "@/data/types";
 import { recipesForSlot } from "@/lib/meals";
 import { StepList, TagRow } from "@/components/blocks";
 import { EquipmentBadges } from "@/components/equipment-badges";
+import { NutritionStrip } from "@/components/nutrition-strip";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -45,6 +46,13 @@ export function MealCard({
       </div>
 
       <EquipmentBadges equipment={meal.equipment} />
+      <NutritionStrip macros={meal.macros} />
+      {meal.benefit && (
+        <p className="mt-2 flex gap-1.5 text-xs leading-snug text-muted-foreground">
+          <Sparkles className="mt-0.5 size-3.5 shrink-0 text-primary" />
+          <span>{meal.benefit}</span>
+        </p>
+      )}
       <StepList steps={meal.steps} />
       <TagRow tags={meal.tags} />
 

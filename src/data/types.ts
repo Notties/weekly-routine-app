@@ -2,6 +2,17 @@
 // โมเดลข้อมูลทั้งหมดของแอป — แก้ไข/เพิ่ม/ลด เนื้อหาได้ที่ไฟล์ data ข้าง ๆ
 // ───────────────────────────────────────────────────────────
 
+/** มาโคร: แคลอรี่ + โปรตีน/คาร์บ/ไขมัน (กรัม) */
+export type Macros = {
+  kcal: number;
+  protein: number;
+  carb: number;
+  fat: number;
+};
+
+/** วัตถุดิบในเมนู: ชื่อ (อ้าง catalog) + กรัมที่ใช้จริงต่อ 1 ที่ */
+export type RecipeItem = { name: string; grams: number };
+
 export type DayKey =
   | "mon"
   | "tue"
@@ -18,6 +29,8 @@ export type Profile = {
   sex: string;
   age: number;
   heightCm: number;
+  /** น้ำหนักปัจจุบัน (กก.) — ใช้คำนวณเป้าโภชนาการ */
+  weightKg: number;
   goal: string;
   /** ช่วงเวลาออกกำลังประจำ เช่น "19:00–20:00" */
   workoutWindow: string;
@@ -73,10 +86,12 @@ export type Recipe = {
   slot: MealSlot;
   /** อุปกรณ์ที่ต้องใช้ */
   equipment: Appliance[];
-  /** ชื่อวัตถุดิบ (อ้างอิง ingredientCatalog) — ใช้คำนวณรายการซื้อของ */
-  ingredients: string[];
+  /** วัตถุดิบ + กรัมต่อ 1 ที่ (อ้างอิง ingredientCatalog/pantryStaples) */
+  ingredients: RecipeItem[];
   /** ขั้นตอนวิธีทำแบบมือใหม่ทำตามได้ */
   steps: string[];
+  /** ประโยชน์: เมนูนี้ให้อะไร/ช่วยอะไร */
+  benefit: string;
   /** ป้ายกำกับเริ่มต้น เช่น "โปรตีนสูง" */
   tags?: string[];
 };
@@ -106,6 +121,10 @@ export type Meal = {
   equipment?: Appliance[];
   steps: string[];
   tags: string[];
+  /** มาโครของเมนูที่เลือก (คำนวณจากวัตถุดิบ) */
+  macros: Macros;
+  /** ประโยชน์ของเมนูที่เลือก */
+  benefit: string;
 };
 
 export type Workout = {
@@ -165,10 +184,13 @@ export type ShopItem = {
 };
 
 /**
- * รายการในคลังวัตถุดิบ (ingredient catalog) — กำหนดปริมาณ/ราคาต่อสัปดาห์ของวัตถุดิบ 1 ชนิด
+ * รายการในคลังวัตถุดิบ (ingredient catalog) — ราคาต่อสัปดาห์ + มาโครต่อ 100 ก.
  * รายการซื้อของจะหยิบเฉพาะวัตถุดิบที่เมนูในสัปดาห์นั้นใช้จริง
  */
-export type CatalogItem = ShopItem;
+export type CatalogItem = ShopItem & {
+  /** มาโครต่อวัตถุดิบ 100 กรัม — ใช้คำนวณโภชนาการของเมนู */
+  macrosPer100g: Macros;
+};
 
 /** ลำดับหมวดที่จะแสดงในแท็บซื้อของ */
 export const SHOP_CATEGORIES: ShopCategory[] = [

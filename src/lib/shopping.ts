@@ -97,7 +97,7 @@ export function computeShoppingItems(
 ): ShopItem[] {
   const names = new Set<string>();
   for (const id of activeRecipeIds(week, swaps)) {
-    getRecipe(id)?.ingredients.forEach((n) => names.add(n));
+    getRecipe(id)?.ingredients.forEach((i) => names.add(i.name));
   }
   return buildShoppingItems(names, ingredientCatalog, pantryStaples);
 }
