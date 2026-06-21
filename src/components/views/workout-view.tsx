@@ -1,5 +1,6 @@
-import { Clock, Flame, Snowflake, Moon, Check } from "lucide-react";
+import { Clock, Flame, Snowflake, Moon, Check, TrendingUp } from "lucide-react";
 import type { ResolvedDay } from "@/data/types";
+import { progressionTips } from "@/data";
 import { ExerciseCard } from "@/components/exercise-card";
 import { SectionTitle, BulletList } from "@/components/blocks";
 import { dayTypeInfo } from "@/components/day-type-badge";
@@ -83,6 +84,16 @@ export function WorkoutView({
         </SectionTitle>
         <BulletList items={workout.cooldown} />
       </section>
+
+      {/* progression (เฉพาะวันเล่นเวต) */}
+      {type === "weights" && (
+        <section>
+          <SectionTitle icon={<TrendingUp className="size-4" />}>
+            เพิ่มน้ำหนักยังไง (progression)
+          </SectionTitle>
+          <BulletList items={progressionTips} />
+        </section>
+      )}
     </div>
   );
 }
