@@ -1,7 +1,16 @@
 "use client";
 
 import * as React from "react";
-import { ChevronLeft } from "lucide-react";
+import {
+  ChevronLeft,
+  User,
+  Scale,
+  Flame,
+  CalendarCheck,
+  Target,
+  Activity,
+  Pencil,
+} from "lucide-react";
 import { profile, week } from "@/data";
 import { useAppStore } from "@/lib/store";
 import {
@@ -63,18 +72,70 @@ export function MeView({
       <button
         type="button"
         onClick={onBack}
-        className="flex items-center gap-1 text-sm font-medium text-primary"
+        className="-ml-1 flex items-center gap-1 text-sm font-medium text-primary"
       >
         <ChevronLeft className="size-4" />
         กลับ
       </button>
 
-      {/* น้ำหนัก */}
+      {/* ───── Hero: ตัวตน + สถิติเด่น ───── */}
+      <section className="overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-primary/15 via-primary/5 to-transparent p-5">
+        <div className="flex items-center gap-4">
+          <div className="grid size-14 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground shadow-sm">
+            <User className="size-7" />
+          </div>
+          <div className="min-w-0">
+            <h2 className="text-lg font-bold leading-tight">โปรไฟล์ของฉัน</h2>
+            <p className="mt-0.5 truncate text-xs text-muted-foreground tnum">
+              {eff.sex} · {eff.age} ปี · {eff.goal}
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-4 grid grid-cols-3 gap-2">
+          <Stat icon={<Scale className="size-3.5" />} label="น้ำหนัก" value={`${eff.weightKg}`} unit="กก." />
+          <Stat icon={<Flame className="size-3.5" />} label="สตรีค" value={`${streak}`} unit="วัน" />
+          <Stat icon={<CalendarCheck className="size-3.5" />} label="7 วันล่าสุด" value={`${hit7}/7`} unit="วัน" />
+        </div>
+      </section>
+
+      {/* ───── ความสม่ำเสมอวันนี้ (วงแหวน) ───── */}
       <section className="rounded-2xl border border-border bg-card p-4">
-        <h3 className="text-sm font-bold">น้ำหนัก</h3>
-        <p className="mt-1 text-xs text-muted-foreground tnum">
-          ปัจจุบัน {eff.weightKg} กก.
-        </p>
+        <h3 className="flex items-center gap-2 text-sm font-bold">
+          <Activity className="size-4 text-primary" />
+          ความสม่ำเสมอวันนี้
+        </h3>
+        <div className="mt-3 flex items-center gap-4">
+          <ProgressRing pct={adh.pct} />
+          <div className="min-w-0 flex-1 space-y-1.5 text-xs text-muted-foreground tnum">
+            <p>
+              ทำได้{" "}
+              <span className="font-semibold text-foreground">
+                {adh.done}/{adh.total}
+              </span>{" "}
+              อย่างวันนี้
+            </p>
+            <p className="flex items-center gap-1.5">
+              <Flame className="size-3.5 text-amber-500" />
+              สตรีค {streak} วัน
+            </p>
+            <p className="flex items-center gap-1.5">
+              <CalendarCheck className="size-3.5 text-primary" />
+              ทำครบ {hit7}/7 วันล่าสุด
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ───── น้ำหนัก ───── */}
+      <section className="rounded-2xl border border-border bg-card p-4">
+        <h3 className="flex items-center gap-2 text-sm font-bold">
+          <Scale className="size-4 text-primary" />
+          น้ำหนัก
+          <span className="ml-auto text-xs font-normal text-muted-foreground tnum">
+            ปัจจุบัน {eff.weightKg} กก.
+          </span>
+        </h3>
         <div className="mt-3 flex items-center gap-2">
           <input
             type="number"
@@ -91,67 +152,58 @@ export function MeView({
         <WeightTrend series={series} />
       </section>
 
-      {/* ซิงค์คลาวด์ */}
-      <SyncCard />
-
-      {/* ความสม่ำเสมอ */}
+      {/* ───── ประวัติ heatmap ───── */}
       <section className="rounded-2xl border border-border bg-card p-4">
-        <h3 className="text-sm font-bold">ความสม่ำเสมอวันนี้</h3>
-        <div className="mt-2 flex items-baseline gap-2">
-          <span className="tnum text-3xl font-bold">{adh.pct}%</span>
-          <span className="text-xs text-muted-foreground tnum">
-            ({adh.done}/{adh.total} อย่าง)
+        <h3 className="flex items-center gap-2 text-sm font-bold">
+          <CalendarCheck className="size-4 text-primary" />
+          ประวัติความสม่ำเสมอ
+          <span className="ml-auto text-xs font-normal text-muted-foreground">
+            8 สัปดาห์
           </span>
-        </div>
-        <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-muted">
-          <div
-            className="h-full rounded-full bg-primary"
-            style={{ width: `${adh.pct}%` }}
-          />
-        </div>
-        <div className="mt-3 flex gap-4 text-xs text-muted-foreground tnum">
-          <span>🔥 สตรีค {streak} วัน</span>
-          <span>ทำครบ {hit7}/7 วันล่าสุด</span>
-        </div>
-      </section>
-
-      {/* ประวัติ heatmap */}
-      <section className="rounded-2xl border border-border bg-card p-4">
-        <h3 className="text-sm font-bold">ประวัติความสม่ำเสมอ (8 สัปดาห์)</h3>
+        </h3>
         <div className="mt-3">
           <AdherenceHeatmap cells={heat} log={log} todayISO={todayISO} />
         </div>
       </section>
 
-      {/* เป้าวันนี้ */}
+      {/* ───── เป้าวันนี้ ───── */}
       <section className="rounded-2xl border border-border bg-card p-4">
-        <h3 className="text-sm font-bold">
-          เป้าวันนี้ ({DAY_TYPE_LABEL[todayDay.type]})
+        <h3 className="flex items-center gap-2 text-sm font-bold">
+          <Target className="size-4 text-primary" />
+          เป้าวันนี้
+          <span className="ml-auto text-xs font-normal text-muted-foreground">
+            {DAY_TYPE_LABEL[todayDay.type]}
+          </span>
         </h3>
         <NutritionStrip macros={target} />
       </section>
 
-      {/* แก้โปรไฟล์ */}
+      {/* ───── แก้โปรไฟล์ ───── */}
       <section className="rounded-2xl border border-border bg-card p-4">
-        <h3 className="text-sm font-bold">โปรไฟล์</h3>
+        <h3 className="flex items-center gap-2 text-sm font-bold">
+          <Pencil className="size-4 text-primary" />
+          แก้โปรไฟล์
+        </h3>
         <div className="mt-3 space-y-3">
           <ProfileField
             label="เป้าหมาย"
             value={eff.goal}
             onCommit={(v) => setProfileField("goal", v)}
           />
-          <ProfileField
-            label="ส่วนสูง (ซม.)"
-            type="number"
-            value={String(eff.heightCm)}
-            onCommit={(v) => setProfileField("heightCm", Number(v) || eff.heightCm)}
-          />
-          <ProfileField
-            label="อายุ (ปี)"
-            type="number"
-            value={String(eff.age)}
-            onCommit={(v) => setProfileField("age", Number(v) || eff.age)}
-          />
+          <div className="grid grid-cols-2 gap-3">
+            <ProfileField
+              label="ส่วนสูง (ซม.)"
+              type="number"
+              value={String(eff.heightCm)}
+              onCommit={(v) => setProfileField("heightCm", Number(v) || eff.heightCm)}
+            />
+            <ProfileField
+              label="อายุ (ปี)"
+              type="number"
+              value={String(eff.age)}
+              onCommit={(v) => setProfileField("age", Number(v) || eff.age)}
+            />
+          </div>
           <ProfileField
             label="ช่วงเล่น"
             value={eff.workoutWindow}
@@ -159,6 +211,70 @@ export function MeView({
           />
         </div>
       </section>
+
+      {/* ───── บัญชี & ซิงค์ ───── */}
+      <SyncCard />
+    </div>
+  );
+}
+
+/** ช่องสถิติเล็กใน hero */
+function Stat({
+  icon,
+  label,
+  value,
+  unit,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  unit?: string;
+}) {
+  return (
+    <div className="rounded-2xl bg-background/60 p-2.5 text-center backdrop-blur-sm">
+      <div className="flex items-center justify-center gap-1 text-muted-foreground">
+        {icon}
+        <span className="text-[10px] leading-none">{label}</span>
+      </div>
+      <div className="mt-1 tnum text-lg font-bold leading-none">
+        {value}
+        {unit && (
+          <span className="ml-0.5 text-[10px] font-normal text-muted-foreground">
+            {unit}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/** วงแหวนแสดง % ความสม่ำเสมอ (SVG, ไม่ใช้ไลบรารีนอก) */
+function ProgressRing({ pct }: { pct: number }) {
+  const clamped = Math.max(0, Math.min(100, pct));
+  return (
+    <div className="relative grid size-20 shrink-0 place-items-center">
+      <svg viewBox="0 0 36 36" className="size-20 -rotate-90">
+        <circle
+          cx="18"
+          cy="18"
+          r="15.5"
+          fill="none"
+          className="stroke-muted"
+          strokeWidth="3.5"
+        />
+        <circle
+          cx="18"
+          cy="18"
+          r="15.5"
+          fill="none"
+          className="stroke-primary"
+          strokeWidth="3.5"
+          strokeLinecap="round"
+          pathLength={100}
+          strokeDasharray={`${clamped} 100`}
+        />
+      </svg>
+      <span className="absolute tnum text-base font-bold">{clamped}%</span>
     </div>
   );
 }
