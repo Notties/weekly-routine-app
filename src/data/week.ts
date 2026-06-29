@@ -7,29 +7,29 @@ import type { Day } from "./types";
 // ───────────────────────────────────────────────────────────
 
 export const week: Day[] = [
-  // ───────────── จันทร์ — Full Body A ─────────────
+  // ───────────── จันทร์ — Push (ดัน) ─────────────
   {
     key: "mon",
     label: "จันทร์",
     short: "จ",
     type: "weights",
-    title: "Full Body A",
+    title: "Push · อก/ไหล่/ไทรเซ็ป",
     workout: {
       time: { start: "19:00", end: "20:00" },
       warmup: [
         "ปั่นจักรยาน/เดินลู่เบา ๆ 5 นาที",
-        "หมุนข้อไหล่–สะโพก–เข่า อย่างละ 10 ครั้ง",
-        "Bodyweight squat 15 ครั้ง + Band pull-apart 15 ครั้ง",
+        "หมุนข้อไหล่ + Band pull-apart 15 ครั้ง",
+        "ดันบาร์เปล่า/วิดพื้น 15 ครั้ง อุ่นข้อไหล่–ศอก",
       ],
       exercises: [
-        { name: "Barbell Squat", muscle: "ขา/สะโพก", sets: 4, reps: "6–8", rest: "120 วิ" },
         { name: "Bench Press", muscle: "อก/ไหล่หน้า/ไทรเซ็ป", sets: 4, reps: "6–8", rest: "120 วิ" },
-        { name: "Bent-over Row", muscle: "หลัง/ปีก", sets: 4, reps: "8–10", rest: "90 วิ" },
-        { name: "Overhead Press", muscle: "ไหล่", sets: 3, reps: "8–10", rest: "90 วิ" },
+        { name: "Overhead Press", muscle: "ไหล่", sets: 4, reps: "8–10", rest: "90 วิ" },
+        { name: "Incline Dumbbell Press", muscle: "อกบน/ไหล่", sets: 3, reps: "8–10", rest: "90 วิ" },
         { name: "Lateral Raise", muscle: "ไหล่ข้าง", sets: 3, reps: "12–15", rest: "60 วิ" },
+        { name: "Triceps Pushdown", muscle: "ไทรเซ็ป", sets: 3, reps: "12–15", rest: "60 วิ" },
         { name: "Plank", muscle: "แกนกลางลำตัว", sets: 3, reps: "45 วิ", rest: "45 วิ" },
       ],
-      cooldown: ["ยืดต้นขาหน้า–อก–หลัง อย่างละ 30 วิ", "หายใจเข้าลึก–ออกยาว 1 นาที"],
+      cooldown: ["ยืดอก–ไหล่หน้า–ไทรเซ็ป อย่างละ 30 วิ", "หายใจเข้าลึก–ออกยาว 1 นาที"],
     },
     meals: [
       { time: "07:00", slot: "breakfast", recipeId: "bf-oat" },
@@ -37,57 +37,48 @@ export const week: Day[] = [
       { time: "17:30", slot: "preworkout", recipeId: "pw-banana" },
       { time: "20:30", slot: "postworkout", recipeId: "po-whey-rice" },
     ],
-    sleep: { bedtime: "23:00", wake: "06:30", hours: 7.5, note: "วันเล่นหนัก พักให้เต็มที่ กล้ามซ่อมแซมตอนหลับลึก" },
+    sleep: { bedtime: "23:00", wake: "06:30", hours: 7.5, note: "วันดัน (อก/ไหล่) พักให้เต็มที่ กล้ามซ่อมแซมตอนหลับลึก" },
   },
 
-  // ───────────── อังคาร — คาร์ดิโอ (LISS) ─────────────
+  // ───────────── อังคาร — วันพัก ─────────────
   {
     key: "tue",
     label: "อังคาร",
     short: "อ",
-    type: "cardio",
-    title: "คาร์ดิโอ (เผาไขมัน)",
-    workout: {
-      time: { start: "19:00", end: "19:45" },
-      warmup: ["เดินเร็วอุ่นเครื่อง 5 นาที", "หมุนข้อเท้า–สะโพกเบา ๆ"],
-      exercises: [
-        { name: "เดินชันลู่วิ่ง (Incline)", muscle: "หัวใจ/ทั้งตัว", sets: 1, reps: "35 นาที โซน 2", rest: "-" },
-        { name: "แพลงก์ + Side plank", muscle: "แกนกลางลำตัว", sets: 3, reps: "40 วิ", rest: "40 วิ" },
-      ],
-      cooldown: ["เดินช้าลง 5 นาที", "ยืดน่อง–ขาหลัง อย่างละ 30 วิ"],
-    },
+    type: "rest",
+    title: "วันพัก",
     meals: [
       { time: "07:00", slot: "breakfast", recipeId: "bf-bread" },
       { time: "12:30", slot: "lunch", recipeId: "ln-chicken" },
       { time: "16:00", slot: "snack", recipeId: "sn-yogurt" },
-      { time: "20:00", slot: "dinner", recipeId: "dn-chicken", tags: ["หลังเล่น = ซ่อมกล้าม"] },
+      { time: "20:00", slot: "dinner", recipeId: "dn-yogurt" },
     ],
-    sleep: { bedtime: "23:00", wake: "06:30", hours: 7.5, note: "คาร์ดิโอเบา ฟื้นตัวเร็ว เข้านอนตรงเวลาเหมือนเดิม" },
+    sleep: { bedtime: "23:00", wake: "06:30", hours: 7.5, note: "พักฟื้นจากวันดัน เดินเล่น/ยืดเหยียดเบา ๆ ได้ (อยากเผาไขมันเพิ่มเดิน Zone 2 ~30 นาทีก็ได้)" },
   },
 
-  // ───────────── พุธ — Full Body B ─────────────
+  // ───────────── พุธ — Pull (ดึง) ─────────────
   {
     key: "wed",
     label: "พุธ",
     short: "พ",
     type: "weights",
-    title: "Full Body B",
+    title: "Pull · หลัง/ปีก/ไบเซ็ป",
     workout: {
       time: { start: "19:00", end: "20:00" },
       warmup: [
         "เดินลู่/ปั่นเบา ๆ 5 นาที",
-        "Hip hinge เปล่า ๆ 15 ครั้ง + Scapular pull-up 10 ครั้ง",
-        "Glute bridge 15 ครั้ง",
+        "Scapular pull-up 10 ครั้ง + Band pull-apart 15 ครั้ง",
+        "Hip hinge เปล่า ๆ 15 ครั้ง อุ่นหลังล่างก่อน Deadlift",
       ],
       exercises: [
-        { name: "Deadlift", muscle: "หลังล่าง/สะโพก/ขาหลัง", sets: 4, reps: "5", rest: "150 วิ" },
-        { name: "Incline Dumbbell Press", muscle: "อกบน/ไหล่", sets: 4, reps: "8–10", rest: "90 วิ" },
+        { name: "Deadlift", muscle: "หลังล่าง/สะโพก/ขาหลัง", sets: 3, reps: "5", rest: "150 วิ" },
         { name: "Lat Pulldown / Pull-up", muscle: "ปีก/หลัง", sets: 4, reps: "8–12", rest: "90 วิ" },
-        { name: "Walking Lunge", muscle: "ขา/ก้น", sets: 3, reps: "12 ก้าว/ข้าง", rest: "90 วิ" },
-        { name: "Standing Calf Raise", muscle: "น่อง", sets: 4, reps: "12–15", rest: "60 วิ" },
+        { name: "Seated Cable Row", muscle: "หลังกลาง/ปีก", sets: 4, reps: "10", rest: "90 วิ" },
+        { name: "Face Pull", muscle: "ไหล่หลัง/หลังบน", sets: 3, reps: "15", rest: "60 วิ" },
+        { name: "Dumbbell Curl", muscle: "แขนหน้า (ไบเซ็ป)", sets: 3, reps: "12", rest: "60 วิ" },
         { name: "Hanging Knee Raise", muscle: "หน้าท้องล่าง", sets: 3, reps: "12", rest: "60 วิ" },
       ],
-      cooldown: ["ยืดสะโพก–ขาหลัง–ปีก อย่างละ 30 วิ", "เดินเบา ๆ ผ่อนคลาย 2 นาที"],
+      cooldown: ["ยืดปีก–หลัง–ไบเซ็ป อย่างละ 30 วิ", "ห้อยบาร์ผ่อนหลัง 30 วิ"],
     },
     meals: [
       { time: "07:00", slot: "breakfast", recipeId: "bf-oat" },
@@ -98,55 +89,44 @@ export const week: Day[] = [
     sleep: { bedtime: "23:00", wake: "06:30", hours: 7.5, note: "Deadlift หนัก หลังล่างต้องการพัก งดเล่นมือถือบนเตียง" },
   },
 
-  // ───────────── พฤหัสบดี — คาร์ดิโอ (HIIT) ─────────────
+  // ───────────── พฤหัสบดี — วันพัก ─────────────
   {
     key: "thu",
     label: "พฤหัสบดี",
     short: "พฤ",
-    type: "cardio",
-    title: "คาร์ดิโอ (HIIT)",
-    workout: {
-      time: { start: "19:00", end: "19:40" },
-      warmup: ["เดิน/ปั่นเบา ๆ 5 นาที", "High knees + Butt kicks อย่างละ 30 วิ"],
-      exercises: [
-        { name: "HIIT จักรยาน/วิ่ง", muscle: "หัวใจ/ขา", sets: 10, reps: "เร็ว 20 วิ / ช้า 40 วิ", rest: "คาบในเซ็ต" },
-        { name: "Mountain Climber", muscle: "แกนกลาง/ไหล่", sets: 3, reps: "30 วิ", rest: "30 วิ" },
-        { name: "Cable/Floor Crunch", muscle: "หน้าท้อง", sets: 3, reps: "15", rest: "45 วิ" },
-      ],
-      cooldown: ["เดินช้า 5 นาที ให้ชีพจรลง", "ยืดทั้งตัวเบา ๆ"],
-    },
+    type: "rest",
+    title: "วันพัก",
     meals: [
       { time: "07:00", slot: "breakfast", recipeId: "bf-bread" },
       { time: "12:30", slot: "lunch", recipeId: "ln-chicken" },
-      { time: "16:00", slot: "snack", recipeId: "sn-milk-apple" },
-      { time: "20:00", slot: "dinner", recipeId: "dn-chicken", tags: ["หลังเล่น = ซ่อมกล้าม"] },
+      { time: "16:00", slot: "snack", recipeId: "sn-yogurt" },
+      { time: "20:00", slot: "dinner", recipeId: "dn-yogurt" },
     ],
-    sleep: { bedtime: "23:00", wake: "06:30", hours: 7.5, note: "HIIT กระตุ้นระบบประสาท เลี่ยงคาเฟอีนหลัง 18:00 จะหลับง่ายขึ้น" },
+    sleep: { bedtime: "23:00", wake: "06:30", hours: 7.5, note: "พักก่อนวันขา ฟื้นให้เต็มที่ นอนให้ครบ ตื่นมาขาพร้อมลุย" },
   },
 
-  // ───────────── ศุกร์ — Full Body C ─────────────
+  // ───────────── ศุกร์ — Legs (ขา) ─────────────
   {
     key: "fri",
     label: "ศุกร์",
     short: "ศ",
     type: "weights",
-    title: "Full Body C",
+    title: "Legs · ขา/ก้น/น่อง",
     workout: {
       time: { start: "19:00", end: "20:00" },
       warmup: [
         "ปั่น/เดินลู่เบา ๆ 5 นาที",
-        "RDL เปล่า ๆ 15 ครั้ง + Face pull เบา 15 ครั้ง",
-        "Air squat 15 ครั้ง",
+        "Air squat 15 ครั้ง + Glute bridge 15 ครั้ง",
+        "RDL เปล่า ๆ 15 ครั้ง อุ่นสะโพก–ขาหลัง",
       ],
       exercises: [
-        { name: "Romanian Deadlift", muscle: "ขาหลัง/ก้น", sets: 4, reps: "8", rest: "120 วิ" },
-        { name: "Dumbbell Shoulder Press", muscle: "ไหล่", sets: 4, reps: "8–10", rest: "90 วิ" },
-        { name: "Seated Cable Row", muscle: "หลังกลาง/ปีก", sets: 4, reps: "10", rest: "90 วิ" },
+        { name: "Barbell Squat", muscle: "ขา/สะโพก", sets: 4, reps: "6–8", rest: "120 วิ" },
+        { name: "Romanian Deadlift", muscle: "ขาหลัง/ก้น", sets: 3, reps: "8", rest: "120 วิ" },
+        { name: "Walking Lunge", muscle: "ขา/ก้น", sets: 3, reps: "12 ก้าว/ข้าง", rest: "90 วิ" },
         { name: "Goblet Squat", muscle: "ขา/แกนกลาง", sets: 3, reps: "12", rest: "90 วิ" },
-        { name: "Face Pull", muscle: "ไหล่หลัง/หลังบน", sets: 3, reps: "15", rest: "60 วิ" },
-        { name: "Dumbbell Curl + Triceps Pushdown (ซูเปอร์เซ็ต)", muscle: "แขนหน้า/หลัง", sets: 3, reps: "12+12", rest: "60 วิ" },
+        { name: "Standing Calf Raise", muscle: "น่อง", sets: 4, reps: "12–15", rest: "60 วิ" },
       ],
-      cooldown: ["ยืดไหล่–แขน–ขาหลัง อย่างละ 30 วิ", "หายใจผ่อนคลาย 1 นาที"],
+      cooldown: ["ยืดต้นขาหน้า–ขาหลัง–น่อง อย่างละ 30 วิ", "เดินเบา ๆ ผ่อนคลาย 2 นาที"],
     },
     meals: [
       { time: "07:00", slot: "breakfast", recipeId: "bf-oat" },
@@ -154,7 +134,7 @@ export const week: Day[] = [
       { time: "17:30", slot: "preworkout", recipeId: "pw-banana" },
       { time: "20:30", slot: "postworkout", recipeId: "po-whey-rice" },
     ],
-    sleep: { bedtime: "23:30", wake: "07:00", hours: 7.5, note: "ปลายสัปดาห์ นอนเพิ่มได้นิดหน่อย แต่อย่าให้นาฬิกาชีวิตเพี้ยน" },
+    sleep: { bedtime: "23:30", wake: "07:00", hours: 7.5, note: "วันขาหนักสุดของสัปดาห์ ขา/ก้นล้าได้มาก พักให้เต็มที่ ดื่มน้ำเยอะ ๆ" },
   },
 
   // ───────────── เสาร์ — วันพัก ─────────────
@@ -186,6 +166,6 @@ export const week: Day[] = [
       { time: "16:00", slot: "snack", recipeId: "sn-yogurt" },
       { time: "18:30", slot: "dinner", recipeId: "dn-yogurt" },
     ],
-    sleep: { bedtime: "23:00", wake: "06:30", hours: 7.5, note: "คืนก่อนเริ่มสัปดาห์ใหม่ นอนให้ตรงเวลา ตื่นสดชื่นพร้อมเล่น Full Body A" },
+    sleep: { bedtime: "23:00", wake: "06:30", hours: 7.5, note: "คืนก่อนเริ่มสัปดาห์ใหม่ นอนให้ตรงเวลา ตื่นสดชื่นพร้อมเล่นวัน Push" },
   },
 ];
