@@ -28,6 +28,7 @@ export const week: Day[] = [
         { name: "Lateral Raise", muscle: "ไหล่ข้าง", sets: 3, reps: "12–15", rest: "60 วิ" },
         { name: "Triceps Pushdown", muscle: "ไทรเซ็ป", sets: 3, reps: "12–15", rest: "60 วิ" },
         { name: "Plank", muscle: "แกนกลางลำตัว", sets: 3, reps: "45 วิ", rest: "45 วิ" },
+        { name: "Side Plank", muscle: "หน้าท้องด้านข้าง", sets: 3, reps: "30 วิ/ข้าง", rest: "30 วิ" },
       ],
       cooldown: ["ยืดอก–ไหล่หน้า–ไทรเซ็ป อย่างละ 30 วิ", "หายใจเข้าลึก–ออกยาว 1 นาที"],
     },
@@ -40,13 +41,21 @@ export const week: Day[] = [
     sleep: { bedtime: "23:00", wake: "06:30", hours: 7.5, note: "วันดัน (อก/ไหล่) พักให้เต็มที่ กล้ามซ่อมแซมตอนหลับลึก" },
   },
 
-  // ───────────── อังคาร — วันพัก ─────────────
+  // ───────────── อังคาร — วันพัก (คาร์ดิโอเบา optional) ─────────────
   {
     key: "tue",
     label: "อังคาร",
     short: "อ",
     type: "rest",
-    title: "วันพัก",
+    title: "คาร์ดิโอเบา (optional)",
+    workout: {
+      time: { start: "19:00", end: "19:30" },
+      warmup: ["เดินเร็วอุ่นเครื่อง 5 นาที", "หมุนข้อเท้า–สะโพกเบา ๆ"],
+      exercises: [
+        { name: "เดินชันลู่วิ่ง (Incline) / ปั่นจักรยาน", muscle: "หัวใจ/ทั้งตัว", sets: 1, reps: "25–30 นาที โซน 2", rest: "-" },
+      ],
+      cooldown: ["เดินช้าลง 5 นาที", "ยืดน่อง–ขาหลัง อย่างละ 30 วิ"],
+    },
     meals: [
       { time: "07:00", slot: "breakfast", recipeId: "bf-bread" },
       { time: "12:30", slot: "lunch", recipeId: "ln-chicken" },
@@ -89,13 +98,21 @@ export const week: Day[] = [
     sleep: { bedtime: "23:00", wake: "06:30", hours: 7.5, note: "Deadlift หนัก หลังล่างต้องการพัก งดเล่นมือถือบนเตียง" },
   },
 
-  // ───────────── พฤหัสบดี — วันพัก ─────────────
+  // ───────────── พฤหัสบดี — วันพัก (คาร์ดิโอเบา optional) ─────────────
   {
     key: "thu",
     label: "พฤหัสบดี",
     short: "พฤ",
     type: "rest",
-    title: "วันพัก",
+    title: "คาร์ดิโอเบา (optional)",
+    workout: {
+      time: { start: "19:00", end: "19:30" },
+      warmup: ["เดิน/ปั่นเบา ๆ อุ่นเครื่อง 5 นาที"],
+      exercises: [
+        { name: "เดินเร็ว / ปั่นจักรยาน / ว่ายน้ำ", muscle: "หัวใจ/ทั้งตัว", sets: 1, reps: "25–30 นาที โซน 2", rest: "-" },
+      ],
+      cooldown: ["เดินช้าลง 5 นาที", "ยืดทั้งตัวเบา ๆ"],
+    },
     meals: [
       { time: "07:00", slot: "breakfast", recipeId: "bf-bread" },
       { time: "12:30", slot: "lunch", recipeId: "ln-chicken" },
@@ -122,6 +139,7 @@ export const week: Day[] = [
       exercises: [
         { name: "Barbell Squat", muscle: "ขา/สะโพก", sets: 4, reps: "6–8", rest: "120 วิ" },
         { name: "Romanian Deadlift", muscle: "ขาหลัง/ก้น", sets: 3, reps: "8", rest: "120 วิ" },
+        { name: "Lying Leg Curl", muscle: "ขาหลัง (งอเข่า)", sets: 3, reps: "10–12", rest: "90 วิ" },
         { name: "Walking Lunge", muscle: "ขา/ก้น", sets: 3, reps: "12 ก้าว/ข้าง", rest: "90 วิ" },
         { name: "Goblet Squat", muscle: "ขา/แกนกลาง", sets: 3, reps: "12", rest: "90 วิ" },
         { name: "Standing Calf Raise", muscle: "น่อง", sets: 4, reps: "12–15", rest: "60 วิ" },

@@ -19,7 +19,7 @@ export function WorkoutView({
   todayISO?: string;
   onToggleDone?: () => void;
 }) {
-  if (day.type === "rest" || !day.workout) {
+  if (!day.workout) {
     return (
       <div className="px-4 py-10">
         <div className="mx-auto flex max-w-sm flex-col items-center gap-3 rounded-2xl border border-dashed border-border p-8 text-center">
