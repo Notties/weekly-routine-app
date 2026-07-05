@@ -55,8 +55,8 @@ export const ingredientCatalog: CatalogItem[] = [
   { name: "อัลมอนด์", unit: { grams: 28, label: "กำมือ" }, qty: "อัลมอนด์ดิบ 500 ก.", price: 200, category: "ไขมันดี", recurring: false, macrosPer100g: { kcal: 580, protein: 21, carb: 22, fat: 50 },
     storage: { zone: "pantry", note: "ภาชนะปิดสนิทที่เย็น · อากาศร้อน/ซื้อเยอะ ย้ายแช่ตู้กันหืนได้", life: "หลายเดือน" } },
   // วอลนัท — USDA FDC #170187: 654 kcal · P15.2 · C13.7 · F65.2 · ALA (โอเมกา-3 พืช) 9.08 ก. /100 ก.
-  { name: "วอลนัท", qty: "วอลนัทซีก 500 ก. (ใช้ ~105 ก./สัปดาห์ ≈ ถุงละเดือน) — โอเมกา-3 สูงสุดในถั่ว", price: 280, category: "ไขมันดี", recurring: true, macrosPer100g: { kcal: 654, protein: 15.2, carb: 13.7, fat: 65.2 },
-    storage: { zone: "pantry", note: "ปิดสนิทพ้นแดด · ไขมันสูงหืนง่าย ถ้ากินช้าย้ายแช่ตู้เย็น/ช่องแข็งยืดอายุ", life: "~1 เดือนนอกตู้ · แช่เย็นนานกว่า" } },
+  { name: "วอลนัท", qty: "เอโร่ วอลนัท 1 กก. (ใช้ ~105 ก./สัปดาห์ ≈ 2 เดือนครึ่ง/ถุง) — โอเมกา-3 สูงสุดในถั่ว", price: 539, category: "ไขมันดี", recurring: true, macrosPer100g: { kcal: 654, protein: 15.2, carb: 13.7, fat: 65.2 },
+    storage: { zone: "pantry", note: "แบ่งครึ่ง: ที่กินเดือนนี้ใส่โหลปิดสนิทพ้นแดด · อีกครึ่งแช่ช่องแข็งกันหืน (ไขมันสูงหืนง่าย)", life: "นอกตู้ ~1 เดือน · ช่องแข็งหลายเดือน" } },
   { name: "เนยถั่ว", unit: { grams: 16, label: "ช้อนโต๊ะ" }, qty: "1 กระปุก (~500 ก.)", price: 120, category: "ไขมันดี", recurring: true, macrosPer100g: { kcal: 590, protein: 25, carb: 20, fat: 50 },
     storage: { zone: "pantry", note: "แบบทั่วไปวางนอกตู้ได้ · แบบธรรมชาติ (มีน้ำมันแยกชั้น) เปิดแล้วแช่ตู้กันหืน", life: "หลายเดือน (ตามฉลาก)" } },
 
