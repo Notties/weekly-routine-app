@@ -39,12 +39,13 @@ describe("recipesForSlot", () => {
 });
 
 describe("computeShoppingItems (วัตถุดิบเปลี่ยนตามเมนู)", () => {
-  it("ค่าเริ่มต้น: มีอกไก่ + ของครัวพื้นฐาน แต่ไม่มีหมู", () => {
+  it("ค่าเริ่มต้น: มีอกไก่ + หมู (อ/ส) + ของครัวพื้นฐาน แต่ไม่มีเวย์", () => {
     const items = computeShoppingItems(week, {});
     const names = items.map((i) => i.name);
     expect(names).toContain("อกไก่");
+    expect(names).toContain("หมูสันใน");
     expect(names).toContain("น้ำมันรำข้าว");
-    expect(names).not.toContain("หมูสันใน");
+    expect(names).not.toContain("เวย์โปรตีน");
   });
 
   it("สลับมื้อกลางวันอังคารเป็นเมนูหมู → หมูโผล่ในรายการซื้อของ", () => {

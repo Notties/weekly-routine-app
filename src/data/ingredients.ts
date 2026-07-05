@@ -14,11 +14,11 @@ export const ingredientCatalog: CatalogItem[] = [
   // ── โปรตีน ──
   { name: "อกไก่", qty: "เอโร่ แช่แข็ง 3 กก. (ใช้ ~3 กก./สัปดาห์พอดีแพ็ค)", price: 300, category: "โปรตีน", recurring: false, macrosPer100g: { kcal: 120, protein: 23, carb: 0, fat: 2.5 },
     storage: { zone: "freezer", note: "ชั่งแบ่งถุงซิปเป็นก้อนต่อวันก่อนแช่ เขียนชื่อวัน · ทุกคืนย้ายถุงพรุ่งนี้ลงช่องเย็นให้ละลายเอง (ห้ามละลายนอกตู้)", life: "หลายเดือน · ละลายแล้วใช้ใน 1–2 วัน" } },
-  { name: "หมูสันใน", qty: "CP สันในหมู 1 กก.", price: 160, category: "โปรตีน", recurring: false, macrosPer100g: { kcal: 120, protein: 21, carb: 0, fat: 3.5 },
+  { name: "หมูสันใน", qty: "CP สันในหมู 1 กก. (ใช้ 400 ก./สัปดาห์ — แพ็คอยู่ ~2.5 สัปดาห์ แบ่งแช่แข็ง)", price: 160, category: "โปรตีน", recurring: false, macrosPer100g: { kcal: 120, protein: 21, carb: 0, fat: 3.5 },
     storage: { zone: "freezer", note: "แบ่งถุงละมื้อเหมือนอกไก่ · ละลายในช่องเย็นข้ามคืน", life: "หลายเดือน · ละลายแล้วใช้ใน 1–2 วัน" } },
   { name: "ไข่ไก่", unit: { grams: 50, label: "ฟอง" }, qty: "แผง 10 ฟอง เบอร์ 2 (ใช้แค่ 6 ฟอง/สัปดาห์ — คุมคอเลสเตอรอล)", price: 55, category: "โปรตีน", recurring: false, macrosPer100g: { kcal: 143, protein: 12.6, carb: 0.7, fat: 9.5 },
     storage: { zone: "fridge", note: "เก็บทั้งแผงวางชั้นในตู้ (ไม่วางที่ประตู อุณหภูมิแกว่ง) ไม่ต้องล้างก่อนเก็บ · ไข่ต้มสุกไม่ปอกเปลือกอยู่ได้ ~1 สัปดาห์", life: "3–5 สัปดาห์" } },
-  { name: "เต้าหู้ไข่", unit: { grams: 120, label: "หลอด" }, qty: "เต้าหู้ไข่หลอด ~120 ก. (ซื้อเมื่อจะสลับเมนู)", price: 15, category: "โปรตีน", recurring: false, macrosPer100g: { kcal: 82, protein: 6.8, carb: 2.5, fat: 5 },
+  { name: "เต้าหู้ไข่", unit: { grams: 120, label: "หลอด" }, qty: "เต้าหู้ไข่หลอด ~120 ก. × 1 (มื้อเย็นพฤหัส)", price: 15, category: "โปรตีน", recurring: false, macrosPer100g: { kcal: 82, protein: 6.8, carb: 2.5, fat: 5 },
     storage: { zone: "fridge", note: "แช่เย็นทั้งหลอด · เปิดแล้วใช้ให้หมดหลอดในมื้อนั้น", life: "ยังไม่เปิดตามฉลาก (~2–3 สัปดาห์)" } },
   { name: "กรีกโยเกิร์ต", qty: "4 ถ้วย (หรือกระปุกใหญ่ 1 กก.)", price: 180, category: "โปรตีน", recurring: false, macrosPer100g: { kcal: 60, protein: 10, carb: 4, fat: 0.5 },
     storage: { zone: "fridge", note: "ชั้นบน/กลาง ปิดฝาสนิท ใช้ช้อนสะอาดตักทุกครั้ง", life: "เปิดแล้ว ~1 สัปดาห์ (ยึดวันหมดอายุข้างกระปุก)" } },
@@ -54,6 +54,9 @@ export const ingredientCatalog: CatalogItem[] = [
   // ── ไขมันดี ──
   { name: "อัลมอนด์", unit: { grams: 28, label: "กำมือ" }, qty: "อัลมอนด์ดิบ 500 ก.", price: 200, category: "ไขมันดี", recurring: false, macrosPer100g: { kcal: 580, protein: 21, carb: 22, fat: 50 },
     storage: { zone: "pantry", note: "ภาชนะปิดสนิทที่เย็น · อากาศร้อน/ซื้อเยอะ ย้ายแช่ตู้กันหืนได้", life: "หลายเดือน" } },
+  // วอลนัท — USDA FDC #170187: 654 kcal · P15.2 · C13.7 · F65.2 · ALA (โอเมกา-3 พืช) 9.08 ก. /100 ก.
+  { name: "วอลนัท", qty: "วอลนัทซีก 500 ก. (ใช้ ~105 ก./สัปดาห์ ≈ ถุงละเดือน) — โอเมกา-3 สูงสุดในถั่ว", price: 280, category: "ไขมันดี", recurring: true, macrosPer100g: { kcal: 654, protein: 15.2, carb: 13.7, fat: 65.2 },
+    storage: { zone: "pantry", note: "ปิดสนิทพ้นแดด · ไขมันสูงหืนง่าย ถ้ากินช้าย้ายแช่ตู้เย็น/ช่องแข็งยืดอายุ", life: "~1 เดือนนอกตู้ · แช่เย็นนานกว่า" } },
   { name: "เนยถั่ว", unit: { grams: 16, label: "ช้อนโต๊ะ" }, qty: "1 กระปุก (~500 ก.)", price: 120, category: "ไขมันดี", recurring: true, macrosPer100g: { kcal: 590, protein: 25, carb: 20, fat: 50 },
     storage: { zone: "pantry", note: "แบบทั่วไปวางนอกตู้ได้ · แบบธรรมชาติ (มีน้ำมันแยกชั้น) เปิดแล้วแช่ตู้กันหืน", life: "หลายเดือน (ตามฉลาก)" } },
 

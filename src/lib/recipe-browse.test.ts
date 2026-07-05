@@ -52,9 +52,10 @@ describe("sortRecipes", () => {
 });
 
 describe("recipeUsage", () => {
-  it("แผนเริ่มต้น: ln-chicken ใช้ทุกวัน (7) · po-chicken ใช้ จ/พ/ศ", () => {
+  it("แผนหมุนเวียน: ln-chicken 5 วัน · ln-pork อ/ส · po-chicken จ/พ/ศ", () => {
     const usage = recipeUsage(week, {});
-    expect(usage.get("ln-chicken")?.length).toBe(7);
+    expect(usage.get("ln-chicken")?.length).toBe(5);
+    expect(usage.get("ln-pork")?.map((u) => u.day)).toEqual(["tue", "sat"]);
     expect(usage.get("po-chicken")?.map((u) => u.day)).toEqual([
       "mon",
       "wed",
@@ -62,18 +63,19 @@ describe("recipeUsage", () => {
     ]);
   });
 
-  it("สลับเที่ยงอังคารเป็นหมู → ln-chicken เหลือ 6 และ ln-pork ขึ้นอังคาร", () => {
-    const usage = recipeUsage(week, { "tue:1": "ln-pork" });
-    expect(usage.get("ln-chicken")?.length).toBe(6);
-    expect(usage.get("ln-pork")?.map((u) => u.day)).toEqual(["tue"]);
+  it("สลับเที่ยงพฤหัสเป็นหมู → ln-chicken เหลือ 4 และ ln-pork ขึ้น 3 วัน", () => {
+    const usage = recipeUsage(week, { "thu:1": "ln-pork" });
+    expect(usage.get("ln-chicken")?.length).toBe(4);
+    expect(usage.get("ln-pork")?.map((u) => u.day)).toEqual(["tue", "thu", "sat"]);
   });
 });
 
 describe("slotOptions", () => {
-  it("มื้อกลางวันมีให้เลือกครบ 7 วัน พร้อมเมนูปัจจุบัน", () => {
+  it("มื้อกลางวันมีให้เลือกครบ 7 วัน พร้อมเมนูปัจจุบัน (ไก่ 5 + หมู 2)", () => {
     const opts = slotOptions(week, {}, "lunch");
     expect(opts).toHaveLength(7);
-    expect(opts.every((o) => o.currentRecipeId === "ln-chicken")).toBe(true);
+    expect(opts.filter((o) => o.currentRecipeId === "ln-chicken")).toHaveLength(5);
+    expect(opts.filter((o) => o.currentRecipeId === "ln-pork")).toHaveLength(2);
   });
 
   it("ของหวานไม่มีช่องในแผน → ว่าง", () => {

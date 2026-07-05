@@ -58,7 +58,7 @@ export const week: Day[] = [
     },
     meals: [
       { time: "07:00", slot: "breakfast", recipeId: "bf-yogurt-oat" },
-      { time: "12:30", slot: "lunch", recipeId: "ln-chicken" },
+      { time: "12:30", slot: "lunch", recipeId: "ln-pork" },
       { time: "16:00", slot: "snack", recipeId: "sn-yogurt" },
       { time: "20:00", slot: "dinner", recipeId: "dn-chicken" },
     ],
@@ -92,7 +92,7 @@ export const week: Day[] = [
     meals: [
       { time: "07:00", slot: "breakfast", recipeId: "bf-oat" },
       { time: "12:30", slot: "lunch", recipeId: "ln-chicken" },
-      { time: "17:30", slot: "preworkout", recipeId: "pw-bread" },
+      { time: "17:30", slot: "preworkout", recipeId: "pw-banana" },
       { time: "20:30", slot: "postworkout", recipeId: "po-chicken" },
     ],
     sleep: { bedtime: "23:00", wake: "06:30", hours: 7.5, note: "Deadlift หนัก หลังล่างต้องการพัก งดเล่นมือถือบนเตียง" },
@@ -117,7 +117,7 @@ export const week: Day[] = [
       { time: "07:00", slot: "breakfast", recipeId: "bf-yogurt-oat" },
       { time: "12:30", slot: "lunch", recipeId: "ln-chicken" },
       { time: "16:00", slot: "snack", recipeId: "sn-yogurt" },
-      { time: "20:00", slot: "dinner", recipeId: "dn-chicken" },
+      { time: "20:00", slot: "dinner", recipeId: "dn-eggtofu" },
     ],
     sleep: { bedtime: "23:00", wake: "06:30", hours: 7.5, note: "พักก่อนวันขา ฟื้นให้เต็มที่ นอนให้ครบ ตื่นมาขาพร้อมลุย" },
   },
@@ -164,7 +164,7 @@ export const week: Day[] = [
     title: "วันพัก",
     meals: [
       { time: "08:00", slot: "breakfast", recipeId: "bf-yogurt-oat" },
-      { time: "12:30", slot: "lunch", recipeId: "ln-chicken" },
+      { time: "12:30", slot: "lunch", recipeId: "ln-pork" },
       { time: "16:00", slot: "snack", recipeId: "sn-yogurt" },
       { time: "18:30", slot: "dinner", recipeId: "dn-chicken" },
     ],
