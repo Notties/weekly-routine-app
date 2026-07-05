@@ -39,7 +39,9 @@ export function MealCard({
       </div>
 
       <div className="mt-1 flex items-start justify-between gap-2">
-        <p className="text-sm">{meal.menu}</p>
+        <p className="text-sm">
+          <span aria-hidden="true">{meal.emoji}</span> {meal.menu}
+        </p>
         {canSwap && (
           <Button
             variant="ghost"
@@ -118,6 +120,7 @@ export function MealCard({
                 ) : (
                   <span className="size-4 shrink-0" />
                 )}
+                <span aria-hidden="true">{r.emoji}</span>
                 <span className="flex-1">{r.name}</span>
               </button>
             );

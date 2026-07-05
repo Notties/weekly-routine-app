@@ -11,6 +11,7 @@ export const recipes: Recipe[] = [
   // ── มื้อเช้า ──
   {
     id: "bf-oat",
+    emoji: "🥣",
     name: "ข้าวโอ๊ตไมโครเวฟ + ไข่ต้ม 2 ฟอง + กล้วย",
     slot: "breakfast",
     equipment: ["เครื่องต้มไข่", "ไมโครเวฟ"],
@@ -31,6 +32,7 @@ export const recipes: Recipe[] = [
   },
   {
     id: "bf-bread",
+    emoji: "🍞",
     name: "ขนมปังโฮลวีท 2 แผ่น + ไข่ต้ม 3 ฟอง + กล้วย",
     slot: "breakfast",
     equipment: ["เครื่องต้มไข่", "ไมโครเวฟ"],
@@ -51,6 +53,7 @@ export const recipes: Recipe[] = [
   },
   {
     id: "bf-eggmilk",
+    emoji: "🥚",
     name: "ไข่ต้ม 3 ฟอง + นมจืด + แอปเปิล",
     slot: "breakfast",
     equipment: ["เครื่องต้มไข่"],
@@ -72,6 +75,7 @@ export const recipes: Recipe[] = [
   // ── มื้อกลางวัน ──
   {
     id: "ln-chicken",
+    emoji: "🍗",
     name: "ข้าวกล้อง + อกไก่ทอดกระทะ + ผัก",
     slot: "lunch",
     equipment: ["หม้อหุงข้าว", "กระทะไฟฟ้า", "ไมโครเวฟ"],
@@ -92,6 +96,7 @@ export const recipes: Recipe[] = [
   },
   {
     id: "ln-pork",
+    emoji: "🥩",
     name: "ข้าวกล้อง + หมูสันในทอดกระทะ + ผัก",
     slot: "lunch",
     equipment: ["หม้อหุงข้าว", "กระทะไฟฟ้า", "ไมโครเวฟ"],
@@ -112,6 +117,7 @@ export const recipes: Recipe[] = [
   },
   {
     id: "ln-omelet",
+    emoji: "🍳",
     name: "ข้าวกล้อง + ไข่เจียวกระทะ + ผัก",
     slot: "lunch",
     equipment: ["หม้อหุงข้าว", "กระทะไฟฟ้า", "ไมโครเวฟ"],
@@ -134,6 +140,7 @@ export const recipes: Recipe[] = [
   // ── ก่อนเล่น ──
   {
     id: "pw-banana",
+    emoji: "🍌",
     name: "กล้วย + เนยถั่ว + กาแฟดำ",
     slot: "preworkout",
     equipment: ["ไม่ต้องปรุง"],
@@ -152,6 +159,7 @@ export const recipes: Recipe[] = [
   },
   {
     id: "pw-bread",
+    emoji: "🥪",
     name: "ขนมปัง 2 แผ่น + เนยถั่ว + กาแฟดำ",
     slot: "preworkout",
     equipment: ["ไม่ต้องปรุง"],
@@ -172,6 +180,7 @@ export const recipes: Recipe[] = [
   // ── หลังเล่น ──
   {
     id: "po-whey-rice",
+    emoji: "🍛",
     name: "เวย์โปรตีน + ข้าวกล้อง + อกไก่ + ผัก",
     slot: "postworkout",
     equipment: ["ไมโครเวฟ", "กระทะไฟฟ้า"],
@@ -192,6 +201,7 @@ export const recipes: Recipe[] = [
   },
   {
     id: "po-whey-egg",
+    emoji: "🥤",
     name: "เวย์โปรตีน + กล้วย + ไข่ต้ม 3 ฟอง",
     slot: "postworkout",
     equipment: ["เครื่องต้มไข่"],
@@ -213,6 +223,7 @@ export const recipes: Recipe[] = [
   // ── ของว่าง ──
   {
     id: "sn-yogurt",
+    emoji: "🥜",
     name: "กรีกโยเกิร์ต + อัลมอนด์ 1 กำมือ",
     slot: "snack",
     equipment: ["ไม่ต้องปรุง"],
@@ -227,6 +238,7 @@ export const recipes: Recipe[] = [
   },
   {
     id: "sn-milk-apple",
+    emoji: "🍎",
     name: "นมจืด 1 กล่อง + แอปเปิล",
     slot: "snack",
     equipment: ["ไม่ต้องปรุง"],
@@ -243,6 +255,7 @@ export const recipes: Recipe[] = [
   // ── มื้อเย็น ──
   {
     id: "dn-yogurt",
+    emoji: "🍨",
     name: "กรีกโยเกิร์ต + ผลไม้ + ไข่ต้ม 3 ฟอง",
     slot: "dinner",
     equipment: ["เครื่องต้มไข่", "ไม่ต้องปรุง"],
@@ -263,6 +276,7 @@ export const recipes: Recipe[] = [
   },
   {
     id: "dn-chicken",
+    emoji: "🍗",
     name: "ข้าวกล้อง + อกไก่ทอดกระทะ + ผัก (อุ่นจากกล่องก็ได้)",
     slot: "dinner",
     equipment: ["กระทะไฟฟ้า", "ไมโครเวฟ"],
@@ -285,6 +299,7 @@ export const recipes: Recipe[] = [
   // ── เมนูสลับเพิ่ม (ความหลากหลาย) ──
   {
     id: "bf-yogurt-oat",
+    emoji: "🥛",
     name: "กรีกโยเกิร์ต + โอ๊ต + กล้วย + อัลมอนด์",
     slot: "breakfast",
     equipment: ["ไม่ต้องปรุง"],
@@ -304,6 +319,7 @@ export const recipes: Recipe[] = [
   },
   {
     id: "ln-eggrice",
+    emoji: "🍚",
     name: "ข้าวกล้อง + ไข่ต้ม 3 ฟอง + ผัก (ไม่ใช้กระทะ)",
     slot: "lunch",
     equipment: ["หม้อหุงข้าว", "เครื่องต้มไข่", "ไมโครเวฟ"],
@@ -323,6 +339,7 @@ export const recipes: Recipe[] = [
   },
   {
     id: "sn-boiled-egg",
+    emoji: "🥚",
     name: "ไข่ต้ม 2 ฟอง + แอปเปิล",
     slot: "snack",
     equipment: ["เครื่องต้มไข่"],
@@ -337,6 +354,7 @@ export const recipes: Recipe[] = [
   },
   {
     id: "dn-eggveg",
+    emoji: "🥗",
     name: "ไข่ต้ม 3 ฟอง + ผัก + แอปเปิล (เบาแป้ง)",
     slot: "dinner",
     equipment: ["เครื่องต้มไข่", "ไมโครเวฟ"],
@@ -358,6 +376,7 @@ export const recipes: Recipe[] = [
   // ── ของหวาน (healthy) ──
   {
     id: "dst-yogurt-bowl",
+    emoji: "🍧",
     name: "กรีกโยเกิร์ตโบว์ล + กล้วย + อัลมอนด์",
     slot: "dessert",
     equipment: ["ไม่ต้องปรุง"],
@@ -373,6 +392,7 @@ export const recipes: Recipe[] = [
   },
   {
     id: "dst-nicecream",
+    emoji: "🍦",
     name: "ไอศกรีมกล้วยโกโก้",
     slot: "dessert",
     equipment: ["ไม่ต้องปรุง"],
@@ -392,6 +412,7 @@ export const recipes: Recipe[] = [
   },
   {
     id: "dst-mugcake",
+    emoji: "🧁",
     name: "เค้กโกโก้ถ้วยไมโครเวฟ",
     slot: "dessert",
     equipment: ["ไมโครเวฟ"],
@@ -413,6 +434,7 @@ export const recipes: Recipe[] = [
   },
   {
     id: "dst-protein-mousse",
+    emoji: "🍫",
     name: "มูสโปรตีนโกโก้",
     slot: "dessert",
     equipment: ["ไม่ต้องปรุง"],
@@ -431,6 +453,7 @@ export const recipes: Recipe[] = [
   },
   {
     id: "dst-apple-cinnamon",
+    emoji: "🥧",
     name: "แอปเปิลอบอบเชยไมโครเวฟ + อัลมอนด์",
     slot: "dessert",
     equipment: ["ไมโครเวฟ"],

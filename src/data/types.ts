@@ -82,6 +82,8 @@ export const MEAL_SLOT_LABEL: Record<MealSlot, string> = {
  */
 export type Recipe = {
   id: string;
+  /** อีโมจิประจำเมนู — ภาพจำในการ์ด/ตัวเลือกสลับ เช่น "🍗" */
+  emoji: string;
   /** ชื่อเมนู/จานอาหาร เช่น "ข้าวกล้อง + อกไก่ทอดกระทะ + ผัก" */
   name: string;
   /** หมวดมื้อ (สลับได้เฉพาะเมนูหมวดเดียวกัน) */
@@ -117,6 +119,8 @@ export type Meal = {
   name: string;
   /** ชื่อเมนูที่เลือก */
   menu: string;
+  /** อีโมจิของเมนูที่เลือก */
+  emoji: string;
   /** id ของเมนูที่กำลังใช้ (ไว้ทำปุ่มสลับ) */
   recipeId: string;
   slot: MealSlot;

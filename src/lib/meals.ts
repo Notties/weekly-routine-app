@@ -52,6 +52,7 @@ export function resolveMeal(
     time: dm.time,
     name: MEAL_SLOT_LABEL[dm.slot],
     menu: recipe?.name ?? "(ไม่พบเมนู)",
+    emoji: recipe?.emoji ?? "🍽️",
     recipeId: recipe?.id ?? dm.recipeId,
     slot: dm.slot,
     equipment: recipe?.equipment,
