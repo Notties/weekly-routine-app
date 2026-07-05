@@ -16,7 +16,7 @@ describe("portionLabel — แปลงกรัมเป็นหน่วย�
   });
 
   it("ของที่ต้องชั่ง (ไม่มีหน่วยนับ) → กรัมล้วน", () => {
-    expect(portionLabel("ข้าวกล้อง", 220)).toBe("220 ก.");
+    expect(portionLabel("ข้าวหอมมะลิ", 220)).toBe("220 ก.");
     expect(portionLabel("อกไก่", 200)).toBe("200 ก.");
   });
 

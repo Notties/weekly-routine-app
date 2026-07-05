@@ -28,16 +28,22 @@ export const ingredientCatalog: CatalogItem[] = [
     storage: { zone: "pantry", note: "ปิดฝาให้แน่น เก็บที่แห้ง อย่าแช่ตู้เย็น — ความชื้นทำผงจับก้อน", life: "หลายเดือน (ตามฉลาก)" } },
 
   // ── คาร์บ ──
-  { name: "ข้าวกล้อง", qty: "หงษ์ทอง/เอโร่ หอมมะลิ 5 กก.", price: 230, category: "คาร์บ", recurring: true, macrosPer100g: { kcal: 130, protein: 2.7, carb: 28, fat: 0.3 },
+  // ข้าวหอมมะลิขาว หุงสุก — USDA FDC #168878 (white rice, cooked): 130 kcal · P2.7 · C28.2 · F0.3 /100 ก.
+  { name: "ข้าวหอมมะลิ", qty: "ข้าวหอมมะลิขาว 5 กก. (กรัมในเมนู = น้ำหนักหุงสุก)", price: 200, category: "คาร์บ", recurring: true, macrosPer100g: { kcal: 130, protein: 2.7, carb: 28.2, fat: 0.3 },
     storage: { zone: "pantry", note: "เทใส่โหล/กล่องปิดสนิทกันมอด · ข้าวหุงสุกแบ่งกล่องแช่เย็น กิน 3–4 วัน", life: "ข้าวสารหลายเดือน" } },
   { name: "ข้าวโอ๊ต", qty: "ควิกโอ๊ต 1 กก.", price: 150, category: "คาร์บ", recurring: true, macrosPer100g: { kcal: 380, protein: 13, carb: 67, fat: 7 },
     storage: { zone: "pantry", note: "ภาชนะปิดสนิท ที่แห้ง", life: "หลายเดือน" } },
   { name: "ขนมปังโฮลวีท", unit: { grams: 30, label: "แผ่น" }, qty: "โฮลวีท 1 แถว", price: 55, category: "คาร์บ", recurring: false, macrosPer100g: { kcal: 250, protein: 12, carb: 43, fat: 3.5 },
     storage: { zone: "pantry", note: "ที่จะกินใน 2–3 วันวางนอกตู้ · ที่เหลือแช่แข็ง หยิบทีละแผ่นเข้าไมโครเวฟได้เลย (อย่าแช่ช่องเย็นธรรมดา แข็งกระด้างเร็ว)", life: "นอกตู้ 2–3 วัน · ช่องแข็ง ~1 เดือน" } },
 
-  // ── ผัก ──
-  { name: "ผักรวมแช่แข็ง", qty: "เอโร่ บรอกโคลี/แครอท/ข้าวโพด 1.5 กก.", price: 70, category: "ผัก", recurring: false, macrosPer100g: { kcal: 45, protein: 2.5, carb: 8, fat: 0.4 },
-    storage: { zone: "freezer", note: "เก็บช่องแข็งตลอด ตักใช้ทีละมื้อแล้วรีบปิดถุง · อุ่น/ปรุงจากแข็งได้เลยไม่ต้องละลาย", life: "หลายเดือน" } },
+  // ── ผัก (ค่าโภชนาการดิบต่อ 100 ก. อ้างอิง USDA FoodData Central) ──
+  // บรอกโคลี FDC #170379 · แครอท FDC #170393 · กะหล่ำปลี FDC #169975
+  { name: "บรอกโคลี", qty: "แช่แข็งเอโร่ 1 กก. (หรือสด 2–3 หัว) — วิตามินซี/เค สูง", price: 90, category: "ผัก", recurring: false, macrosPer100g: { kcal: 31, protein: 2.6, carb: 6.3, fat: 0.3 },
+    storage: { zone: "freezer", note: "แช่แข็ง: ตักใช้ทีละมื้อ เวฟจากแข็งได้เลย · สด: ลิ้นชักผัก ใช้ใน 3–5 วัน", life: "แช่แข็งหลายเดือน" } },
+  { name: "แครอท", unit: { grams: 60, label: "หัว" }, qty: "สด ~1 กก. (5–6 หัวกลาง) — เบต้าแคโรทีน/วิตามินเอ", price: 35, category: "ผัก", recurring: false, macrosPer100g: { kcal: 41, protein: 0.9, carb: 9.6, fat: 0.2 },
+    storage: { zone: "fridge", note: "ลิ้นชักผัก ไม่ต้องล้างก่อนเก็บ (ล้าง+ปอกตอนจะใช้)", life: "2–3 สัปดาห์" } },
+  { name: "กะหล่ำปลี", qty: "หัวกลาง ~1 กก. — วิตามินซี/ไฟเบอร์ ราคาถูก", price: 30, category: "ผัก", recurring: false, macrosPer100g: { kcal: 25, protein: 1.3, carb: 5.8, fat: 0.1 },
+    storage: { zone: "fridge", note: "ทั้งหัวใส่ลิ้นชักผัก · หั่นแล้วห่อฟิล์ม/ใส่กล่องปิด ใช้ใน 3–4 วัน", life: "ทั้งหัว 1–2 สัปดาห์" } },
 
   // ── ผลไม้ ──
   { name: "กล้วยหอม", unit: { grams: 100, label: "ลูก" }, qty: "1 หวี", price: 40, category: "ผลไม้", recurring: false, macrosPer100g: { kcal: 89, protein: 1.1, carb: 23, fat: 0.3 },

@@ -36,14 +36,14 @@ describe("sumMacros", () => {
 });
 
 describe("recipeMacros", () => {
-  it("ln-chicken = 624/55/71/11 (ปัดเศษ)", () => {
+  it("ln-chicken = 613/54/72/11 (ข้าวขาว USDA #168878 + บรอกโคลี/แครอท)", () => {
     const r = getRecipe("ln-chicken")!;
-    expect(recipeMacros(r)).toEqual({ kcal: 624, protein: 55, carb: 71, fat: 11 });
+    expect(recipeMacros(r)).toEqual({ kcal: 613, protein: 54, carb: 72, fat: 11 });
   });
 
-  it("po-whey-rice โปรตีนสูง (= 73 ก. · เวย์ 5 ปอนด์ สกู๊ปละ 25 ก.โปรตีน)", () => {
+  it("po-whey-rice โปรตีนสูง (= 72 ก.)", () => {
     const r = getRecipe("po-whey-rice")!;
-    expect(recipeMacros(r).protein).toBe(73);
+    expect(recipeMacros(r).protein).toBe(72);
   });
 });
 
