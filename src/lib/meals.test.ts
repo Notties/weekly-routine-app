@@ -61,11 +61,11 @@ describe("computeShoppingItems (วัตถุดิบเปลี่ยนต
 
 describe("buildShoppingItems", () => {
   const catalog: CatalogItem[] = [
-    { storage: { zone: "fridge", note: "ทั้งแผงชั้นในตู้", life: "3–5 สัปดาห์" }, name: "ไข่", qty: "30", price: 140, category: "โปรตีน", recurring: false, macrosPer100g: { kcal: 143, protein: 12.6, carb: 0.7, fat: 9.5 } },
-    { storage: { zone: "pantry", note: "โหลปิดสนิท", life: "หลายเดือน" }, name: "ข้าว", qty: "5กก", price: 250, category: "คาร์บ", recurring: true, macrosPer100g: { kcal: 130, protein: 2.7, carb: 28, fat: 0.3 } },
+    { packGrams: 500, storage: { zone: "fridge", note: "ทั้งแผงชั้นในตู้", life: "3–5 สัปดาห์" }, name: "ไข่", qty: "30", price: 140, category: "โปรตีน", recurring: false, macrosPer100g: { kcal: 143, protein: 12.6, carb: 0.7, fat: 9.5 } },
+    { packGrams: 5000, storage: { zone: "pantry", note: "โหลปิดสนิท", life: "หลายเดือน" }, name: "ข้าว", qty: "5กก", price: 250, category: "คาร์บ", recurring: true, macrosPer100g: { kcal: 130, protein: 2.7, carb: 28, fat: 0.3 } },
   ];
   const pantry: CatalogItem[] = [
-    { storage: { zone: "pantry", note: "ที่มืดพ้นแดด", life: "หลายเดือน" }, name: "น้ำมัน", qty: "1", price: 200, category: "เครื่องปรุง", recurring: true, macrosPer100g: { kcal: 884, protein: 0, carb: 0, fat: 100 } },
+    { packGrams: 1000, storage: { zone: "pantry", note: "ที่มืดพ้นแดด", life: "หลายเดือน" }, name: "น้ำมัน", qty: "1", price: 200, category: "เครื่องปรุง", recurring: true, macrosPer100g: { kcal: 884, protein: 0, carb: 0, fat: 100 } },
   ];
 
   it("หยิบเฉพาะวัตถุดิบที่ใช้ + เติม pantry เสมอ", () => {

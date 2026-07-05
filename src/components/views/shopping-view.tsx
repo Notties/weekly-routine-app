@@ -18,7 +18,9 @@ import {
   itemKey,
   computeShoppingItems,
 } from "@/lib/shopping";
-import { monthlyCost, bottlesPerDay } from "@/lib/cost";
+import { monthlyCost, bottlesPerDay, consumptionCost } from "@/lib/cost";
+import { weeklyIngredientGrams } from "@/lib/prep";
+import { ingredientCatalog, pantryStaples } from "@/data/ingredients";
 import { useAppStore } from "@/lib/store";
 import { baht } from "@/lib/format";
 import { ShopItemRow } from "@/components/shop-item-row";
@@ -49,6 +51,17 @@ export function ShoppingView({ swaps }: { swaps: Record<string, string> }) {
   // ค่าใช้จ่ายรายเดือน (ค่ากิน + ค่าน้ำดื่ม)
   const cost = monthlyCost(shopping, water);
   const bpd = bottlesPerDay(water.litersPerDay, water.pack.literEach);
+
+  // ต้นทุน "ตามที่กินจริง" — กรัมที่ใช้ × ราคาต่อกรัม (แพ็คใหญ่กินข้ามสัปดาห์ไม่ถูกนับซ้ำ)
+  const trueCost = React.useMemo(
+    () =>
+      consumptionCost(weeklyIngredientGrams(week, swaps), [
+        ...ingredientCatalog,
+        ...pantryStaples,
+      ]),
+    [swaps]
+  );
+  const trueMonthly = trueCost.monthlyBaht + cost.waterPerMonth;
 
   // แถบสลับโหมด (แสดงทั้งสองโหมด)
   const modeSwitch = (
@@ -165,17 +178,29 @@ export function ShoppingView({ swaps }: { swaps: Record<string, string> }) {
           </div>
         </div>
 
+        {/* ต้นทุนที่กินจริง — ตัวเลขที่ควรใช้วางแผนงบ */}
         <div className="mt-3 flex items-center justify-between rounded-xl border border-primary bg-primary px-3 py-2.5 text-primary-foreground">
-          <span className="text-sm font-medium">รวมต่อเดือน</span>
-          <span className="tnum text-xl font-bold">
-            {baht(cost.totalPerMonth)}
+          <span className="text-sm font-medium">
+            กินจริงต่อเดือน
+            <span className="block text-[11px] font-normal opacity-80">
+              คิดตามกรัมที่ใช้จริง + น้ำดื่ม
+            </span>
           </span>
+          <span className="tnum text-xl font-bold">{baht(trueMonthly)}</span>
+        </div>
+
+        <div className="mt-2 flex items-center justify-between rounded-xl border border-dashed border-border px-3 py-2 text-sm">
+          <span className="text-muted-foreground">
+            งบรอบซื้อแรก (เหมาทั้งแพ็ค)
+          </span>
+          <span className="tnum font-semibold">{baht(cost.totalPerMonth)}</span>
         </div>
 
         <p className="mt-2 text-xs leading-relaxed text-muted-foreground tnum">
-          ≈ {baht(cost.perDay)}/วัน · ของสด {baht(cost.freshPerMonth)} +
-          ของใช้นาน {baht(cost.stockPerMonth)} (ตุน ~เดือนละครั้ง บางอย่างอยู่ได้
-          นานกว่า เดือนถัดไปถูกลง)
+          กินจริง ≈ {baht(Math.round(trueMonthly / 30))}/วัน (อาหาร{" "}
+          {baht(trueCost.weeklyBaht)}/สัปดาห์) — แพ็คใหญ่ เช่น วอลนัท/นมแพ็ค 12/
+          กะหล่ำทั้งหัว กินข้ามสัปดาห์ เลยไม่ต้องซื้อใหม่ทุกรอบ
+          ส่วนงบรอบซื้อแรกคือกรณีตุนครบทุกแพ็คพร้อมกัน หลังจากนั้นจ่ายจริงจะเข้าใกล้เลขบน
         </p>
         <p className="mt-1 flex items-center gap-1.5 rounded-lg bg-muted px-2.5 py-2 text-xs text-foreground">
           <Droplet className="size-3.5 shrink-0" />
