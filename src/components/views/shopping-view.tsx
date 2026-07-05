@@ -7,6 +7,8 @@ import {
   Repeat,
   Wallet,
   Droplet,
+  ShoppingCart,
+  CookingPot,
 } from "lucide-react";
 import { week, water } from "@/data";
 import { SHOP_CATEGORIES, type ShopItem } from "@/data/types";
@@ -20,12 +22,17 @@ import { monthlyCost, bottlesPerDay } from "@/lib/cost";
 import { useAppStore } from "@/lib/store";
 import { baht } from "@/lib/format";
 import { ShopItemRow } from "@/components/shop-item-row";
+import { PrepView } from "@/components/views/prep-view";
 import { Button } from "@/components/ui/button";
+
+/** โหมดของแท็บซื้อของ: รายการซื้อ / แบ่งเก็บ (คู่มือหลังซื้อ) */
+type ShoppingMode = "list" | "prep";
 
 export function ShoppingView({ swaps }: { swaps: Record<string, string> }) {
   const checked = useAppStore((s) => s.checked);
   const toggleChecked = useAppStore((s) => s.toggleChecked);
   const clearChecked = useAppStore((s) => s.clearChecked);
+  const [mode, setMode] = React.useState<ShoppingMode>("list");
 
   const toggle = (key: string, _value: boolean) => toggleChecked(key);
   const reset = () => clearChecked();
@@ -43,8 +50,46 @@ export function ShoppingView({ swaps }: { swaps: Record<string, string> }) {
   const cost = monthlyCost(shopping, water);
   const bpd = bottlesPerDay(water.litersPerDay, water.pack.literEach);
 
+  // แถบสลับโหมด (แสดงทั้งสองโหมด)
+  const modeSwitch = (
+    <div className="mx-4 mt-4 grid grid-cols-2 gap-1 rounded-xl border border-border bg-muted p-1">
+      {(
+        [
+          { value: "list", label: "รายการซื้อ", Icon: ShoppingCart },
+          { value: "prep", label: "แบ่งเก็บ", Icon: CookingPot },
+        ] as const
+      ).map(({ value, label, Icon }) => (
+        <button
+          key={value}
+          type="button"
+          onClick={() => setMode(value)}
+          aria-pressed={mode === value}
+          className={`flex h-9 items-center justify-center gap-1.5 rounded-lg text-sm font-medium transition-colors ${
+            mode === value
+              ? "bg-background font-semibold text-foreground shadow-sm"
+              : "text-muted-foreground"
+          }`}
+        >
+          <Icon className="size-4" />
+          {label}
+        </button>
+      ))}
+    </div>
+  );
+
+  if (mode === "prep") {
+    return (
+      <div>
+        {modeSwitch}
+        <PrepView swaps={swaps} />
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-5 px-4 py-4">
+    <div>
+      {modeSwitch}
+      <div className="space-y-5 px-4 py-4">
       {/* สรุปงบ */}
       <div className="rounded-2xl border border-border bg-card p-4">
         <div className="grid grid-cols-2 gap-3">
@@ -158,6 +203,7 @@ export function ShoppingView({ swaps }: { swaps: Record<string, string> }) {
         checked={checked}
         onToggle={toggle}
       />
+      </div>
     </div>
   );
 }

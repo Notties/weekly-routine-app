@@ -185,6 +185,28 @@ export type ShopItem = {
   recurring: boolean;
 };
 
+/** โซนจัดเก็บวัตถุดิบ: ช่องเย็นธรรมดา / ช่องแช่แข็ง / นอกตู้เย็น */
+export type StorageZone = "fridge" | "freezer" | "pantry";
+
+/** ป้ายไทย + อุณหภูมิของแต่ละโซนเก็บ */
+export const STORAGE_ZONE_LABEL: Record<
+  StorageZone,
+  { label: string; temp: string }
+> = {
+  fridge: { label: "ช่องเย็นธรรมดา", temp: "1–4°C" },
+  freezer: { label: "ช่องแช่แข็ง", temp: "-18°C" },
+  pantry: { label: "นอกตู้เย็น", temp: "แห้ง เย็น พ้นแดด" },
+};
+
+/** วิธีเก็บวัตถุดิบ: โซน + โน้ตวิธีเก็บ + อายุโดยประมาณ */
+export type StorageInfo = {
+  zone: StorageZone;
+  /** วิธีเก็บสั้น ๆ สำหรับมือใหม่ เช่น "ทั้งแผงชั้นในตู้ ไม่วางที่ประตู" */
+  note: string;
+  /** อายุการเก็บ เช่น "3–5 สัปดาห์" */
+  life: string;
+};
+
 /**
  * รายการในคลังวัตถุดิบ (ingredient catalog) — ราคาต่อสัปดาห์ + มาโครต่อ 100 ก.
  * รายการซื้อของจะหยิบเฉพาะวัตถุดิบที่เมนูในสัปดาห์นั้นใช้จริง
@@ -192,6 +214,8 @@ export type ShopItem = {
 export type CatalogItem = ShopItem & {
   /** มาโครต่อวัตถุดิบ 100 กรัม — ใช้คำนวณโภชนาการของเมนู */
   macrosPer100g: Macros;
+  /** ที่เก็บ + วิธีเก็บ (ใช้ในส่วน "แบ่งเก็บ" ของแท็บซื้อของ) */
+  storage: StorageInfo;
 };
 
 /** ลำดับหมวดที่จะแสดงในแท็บซื้อของ */
