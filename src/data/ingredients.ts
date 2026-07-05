@@ -18,8 +18,6 @@ export const ingredientCatalog: CatalogItem[] = [
     storage: { zone: "freezer", note: "แบ่งถุงละมื้อเหมือนอกไก่ · ละลายในช่องเย็นข้ามคืน", life: "หลายเดือน · ละลายแล้วใช้ใน 1–2 วัน" } },
   { name: "ไข่ไก่", unit: { grams: 50, label: "ฟอง" }, qty: "แผง 10 ฟอง เบอร์ 2 (ใช้แค่ 6 ฟอง/สัปดาห์ — คุมคอเลสเตอรอล)", price: 55, category: "โปรตีน", recurring: false, macrosPer100g: { kcal: 143, protein: 12.6, carb: 0.7, fat: 9.5 },
     storage: { zone: "fridge", note: "เก็บทั้งแผงวางชั้นในตู้ (ไม่วางที่ประตู อุณหภูมิแกว่ง) ไม่ต้องล้างก่อนเก็บ · ไข่ต้มสุกไม่ปอกเปลือกอยู่ได้ ~1 สัปดาห์", life: "3–5 สัปดาห์" } },
-  { name: "ปลาทูน่ากระป๋อง", unit: { grams: 120, label: "กระป๋อง" }, qty: "ทูน่าในน้ำเกลือ/น้ำแร่ 165 ก. × 4 (เนื้อสะเด็ดน้ำ ~120 ก./กระป๋อง)", price: 150, category: "โปรตีน", recurring: false, macrosPer100g: { kcal: 110, protein: 25, carb: 0, fat: 1 },
-    storage: { zone: "pantry", note: "กระป๋องเก็บนอกตู้ได้นาน · เปิดแล้วถ่ายใส่ภาชนะปิดฝาแช่เย็น ใช้ใน 1–2 วัน (อย่าเก็บทั้งกระป๋องที่เปิดแล้ว)", life: "กระป๋อง 1–2 ปี (ดูฉลาก)" } },
   { name: "เต้าหู้แข็ง", unit: { grams: 250, label: "ก้อน" }, qty: "เต้าหู้ขาวแข็ง ก้อน ~250 ก. × 4", price: 60, category: "โปรตีน", recurring: false, macrosPer100g: { kcal: 78, protein: 8.5, carb: 2, fat: 4.5 },
     storage: { zone: "fridge", note: "ยังไม่เปิดแช่ตู้ตามฉลาก · เปิดแล้วแช่น้ำต้มสุกในกล่องปิดฝา เปลี่ยนน้ำทุกวัน", life: "เปิดแล้ว 3–4 วัน" } },
   { name: "กรีกโยเกิร์ต", qty: "4 ถ้วย (หรือกระปุกใหญ่ 1 กก.)", price: 180, category: "โปรตีน", recurring: false, macrosPer100g: { kcal: 60, protein: 10, carb: 4, fat: 0.5 },

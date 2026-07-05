@@ -57,7 +57,7 @@ export const week: Day[] = [
       cooldown: ["เดินช้าลง 5 นาที", "ยืดน่อง–ขาหลัง อย่างละ 30 วิ"],
     },
     meals: [
-      { time: "07:00", slot: "breakfast", recipeId: "bf-tuna" },
+      { time: "07:00", slot: "breakfast", recipeId: "bf-whey" },
       { time: "12:30", slot: "lunch", recipeId: "ln-chicken" },
       { time: "16:00", slot: "snack", recipeId: "sn-yogurt" },
       { time: "20:00", slot: "dinner", recipeId: "dn-tofu" },
@@ -114,7 +114,7 @@ export const week: Day[] = [
       cooldown: ["เดินช้าลง 5 นาที", "ยืดทั้งตัวเบา ๆ"],
     },
     meals: [
-      { time: "07:00", slot: "breakfast", recipeId: "bf-tuna" },
+      { time: "07:00", slot: "breakfast", recipeId: "bf-whey" },
       { time: "12:30", slot: "lunch", recipeId: "ln-chicken" },
       { time: "16:00", slot: "snack", recipeId: "sn-yogurt" },
       { time: "20:00", slot: "dinner", recipeId: "dn-tofu" },
@@ -163,7 +163,7 @@ export const week: Day[] = [
     type: "rest",
     title: "วันพัก",
     meals: [
-      { time: "08:00", slot: "breakfast", recipeId: "bf-tuna" },
+      { time: "08:00", slot: "breakfast", recipeId: "bf-whey" },
       { time: "12:30", slot: "lunch", recipeId: "ln-chicken" },
       { time: "16:00", slot: "snack", recipeId: "sn-yogurt" },
       { time: "18:30", slot: "dinner", recipeId: "dn-tofu" },
@@ -179,7 +179,7 @@ export const week: Day[] = [
     type: "rest",
     title: "วันพัก",
     meals: [
-      { time: "08:00", slot: "breakfast", recipeId: "bf-tuna" },
+      { time: "08:00", slot: "breakfast", recipeId: "bf-whey" },
       { time: "12:30", slot: "lunch", recipeId: "ln-chicken" },
       { time: "16:00", slot: "snack", recipeId: "sn-yogurt" },
       { time: "18:30", slot: "dinner", recipeId: "dn-tofu" },
