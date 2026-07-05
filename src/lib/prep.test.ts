@@ -9,35 +9,41 @@ import {
 } from "./prep";
 
 describe("meatBags — แบ่งเนื้อถุงรายวัน", () => {
-  it("แผนเริ่มต้น: วันเวต 370 ก. วันพัก 200 ก. (อกไก่ล้วน)", () => {
+  it("แผนเริ่มต้น: วันเวต 480 ก. (เที่ยง 200+หลังเล่น 280) วันพัก 400 ก. (เที่ยง+เย็น)", () => {
     const bags = meatBags(week, {});
     const byDay = Object.fromEntries(bags.map((b) => [b.day, b]));
-    expect(byDay.mon.total).toBe(370);
-    expect(byDay.tue.total).toBe(200);
-    expect(byDay.wed.total).toBe(370);
-    expect(byDay.thu.total).toBe(200);
-    expect(byDay.fri.total).toBe(370);
-    expect(byDay.sat.total).toBe(200);
-    expect(byDay.sun.total).toBe(200);
+    expect(byDay.mon.total).toBe(480);
+    expect(byDay.tue.total).toBe(400);
+    expect(byDay.wed.total).toBe(480);
+    expect(byDay.thu.total).toBe(400);
+    expect(byDay.fri.total).toBe(480);
+    expect(byDay.sat.total).toBe(400);
+    expect(byDay.sun.total).toBe(400);
     for (const b of bags) {
       expect(b.items).toEqual([{ name: "อกไก่", grams: b.total }]);
     }
   });
 
-  it("รวมทั้งสัปดาห์ = 1,910 ก.", () => {
+  it("รวมทั้งสัปดาห์ = 3,040 ก. (แพ็ค 3 กก. พอดี)", () => {
     const total = meatBags(week, {}).reduce((s, b) => s + b.total, 0);
-    expect(total).toBe(1910);
+    expect(total).toBe(3040);
   });
 
-  it("สลับมื้อเที่ยงอังคารเป็นหมู → ถุงอังคารเป็นหมูสันใน 200 ก.", () => {
+  it("สลับมื้อเที่ยงอังคารเป็นหมู → ถุงผสม หมู 200 + ไก่ 200 (มื้อเย็น)", () => {
     // อังคาร index 1 = มื้อกลางวัน (ln-chicken → ln-pork)
     const bags = meatBags(week, { "tue:1": "ln-pork" });
     const tue = bags.find((b) => b.day === "tue")!;
-    expect(tue.items).toEqual([{ name: "หมูสันใน", grams: 200 }]);
+    expect(tue.items).toEqual([
+      { name: "หมูสันใน", grams: 200 },
+      { name: "อกไก่", grams: 200 },
+    ]);
   });
 
-  it("สลับเป็นเมนูไข่ (ไม่มีเนื้อ) → ถุงว่าง", () => {
-    const bags = meatBags(week, { "tue:1": "ln-omelet" });
+  it("สลับทั้งเที่ยง+เย็นเป็นเมนูไม่มีเนื้อ → ถุงว่าง", () => {
+    const bags = meatBags(week, {
+      "tue:1": "ln-omelet",
+      "tue:3": "dn-eggveg",
+    });
     const tue = bags.find((b) => b.day === "tue")!;
     expect(tue.total).toBe(0);
     expect(tue.items).toEqual([]);
@@ -45,18 +51,20 @@ describe("meatBags — แบ่งเนื้อถุงรายวัน", 
 });
 
 describe("bagMoveNote — เตือนย้ายถุงเนื้อพรุ่งนี้", () => {
-  it("คืนอาทิตย์ → เตือนถุงจันทร์ 370 ก.", () => {
+  it("คืนอาทิตย์ → เตือนถุงจันทร์ 480 ก.", () => {
     const note = bagMoveNote(week, {}, "sun");
-    expect(note).toContain("อกไก่ 370 ก.");
+    expect(note).toContain("อกไก่ 480 ก.");
     expect(note).toContain("จันทร์");
   });
 
-  it("คืนจันทร์ → เตือนถุงอังคาร 200 ก.", () => {
-    expect(bagMoveNote(week, {}, "mon")).toContain("อกไก่ 200 ก.");
+  it("คืนจันทร์ → เตือนถุงอังคาร 400 ก.", () => {
+    expect(bagMoveNote(week, {}, "mon")).toContain("อกไก่ 400 ก.");
   });
 
-  it("พรุ่งนี้ไม่มีเนื้อ (สลับเที่ยงอังคารเป็นเมนูไข่) → null", () => {
-    expect(bagMoveNote(week, { "tue:1": "ln-omelet" }, "mon")).toBeNull();
+  it("พรุ่งนี้ไม่มีเนื้อเลย (สลับทั้งเที่ยง+เย็น) → null", () => {
+    expect(
+      bagMoveNote(week, { "tue:1": "ln-omelet", "tue:3": "dn-eggveg" }, "mon")
+    ).toBeNull();
   });
 
   it("วันไม่รู้จัก → null", () => {
@@ -69,10 +77,10 @@ describe("weeklyIngredientGrams — กรัมรวมต่อสัปด�
     weeklyIngredientGrams(week, {}).map((t) => [t.name, t.grams])
   );
 
-  it("อกไก่ 1,910 · ไข่ 300 (6 ฟอง — คุมคอเลสเตอรอล) · ข้าวสุก 2,830", () => {
-    expect(totals.get("อกไก่")).toBe(1910);
+  it("อกไก่ 3,040 · ไข่ 300 (6 ฟอง — คุมคอเลสเตอรอล) · ข้าวสุก 2,950", () => {
+    expect(totals.get("อกไก่")).toBe(3040);
     expect(totals.get("ไข่ไก่")).toBe(300);
-    expect(totals.get("ข้าวกล้อง")).toBe(2830);
+    expect(totals.get("ข้าวกล้อง")).toBe(2950);
   });
 
   it("เรียงจากมากไปน้อย", () => {

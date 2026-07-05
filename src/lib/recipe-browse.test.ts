@@ -52,10 +52,10 @@ describe("sortRecipes", () => {
 });
 
 describe("recipeUsage", () => {
-  it("แผนเริ่มต้น: ln-chicken ใช้ทุกวัน (7) · po-whey-rice ใช้ จ/พ/ศ", () => {
+  it("แผนเริ่มต้น: ln-chicken ใช้ทุกวัน (7) · po-chicken ใช้ จ/พ/ศ", () => {
     const usage = recipeUsage(week, {});
     expect(usage.get("ln-chicken")?.length).toBe(7);
-    expect(usage.get("po-whey-rice")?.map((u) => u.day)).toEqual([
+    expect(usage.get("po-chicken")?.map((u) => u.day)).toEqual([
       "mon",
       "wed",
       "fri",
