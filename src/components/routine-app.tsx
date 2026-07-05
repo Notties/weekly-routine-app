@@ -202,46 +202,63 @@ export function RoutineApp() {
           </div>
         )}
 
+        {/* .tab-in = จางเข้า+เลื่อนขึ้นตอน mount · key={selected} ให้เล่นซ้ำตอนเปลี่ยนวัน */}
         <TabsContent value="routine">
-          <TimelineView
-            day={resolvedDay}
-            isToday={selected === today}
-            prepNote={bagMoveNote(week, swaps, selected)}
-          />
+          <div key={selected} className="tab-in">
+            <TimelineView
+              day={resolvedDay}
+              isToday={selected === today}
+              prepNote={bagMoveNote(week, swaps, selected)}
+            />
+          </div>
         </TabsContent>
         <TabsContent value="workout">
-          <WorkoutView
-            day={resolvedDay}
-            done={!!dateLog?.workoutDone}
-            isToday={isToday}
-            todayISO={todayISO}
-            onToggleDone={() => setWorkoutDone(todayISO, !dateLog?.workoutDone)}
-          />
+          <div key={selected} className="tab-in">
+            <WorkoutView
+              day={resolvedDay}
+              done={!!dateLog?.workoutDone}
+              isToday={isToday}
+              todayISO={todayISO}
+              onToggleDone={() =>
+                setWorkoutDone(todayISO, !dateLog?.workoutDone)
+              }
+            />
+          </div>
         </TabsContent>
         <TabsContent value="meal">
-          <MealView
-            day={resolvedDay}
-            profile={effProfile}
-            onSwap={applySwap}
-            dateLog={dateLog}
-            isToday={isToday}
-            onToggleMeal={(i) => toggleMeal(todayISO, i)}
-            onAddWater={(d) => addWater(todayISO, d)}
-            onAddExtra={(k, p) => addExtra(todayISO, k, p)}
-            onClearExtra={() => clearExtra(todayISO)}
-          />
+          <div key={selected} className="tab-in">
+            <MealView
+              day={resolvedDay}
+              profile={effProfile}
+              onSwap={applySwap}
+              dateLog={dateLog}
+              isToday={isToday}
+              onToggleMeal={(i) => toggleMeal(todayISO, i)}
+              onAddWater={(d) => addWater(todayISO, d)}
+              onAddExtra={(k, p) => addExtra(todayISO, k, p)}
+              onClearExtra={() => clearExtra(todayISO)}
+            />
+          </div>
         </TabsContent>
         <TabsContent value="sleep">
-          <SleepView day={resolvedDay} />
+          <div key={selected} className="tab-in">
+            <SleepView day={resolvedDay} />
+          </div>
         </TabsContent>
         <TabsContent value="shopping">
-          <ShoppingView swaps={swaps} />
+          <div className="tab-in">
+            <ShoppingView swaps={swaps} />
+          </div>
         </TabsContent>
         <TabsContent value="menu">
-          <MenuLibraryView />
+          <div className="tab-in">
+            <MenuLibraryView />
+          </div>
         </TabsContent>
         {tab === "me" && (
-          <MeView todayISO={todayISO} onBack={() => handleTab("routine")} />
+          <div className="tab-in">
+            <MeView todayISO={todayISO} onBack={() => handleTab("routine")} />
+          </div>
         )}
       </main>
     </Tabs>
