@@ -7,6 +7,7 @@ export type RecipeFilter = {
 };
 
 export const RECIPE_FILTERS: RecipeFilter[] = [
+  { id: "heart", label: "ดีต่อหัวใจ", match: (r) => !!r.tags?.includes("ดีต่อหัวใจ") },
   { id: "protein", label: "โปรตีนสูง", match: (r) => !!r.tags?.includes("โปรตีนสูง") },
   { id: "fast", label: "ทำเร็ว", match: (r) => !!r.tags?.includes("ทำเร็ว") },
   { id: "nomeat", label: "ไม่มีเนื้อสัตว์", match: (r) => !!r.tags?.includes("ไม่มีเนื้อสัตว์") },

@@ -69,10 +69,10 @@ describe("weeklyIngredientGrams — กรัมรวมต่อสัปด�
     weeklyIngredientGrams(week, {}).map((t) => [t.name, t.grams])
   );
 
-  it("อกไก่ 1,910 · ไข่ 1,500 (30 ฟองพอดี) · ข้าวสุก 2,230", () => {
+  it("อกไก่ 1,910 · ไข่ 300 (6 ฟอง — คุมคอเลสเตอรอล) · ข้าวสุก 2,830", () => {
     expect(totals.get("อกไก่")).toBe(1910);
-    expect(totals.get("ไข่ไก่")).toBe(1500);
-    expect(totals.get("ข้าวกล้อง")).toBe(2230);
+    expect(totals.get("ไข่ไก่")).toBe(300);
+    expect(totals.get("ข้าวกล้อง")).toBe(2830);
   });
 
   it("เรียงจากมากไปน้อย", () => {
