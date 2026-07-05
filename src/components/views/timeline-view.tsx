@@ -9,11 +9,14 @@ import { cn } from "@/lib/utils";
 export function TimelineView({
   day,
   isToday = false,
+  prepNote,
 }: {
   day: ResolvedDay;
   isToday?: boolean;
+  /** โน้ตเตรียมของพรุ่งนี้ (เช่น ย้ายถุงเนื้อ) — null/ไม่ส่ง = ไม่มีรายการ */
+  prepNote?: string | null;
 }) {
-  const timeline = buildTimeline(day);
+  const timeline = buildTimeline(day, prepNote);
 
   return (
     <div className="px-4 py-4">
@@ -79,6 +82,12 @@ export function TimelineView({
                       ดูรายละเอียดท่าได้ที่แท็บ “ออกกำลัง”
                     </p>
                   </div>
+                )}
+
+                {entry.kind === "prep" && entry.detail && (
+                  <p className="tnum mt-0.5 text-xs text-muted-foreground">
+                    {entry.detail}
+                  </p>
                 )}
 
                 {(entry.kind === "wake" || entry.kind === "bedtime") && (

@@ -82,6 +82,23 @@ describe("buildTimeline", () => {
     expect(t.some((e) => e.kind === "workout")).toBe(false);
   });
 
+  it("ส่ง prepNote → มีรายการเตรียมของ 45 นาทีก่อนนอน อยู่ก่อน winddown", () => {
+    const t = buildTimeline(weightDay, "ย้ายถุงอกไก่ลงช่องเย็น");
+    const pi = t.findIndex((e) => e.kind === "prep");
+    const wd = t.findIndex((e) => e.kind === "winddown");
+    expect(pi).toBeGreaterThan(-1);
+    expect(t[pi].time).toBe("22:15"); // นอน 23:00 − 45 นาที
+    expect(t[pi].detail).toBe("ย้ายถุงอกไก่ลงช่องเย็น");
+    expect(pi).toBeLessThan(wd);
+  });
+
+  it("ไม่ส่ง prepNote (หรือ null) → ไม่มีรายการเตรียมของ", () => {
+    expect(buildTimeline(weightDay).some((e) => e.kind === "prep")).toBe(false);
+    expect(
+      buildTimeline(weightDay, null).some((e) => e.kind === "prep")
+    ).toBe(false);
+  });
+
   it("มี winddown (ผ่อนคลายก่อนนอน) อยู่ก่อน bedtime", () => {
     const t = buildTimeline(weightDay);
     const wd = t.findIndex((e) => e.kind === "winddown");

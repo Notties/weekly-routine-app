@@ -82,6 +82,26 @@ export function meatBags(
   });
 }
 
+/**
+ * โน้ตเตือนก่อนนอน: ย้ายถุงเนื้อของ "พรุ่งนี้" จากช่องแข็งลงช่องเย็น
+ * คืน null เมื่อพรุ่งนี้ไม่มีเนื้อต้องละลาย (เช่น สลับเป็นเมนูไข่หมด)
+ */
+export function bagMoveNote(
+  week: Day[],
+  swaps: Record<string, string>,
+  todayKey: DayKey
+): string | null {
+  const idx = week.findIndex((d) => d.key === todayKey);
+  if (idx === -1) return null;
+  const tomorrow = week[(idx + 1) % week.length];
+  const bag = meatBags(week, swaps).find((b) => b.day === tomorrow.key);
+  if (!bag || bag.total === 0) return null;
+  const items = bag.items
+    .map((i) => `${i.name} ${i.grams} ก.`)
+    .join(" + ");
+  return `ย้ายถุง${items}ของวัน${tomorrow.label} จากช่องแข็งลงช่องเย็น ให้ละลายเองข้ามคืน`;
+}
+
 /** จัดกลุ่มวัตถุดิบ (เฉพาะที่ใช้จริง) ตามโซนเก็บ — เรียง fridge → freezer → pantry */
 export function groupByStorageZone(
   names: Iterable<string>

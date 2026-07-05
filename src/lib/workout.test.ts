@@ -5,6 +5,7 @@ import {
   parseRepRange,
   lastLift,
   suggestProgression,
+  personalRecords,
 } from "./workout";
 
 describe("parseRestSeconds", () => {
@@ -105,5 +106,68 @@ describe("suggestProgression", () => {
     expect(
       suggestProgression("12 ก้าว/ข้าง", { sets: [{ kg: 20, reps: 12 }] }).kind
     ).toBe("none");
+  });
+});
+
+describe("personalRecords", () => {
+  const log: Record<ISODate, DayLog> = {
+    "2026-06-01": {
+      lifts: {
+        "Barbell Squat": [
+          { kg: 60, reps: 8 },
+          { kg: 60, reps: 8 },
+        ],
+        "Bench Press": [{ kg: 50, reps: 8 }],
+      },
+    },
+    "2026-06-08": {
+      lifts: {
+        "Barbell Squat": [{ kg: 62.5, reps: 6 }],
+        "Bench Press": [{ kg: 50, reps: 10 }],
+      },
+    },
+    "2026-06-15": {
+      lifts: { Deadlift: [{ kg: 0, reps: 0 }] }, // เซ็ตว่าง ไม่นับ
+    },
+  };
+
+  it("เลือกน้ำหนักมากสุดต่อท่า และเรียงหนักสุดก่อน", () => {
+    const prs = personalRecords(log);
+    expect(prs.map((p) => p.exercise)).toEqual(["Barbell Squat", "Bench Press"]);
+    expect(prs[0]).toEqual({
+      exercise: "Barbell Squat",
+      kg: 62.5,
+      reps: 6,
+      date: "2026-06-08",
+    });
+  });
+
+  it("น้ำหนักเท่ากัน → เอาครั้ง (reps) มากกว่า", () => {
+    const prs = personalRecords(log);
+    const bench = prs.find((p) => p.exercise === "Bench Press")!;
+    expect(bench).toEqual({
+      exercise: "Bench Press",
+      kg: 50,
+      reps: 10,
+      date: "2026-06-08",
+    });
+  });
+
+  it("เซ็ตว่าง (kg/reps = 0) ไม่ถูกนับเป็นสถิติ", () => {
+    expect(
+      personalRecords(log).some((p) => p.exercise === "Deadlift")
+    ).toBe(false);
+  });
+
+  it("ทำได้เท่าสถิติเดิมเป๊ะ → คงวันแรกที่ทำได้", () => {
+    const l: Record<ISODate, DayLog> = {
+      "2026-06-01": { lifts: { Plank: [{ kg: 20, reps: 10 }] } },
+      "2026-06-08": { lifts: { Plank: [{ kg: 20, reps: 10 }] } },
+    };
+    expect(personalRecords(l)[0].date).toBe("2026-06-01");
+  });
+
+  it("log ว่าง → []", () => {
+    expect(personalRecords({})).toEqual([]);
   });
 });

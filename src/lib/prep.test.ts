@@ -5,6 +5,7 @@ import {
   meatBags,
   weeklyIngredientGrams,
   groupByStorageZone,
+  bagMoveNote,
 } from "./prep";
 
 describe("meatBags — แบ่งเนื้อถุงรายวัน", () => {
@@ -40,6 +41,26 @@ describe("meatBags — แบ่งเนื้อถุงรายวัน", 
     const tue = bags.find((b) => b.day === "tue")!;
     expect(tue.total).toBe(0);
     expect(tue.items).toEqual([]);
+  });
+});
+
+describe("bagMoveNote — เตือนย้ายถุงเนื้อพรุ่งนี้", () => {
+  it("คืนอาทิตย์ → เตือนถุงจันทร์ 370 ก.", () => {
+    const note = bagMoveNote(week, {}, "sun");
+    expect(note).toContain("อกไก่ 370 ก.");
+    expect(note).toContain("จันทร์");
+  });
+
+  it("คืนจันทร์ → เตือนถุงอังคาร 200 ก.", () => {
+    expect(bagMoveNote(week, {}, "mon")).toContain("อกไก่ 200 ก.");
+  });
+
+  it("พรุ่งนี้ไม่มีเนื้อ (สลับเที่ยงอังคารเป็นเมนูไข่) → null", () => {
+    expect(bagMoveNote(week, { "tue:1": "ln-omelet" }, "mon")).toBeNull();
+  });
+
+  it("วันไม่รู้จัก → null", () => {
+    expect(bagMoveNote(week, {}, "xxx" as never)).toBeNull();
   });
 });
 

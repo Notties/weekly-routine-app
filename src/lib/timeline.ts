@@ -4,6 +4,7 @@ export type TimelineKind =
   | "wake"
   | "meal"
   | "workout"
+  | "prep"
   | "winddown"
   | "bedtime";
 
@@ -15,6 +16,8 @@ export type TimelineEntry = {
   kind: TimelineKind;
   /** ป้าย/คำอธิบายสั้น ๆ */
   label?: string;
+  /** รายละเอียดบรรทัดรอง (ใช้กับ prep) */
+  detail?: string;
   meal?: Meal;
   workout?: Workout;
 };
@@ -35,10 +38,14 @@ function subtractMinutes(hhmm: string, delta: number): string {
 
 /**
  * สร้างไทม์ไลน์ทั้งวันเรียงตามเวลา:
- * ตื่น → มื้อต่าง ๆ → (บล็อกออกกำลังเฉพาะวันเวต/คาร์ดิโอ) → ผ่อนคลายก่อนนอน → เข้านอน
+ * ตื่น → มื้อต่าง ๆ → (บล็อกออกกำลังเฉพาะวันเวต/คาร์ดิโอ) →
+ * (เตรียมของพรุ่งนี้ ถ้ามี prepNote) → ผ่อนคลายก่อนนอน → เข้านอน
  * การเรียงใช้เวลา (นาที) เป็นหลัก จึงแทรกบล็อกออกกำลังก่อนมื้อหลังเล่นโดยอัตโนมัติ
  */
-export function buildTimeline(day: ResolvedDay): TimelineEntry[] {
+export function buildTimeline(
+  day: ResolvedDay,
+  prepNote?: string | null
+): TimelineEntry[] {
   const entries: TimelineEntry[] = [];
 
   // ตื่นนอน
@@ -67,6 +74,18 @@ export function buildTimeline(day: ResolvedDay): TimelineEntry[] {
       kind: "workout",
       label: day.title,
       workout: day.workout,
+    });
+  }
+
+  // เตรียมของพรุ่งนี้ (45 นาทีก่อนเข้านอน) — เช่น ย้ายถุงเนื้อลงช่องเย็น
+  if (prepNote) {
+    const prepTime = subtractMinutes(day.sleep.bedtime, 45);
+    entries.push({
+      time: prepTime,
+      minutes: toMinutes(prepTime),
+      kind: "prep",
+      label: "เตรียมของพรุ่งนี้",
+      detail: prepNote,
     });
   }
 

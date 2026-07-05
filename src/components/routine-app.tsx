@@ -16,6 +16,7 @@ import type { DayKey } from "@/data/types";
 import { useAppStore } from "@/lib/store";
 import { DAY_ORDER, effectiveProfile, toISODate } from "@/lib/tracking";
 import { resolveDay, swapKey } from "@/lib/meals";
+import { bagMoveNote } from "@/lib/prep";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ProfileHeader } from "@/components/profile-header";
@@ -202,7 +203,11 @@ export function RoutineApp() {
         )}
 
         <TabsContent value="routine">
-          <TimelineView day={resolvedDay} isToday={selected === today} />
+          <TimelineView
+            day={resolvedDay}
+            isToday={selected === today}
+            prepNote={bagMoveNote(week, swaps, selected)}
+          />
         </TabsContent>
         <TabsContent value="workout">
           <WorkoutView

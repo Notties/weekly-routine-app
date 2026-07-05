@@ -12,6 +12,7 @@ import {
   Pencil,
   TrendingDown,
   TrendingUp,
+  Dumbbell,
 } from "lucide-react";
 import { profile, week } from "@/data";
 import { useAppStore } from "@/lib/store";
@@ -29,6 +30,7 @@ import { AdherenceHeatmap } from "@/components/adherence-heatmap";
 import { useSessionEmail, initialsFromEmail } from "@/lib/use-session";
 import { toast } from "@/lib/toast";
 import { dailyTarget } from "@/lib/nutrition";
+import { personalRecords } from "@/lib/workout";
 import { WeightTrend } from "@/components/weight-trend";
 import { NutritionStrip } from "@/components/nutrition-strip";
 import { SyncCard } from "@/components/sync-card";
@@ -69,6 +71,7 @@ export function MeView({
   const hit7 = daysHitInLast(log, week, todayISO, 7);
   const heat = adherenceHistory(log, week, todayISO, 8);
   const target = dailyTarget(eff, todayDay.type);
+  const prs = personalRecords(log);
 
   const [weightInput, setWeightInput] = React.useState<string>(
     log[todayISO]?.weightKg != null ? String(log[todayISO]?.weightKg) : ""
@@ -209,6 +212,47 @@ export function MeView({
           <p className="mt-3 text-xs text-muted-foreground">
             ยังไม่มีประวัติ — เริ่มติ๊กกิจกรรม/บันทึกน้ำหนักวันนี้ แล้วช่องจะค่อย ๆ เขียวขึ้น 🟦
           </p>
+        )}
+      </section>
+
+      {/* ───── สถิติความแข็งแรง (PR ต่อท่า) ───── */}
+      <section className="rounded-2xl border border-border bg-card p-4">
+        <h3 className="flex items-center gap-2 text-sm font-bold">
+          <Dumbbell className="size-4 text-primary" />
+          สถิติความแข็งแรง
+          {prs.length > 0 && (
+            <span className="ml-auto text-xs font-normal text-muted-foreground">
+              หนักสุดที่เคยยก
+            </span>
+          )}
+        </h3>
+        {prs.length === 0 ? (
+          <p className="mt-3 text-xs text-muted-foreground">
+            ยังไม่มีสถิติ — กดบันทึกน้ำหนักที่ยกจริงในแท็บ 🏋️ ออกกำลัง
+            (ใต้แต่ละท่า) แล้ว PR ของแต่ละท่าจะขึ้นที่นี่
+          </p>
+        ) : (
+          <div className="mt-3 divide-y divide-border">
+            {prs.map((pr) => (
+              <div
+                key={pr.exercise}
+                className="flex items-baseline justify-between gap-2 py-2"
+              >
+                <span className="min-w-0 truncate text-sm font-medium">
+                  {pr.exercise}
+                </span>
+                <span className="tnum shrink-0 text-sm font-bold">
+                  {pr.kg} กก. × {pr.reps}
+                  <span className="ml-1.5 text-xs font-normal text-muted-foreground">
+                    {new Date(`${pr.date}T00:00:00`).toLocaleDateString(
+                      "th-TH",
+                      { day: "numeric", month: "short" }
+                    )}
+                  </span>
+                </span>
+              </div>
+            ))}
+          </div>
         )}
       </section>
 

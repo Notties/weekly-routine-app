@@ -1,4 +1,4 @@
-import { Sunrise, Moon, UtensilsCrossed, Dumbbell, HeartPulse, Wind } from "lucide-react";
+import { Sunrise, Moon, UtensilsCrossed, Dumbbell, HeartPulse, Wind, Snowflake } from "lucide-react";
 import type { DayType } from "@/data/types";
 import type { TimelineEntry } from "@/lib/timeline";
 
@@ -11,6 +11,8 @@ export function entryIcon(entry: TimelineEntry, dayType: DayType) {
       return Moon;
     case "winddown":
       return Wind;
+    case "prep":
+      return Snowflake;
     case "meal":
       return UtensilsCrossed;
     case "workout":

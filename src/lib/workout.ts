@@ -41,6 +41,37 @@ export function lastLift(
   return { date, sets: d.lifts![exercise].filter((s) => s.reps > 0) };
 }
 
+/** สถิติสูงสุดของท่าหนึ่ง: น้ำหนักมากสุดที่เคยยกได้ (พร้อมครั้ง/วันที่ทำ) */
+export type LiftPR = {
+  exercise: string;
+  kg: number;
+  reps: number;
+  /** วันที่ทำสถิตินี้ครั้งแรก */
+  date: ISODate;
+};
+
+/**
+ * Personal Record ต่อท่า จากทุกเซ็ตที่เคยบันทึก (ข้ามเซ็ตว่าง kg/reps = 0)
+ * เกณฑ์: น้ำหนักมากกว่า > ครั้งมากกว่า (ที่น้ำหนักเท่ากัน) · เรียงหนักสุดก่อน
+ */
+export function personalRecords(log: Record<ISODate, DayLog>): LiftPR[] {
+  const best = new Map<string, LiftPR>();
+  const dates = Object.keys(log).sort(); // เก่า→ใหม่ เพื่อให้ date = วันแรกที่ทำได้
+  for (const date of dates) {
+    const lifts = log[date].lifts ?? {};
+    for (const [exercise, sets] of Object.entries(lifts)) {
+      for (const s of sets) {
+        if (s.kg <= 0 || s.reps <= 0) continue;
+        const cur = best.get(exercise);
+        if (!cur || s.kg > cur.kg || (s.kg === cur.kg && s.reps > cur.reps)) {
+          best.set(exercise, { exercise, kg: s.kg, reps: s.reps, date });
+        }
+      }
+    }
+  }
+  return [...best.values()].sort((a, b) => b.kg - a.kg);
+}
+
 export type ProgressionSuggestion = {
   kind: "increase" | "hold" | "none";
   text: string;
