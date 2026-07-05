@@ -24,6 +24,9 @@ export const ingredientCatalog: CatalogItem[] = [
     storage: { zone: "fridge", note: "ชั้นบน/กลาง ปิดฝาสนิท ใช้ช้อนสะอาดตักทุกครั้ง", life: "เปิดแล้ว ~1 สัปดาห์ (ยึดวันหมดอายุข้างกระปุก)" } },
   { name: "นมจืด", unit: { grams: 250, label: "กล่อง" }, qty: "UHT จืด 1 ลิตร x2", price: 60, category: "โปรตีน", recurring: false, macrosPer100g: { kcal: 60, protein: 3.2, carb: 4.8, fat: 3.3 },
     storage: { zone: "pantry", note: "UHT ยังไม่เปิดวางนอกตู้ได้ · เปิดแล้วต้องแช่เย็นทันที", life: "เปิดแล้ว 3–4 วันในตู้เย็น" } },
+  // นมแคลเซียมสูง — แอนลีน UHT รสจืด 180 มล.: แคลเซียม 60% Thai RDI ≈ 480 มก./กล่อง (อ้างฉลาก/Makro PRO)
+  { name: "นมแคลเซียมสูง", unit: { grams: 180, label: "กล่อง" }, qty: "แอนลีน UHT รสจืด 180 มล. × 12 (ใช้ 7 กล่อง/สัปดาห์ — แพ็คอยู่ ~1 สัปดาห์ครึ่ง)", price: 176, category: "โปรตีน", recurring: false, macrosPer100g: { kcal: 44, protein: 3.9, carb: 5.5, fat: 1 },
+    storage: { zone: "pantry", note: "UHT ยังไม่เปิดวางนอกตู้ได้ · แช่เย็นก่อนดื่มอร่อยกว่า", life: "ตามฉลาก (หลายเดือน)" } },
   { name: "เวย์โปรตีน", unit: { grams: 30, label: "สกู๊ป" }, qty: "5 ปอนด์ (~2.27 กก. ≈ 75 สกู๊ป · สกู๊ปละ ~27฿)", price: 2000, category: "โปรตีน", recurring: true, macrosPer100g: { kcal: 400, protein: 83, carb: 8, fat: 5 },
     storage: { zone: "pantry", note: "ปิดฝาให้แน่น เก็บที่แห้ง อย่าแช่ตู้เย็น — ความชื้นทำผงจับก้อน", life: "หลายเดือน (ตามฉลาก)" } },
 
