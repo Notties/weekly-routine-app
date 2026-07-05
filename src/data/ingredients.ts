@@ -22,7 +22,7 @@ export const ingredientCatalog: CatalogItem[] = [
     storage: { zone: "fridge", note: "ชั้นบน/กลาง ปิดฝาสนิท ใช้ช้อนสะอาดตักทุกครั้ง", life: "เปิดแล้ว ~1 สัปดาห์ (ยึดวันหมดอายุข้างกระปุก)" } },
   { name: "นมจืด", unit: { grams: 250, label: "กล่อง" }, qty: "UHT จืด 1 ลิตร x2", price: 60, category: "โปรตีน", recurring: false, macrosPer100g: { kcal: 60, protein: 3.2, carb: 4.8, fat: 3.3 },
     storage: { zone: "pantry", note: "UHT ยังไม่เปิดวางนอกตู้ได้ · เปิดแล้วต้องแช่เย็นทันที", life: "เปิดแล้ว 3–4 วันในตู้เย็น" } },
-  { name: "เวย์โปรตีน", unit: { grams: 30, label: "สกู๊ป" }, qty: "ON Gold Standard 2 ปอนด์ (907 ก. ~30 มื้อ)", price: 1290, category: "โปรตีน", recurring: true, macrosPer100g: { kcal: 400, protein: 80, carb: 10, fat: 5 },
+  { name: "เวย์โปรตีน", unit: { grams: 30, label: "สกู๊ป" }, qty: "5 ปอนด์ (~2.27 กก. ≈ 75 สกู๊ป · สกู๊ปละ ~27฿)", price: 2000, category: "โปรตีน", recurring: true, macrosPer100g: { kcal: 400, protein: 83, carb: 8, fat: 5 },
     storage: { zone: "pantry", note: "ปิดฝาให้แน่น เก็บที่แห้ง อย่าแช่ตู้เย็น — ความชื้นทำผงจับก้อน", life: "หลายเดือน (ตามฉลาก)" } },
 
   // ── คาร์บ ──
@@ -48,10 +48,6 @@ export const ingredientCatalog: CatalogItem[] = [
     storage: { zone: "pantry", note: "ภาชนะปิดสนิทที่เย็น · อากาศร้อน/ซื้อเยอะ ย้ายแช่ตู้กันหืนได้", life: "หลายเดือน" } },
   { name: "เนยถั่ว", unit: { grams: 16, label: "ช้อนโต๊ะ" }, qty: "1 กระปุก (~500 ก.)", price: 120, category: "ไขมันดี", recurring: true, macrosPer100g: { kcal: 590, protein: 25, carb: 20, fat: 50 },
     storage: { zone: "pantry", note: "แบบทั่วไปวางนอกตู้ได้ · แบบธรรมชาติ (มีน้ำมันแยกชั้น) เปิดแล้วแช่ตู้กันหืน", life: "หลายเดือน (ตามฉลาก)" } },
-
-  // ── เครื่องดื่ม ──
-  { name: "กาแฟดำ", unit: { grams: 200, label: "แก้ว" }, qty: "กาแฟคั่วบด/ผงกาแฟดำ 1 ถุง", price: 130, category: "เครื่องปรุง", recurring: true, macrosPer100g: { kcal: 0, protein: 0, carb: 0, fat: 0 },
-    storage: { zone: "pantry", note: "โหลทึบแสงปิดสนิท อย่าแช่ตู้ — กาแฟดูดกลิ่น/ความชื้นเก่ง", life: "หลายเดือน" } },
 
   // ── ของหวาน/เบเกอรี่ ──
   { name: "ผงโกโก้", qty: "ผงโกโก้แท้ไม่ใส่น้ำตาล 1 กระปุก", price: 90, category: "เครื่องปรุง", recurring: true, macrosPer100g: { kcal: 230, protein: 20, carb: 58, fat: 14 },
