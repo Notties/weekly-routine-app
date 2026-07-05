@@ -121,6 +121,8 @@ export type Meal = {
   recipeId: string;
   slot: MealSlot;
   equipment?: Appliance[];
+  /** วัตถุดิบ + กรัมของเมนูที่เลือก (แสดงเป็นชิปพร้อมหน่วยบ้าน ๆ) */
+  ingredients: RecipeItem[];
   steps: string[];
   tags: string[];
   /** มาโครของเมนูที่เลือก (คำนวณจากวัตถุดิบ) */
@@ -216,6 +218,8 @@ export type CatalogItem = ShopItem & {
   macrosPer100g: Macros;
   /** ที่เก็บ + วิธีเก็บ (ใช้ในส่วน "แบ่งเก็บ" ของแท็บซื้อของ) */
   storage: StorageInfo;
+  /** หน่วยนับแบบบ้าน ๆ (เฉพาะของที่นับได้) เช่น ไข่ 1 ฟอง = 50 ก. — ใช้แปลงกรัมให้มือใหม่ */
+  unit?: { grams: number; label: string };
 };
 
 /** ลำดับหมวดที่จะแสดงในแท็บซื้อของ */

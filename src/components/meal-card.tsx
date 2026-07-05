@@ -4,6 +4,7 @@ import * as React from "react";
 import { Repeat, Check, Sparkles } from "lucide-react";
 import type { Meal } from "@/data/types";
 import { recipesForSlot } from "@/lib/meals";
+import { portionLabel } from "@/lib/portion";
 import { StepList, TagRow } from "@/components/blocks";
 import { EquipmentBadges } from "@/components/equipment-badges";
 import { NutritionStrip } from "@/components/nutrition-strip";
@@ -54,6 +55,24 @@ export function MealCard({
 
       <EquipmentBadges equipment={meal.equipment} />
       <NutritionStrip macros={meal.macros} />
+
+      {/* วัตถุดิบ + ปริมาณแบบหน่วยบ้าน ๆ (ฟอง/ลูก/แผ่น/สกู๊ป) ให้มือใหม่ชั่ง/นับตามได้ */}
+      {meal.ingredients.length > 0 && (
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          {meal.ingredients.map((ing) => (
+            <span
+              key={ing.name}
+              className="tnum rounded-md border border-border bg-muted px-2 py-0.5 text-[11px] text-foreground"
+            >
+              {ing.name}{" "}
+              <span className="font-semibold">
+                {portionLabel(ing.name, ing.grams)}
+              </span>
+            </span>
+          ))}
+        </div>
+      )}
+
       {meal.benefit && (
         <p className="mt-2 flex gap-1.5 text-xs leading-snug text-muted-foreground">
           <Sparkles className="mt-0.5 size-3.5 shrink-0 text-primary" />

@@ -55,6 +55,7 @@ export function resolveMeal(
     recipeId: recipe?.id ?? dm.recipeId,
     slot: dm.slot,
     equipment: recipe?.equipment,
+    ingredients: recipe?.ingredients ?? [],
     steps: recipe?.steps ?? [],
     tags: dm.tags ?? recipe?.tags ?? [],
     macros: recipe ? recipeMacros(recipe) : { ...ZERO_MACROS },
