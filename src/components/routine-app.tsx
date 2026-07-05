@@ -9,7 +9,6 @@ import {
   ShoppingCart,
   BookOpen,
   CalendarCheck,
-  Loader2,
 } from "lucide-react";
 import { profile, week } from "@/data";
 import type { DayKey } from "@/data/types";
@@ -29,6 +28,7 @@ import { SleepView } from "@/components/views/sleep-view";
 import { ShoppingView } from "@/components/views/shopping-view";
 import { MenuLibraryView } from "@/components/views/menu-library-view";
 import { MeView } from "@/components/views/me-view";
+import { AppSkeleton } from "@/components/app-skeleton";
 import { RestTimerBar } from "@/components/rest-timer-bar";
 import { SyncCard } from "@/components/sync-card";
 import { Toaster } from "@/components/toaster";
@@ -114,9 +114,9 @@ export function RoutineApp() {
     }
   };
 
-  // gate: กำลังโหลด state จาก backend
+  // gate: กำลังโหลด state จาก backend — โชว์ skeleton ตามโครงหน้าจริง
   if (!hasHydrated) {
-    return <LoadingScreen />;
+    return <AppSkeleton />;
   }
 
   // gate: ยังไม่ได้ login — แสดงหน้าเข้าระบบแทน routine
@@ -131,7 +131,7 @@ export function RoutineApp() {
   }
 
   if (!selected) {
-    return <LoadingScreen />;
+    return <AppSkeleton />;
   }
 
   const day = week.find((d) => d.key === selected) ?? week[0];
@@ -248,14 +248,5 @@ export function RoutineApp() {
     <RestTimerBar />
     <Toaster />
     </>
-  );
-}
-
-/** จอกำลังโหลด — ระหว่างดึง state จาก backend */
-function LoadingScreen() {
-  return (
-    <div className="flex min-h-full items-center justify-center">
-      <Loader2 className="size-6 animate-spin text-muted-foreground" />
-    </div>
   );
 }
