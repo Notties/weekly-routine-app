@@ -30,7 +30,6 @@ import { MenuLibraryView } from "@/components/views/menu-library-view";
 import { MeView } from "@/components/views/me-view";
 import { AppSkeleton } from "@/components/app-skeleton";
 import { RestTimerBar } from "@/components/rest-timer-bar";
-import { SyncCard } from "@/components/sync-card";
 import { Toaster } from "@/components/toaster";
 
 const TABS = [
@@ -47,7 +46,6 @@ const WEEK_TABS = new Set(["shopping", "menu", "me"]);
 
 export function RoutineApp() {
   const hasHydrated = useAppStore((s) => s.hasHydrated);
-  const authRequired = useAppStore((s) => s.authRequired);
   const selected = useAppStore((s) => s.selectedDay);
   const swaps = useAppStore((s) => s.swaps);
   const profileOverride = useAppStore((s) => s.profileOverride);
@@ -59,7 +57,6 @@ export function RoutineApp() {
   const addExtra = useAppStore((s) => s.addExtra);
   const clearExtra = useAppStore((s) => s.clearExtra);
   const setWorkoutDone = useAppStore((s) => s.setWorkoutDone);
-  const syncError = useAppStore((s) => s.syncError);
 
   const [today, setToday] = React.useState<DayKey | null>(null);
   const [tab, setTab] = React.useState<string>("routine");
@@ -67,7 +64,7 @@ export function RoutineApp() {
 
   // mount: โหลด state จาก backend + รู้ "วันนี้"
   React.useEffect(() => {
-    void useAppStore.getState().hydrate();
+    useAppStore.getState().hydrate();
     // ตั้ง "วันนี้" หลัง mount (อิง Date ฝั่ง client) เพื่อเลี่ยง hydration mismatch
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setToday(DAY_ORDER[new Date().getDay()]);
@@ -119,17 +116,6 @@ export function RoutineApp() {
     return <AppSkeleton />;
   }
 
-  // gate: ยังไม่ได้ login — แสดงหน้าเข้าระบบแทน routine
-  if (authRequired) {
-    return (
-      <div className="flex min-h-full items-center justify-center p-6">
-        <div className="w-full max-w-sm">
-          <SyncCard />
-        </div>
-      </div>
-    );
-  }
-
   if (!selected) {
     return <AppSkeleton />;
   }
@@ -143,11 +129,6 @@ export function RoutineApp() {
 
   return (
     <>
-      {syncError && (
-        <div className="bg-destructive/10 px-4 py-1.5 text-center text-xs text-destructive">
-          {syncError}
-        </div>
-      )}
     <Tabs
       value={tab}
       onValueChange={handleTab}

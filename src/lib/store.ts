@@ -1,25 +1,30 @@
 import { create } from "zustand";
-import type { DayLog, ISODate, ProfileOverride } from "@/data/types";
-import { apiGet, apiSend, AuthError, NetworkError } from "@/lib/api/client";
-import type { SyncSlice } from "@/lib/api/types";
-import { toast } from "@/lib/toast";
+import type { DayLog, DayKey, ISODate, ProfileOverride } from "@/data/types";
 
-type AppState = {
-  hasHydrated: boolean;
-  online: boolean;
-  syncError: string | null;
-  /** ต้องเข้าสู่ระบบก่อนใช้งาน (ไม่มี session) */
-  authRequired: boolean;
-  selectedDay: import("@/data/types").DayKey | null;
+// ───────────────────────────────────────────────────────────
+// สโตร์กลางของแอป — เก็บทุกอย่างใน localStorage ของเครื่อง
+// ไม่มีบัญชี ไม่มีเซิร์ฟเวอร์ ไม่มีฐานข้อมูล เปิดแอปแล้วใช้ได้เลย
+// (ข้อมูลอยู่ในเบราว์เซอร์เครื่องนี้เท่านั้น — ล้าง site data = เริ่มใหม่)
+// ───────────────────────────────────────────────────────────
+
+const LS_KEY = "knot-state-v1";
+
+/** ส่วนของ state ที่ persist ลง localStorage */
+type PersistedState = {
   swaps: Record<string, string>;
   checked: Record<string, boolean>;
   log: Record<ISODate, DayLog>;
   profileOverride: ProfileOverride;
+};
+
+type AppState = PersistedState & {
+  hasHydrated: boolean;
+  selectedDay: DayKey | null;
   restEndsAt: number | null;
   restTotal: number | null;
 
-  hydrate: () => Promise<void>;
-  setSelectedDay: (k: import("@/data/types").DayKey) => void;
+  hydrate: () => void;
+  setSelectedDay: (k: DayKey) => void;
   setSwap: (key: string, recipeId: string) => void;
   clearSwap: (key: string) => void;
   toggleChecked: (key: string) => void;
@@ -47,39 +52,39 @@ function patchDay(
   return { ...log, [date]: fn(log[date] ?? {}) };
 }
 
-export const useAppStore = create<AppState>()((set, get) => {
-  /** optimistic helper: snapshot → apply → call API → rollback+error ถ้าพลาด */
-  function optimistic(apply: () => void, call: () => Promise<void>) {
-    const snapshot = {
-      swaps: get().swaps, checked: get().checked,
-      log: get().log, profileOverride: get().profileOverride,
+function loadPersisted(): PersistedState | null {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return null;
+    const p = JSON.parse(raw) as Partial<PersistedState>;
+    return {
+      swaps: p.swaps ?? {},
+      checked: p.checked ?? {},
+      log: p.log ?? {},
+      profileOverride: p.profileOverride ?? {},
     };
+  } catch {
+    return null; // ข้อมูลเพี้ยน/อ่านไม่ได้ → เริ่มเปล่า ไม่พังแอป
+  }
+}
+
+export const useAppStore = create<AppState>()((set, get) => {
+  /** apply การเปลี่ยน state แล้วบันทึกลง localStorage ทันที */
+  function commit(apply: () => void) {
     apply();
-    set({ syncError: null });
-    void call()
-      .then(() => set({ online: true }))
-      .catch((e) => {
-        set({ ...snapshot });
-        let msg: string;
-        if (e instanceof AuthError) {
-          msg = "ต้องเข้าสู่ระบบใหม่";
-          set({ syncError: msg });
-        } else if (e instanceof NetworkError) {
-          msg = "ออฟไลน์ ยังไม่บันทึก";
-          set({ online: false, syncError: msg });
-        } else {
-          msg = "บันทึกไม่สำเร็จ";
-          set({ syncError: msg });
-        }
-        toast.error(msg);
-      });
+    try {
+      const { swaps, checked, log, profileOverride } = get();
+      localStorage.setItem(
+        LS_KEY,
+        JSON.stringify({ swaps, checked, log, profileOverride })
+      );
+    } catch {
+      // storage เต็ม/ถูกบล็อก — แอปยังใช้ต่อได้ แค่ไม่บันทึกข้ามรอบ
+    }
   }
 
   return {
     hasHydrated: false,
-    online: true,
-    syncError: null,
-    authRequired: false,
     selectedDay: null,
     swaps: {},
     checked: {},
@@ -88,167 +93,130 @@ export const useAppStore = create<AppState>()((set, get) => {
     restEndsAt: null,
     restTotal: null,
 
-    hydrate: async () => {
-      try {
-        const slice = await apiGet<SyncSlice>("/api/state");
-        set({
-          swaps: slice.swaps, checked: slice.checked,
-          log: slice.log, profileOverride: slice.profileOverride,
-          hasHydrated: true, online: true, syncError: null,
-          // เข้าระบบสำเร็จ — ซ่อนหน้า login
-          authRequired: false,
-        });
-      } catch (e) {
-        // AuthError = ยังไม่ได้ login → แสดงหน้า login
-        if (e instanceof AuthError) {
-          set({ hasHydrated: true, authRequired: true, syncError: null });
-        } else {
-          // NetworkError หรืออื่น ๆ — ยังถือว่า hydrate เสร็จ
-          set({
-            hasHydrated: true,
-            authRequired: false,
-            online: !(e instanceof NetworkError),
-            syncError: "โหลดข้อมูลไม่สำเร็จ",
-          });
-        }
-      }
+    // โหลด state จาก localStorage (เรียกครั้งเดียวตอนเปิดแอป — client เท่านั้น)
+    hydrate: () => {
+      const saved = loadPersisted();
+      set({ ...(saved ?? {}), hasHydrated: true });
     },
 
     setSelectedDay: (k) => set({ selectedDay: k }),
 
     setSwap: (key, recipeId) =>
-      optimistic(
-        () => set((s) => ({ swaps: { ...s.swaps, [key]: recipeId } })),
-        () => apiSend("PUT", `/api/swaps/${encodeURIComponent(key)}`, { recipeId })
-      ),
+      commit(() => set((s) => ({ swaps: { ...s.swaps, [key]: recipeId } }))),
 
     clearSwap: (key) =>
-      optimistic(
-        () => set((s) => {
-          const next = { ...s.swaps }; delete next[key]; return { swaps: next };
-        }),
-        () => apiSend("DELETE", `/api/swaps/${encodeURIComponent(key)}`)
+      commit(() =>
+        set((s) => {
+          const next = { ...s.swaps };
+          delete next[key];
+          return { swaps: next };
+        })
       ),
 
-    toggleChecked: (key) => {
-      const isOn = !!get().checked[key];
-      optimistic(
-        () => set((s) => {
+    toggleChecked: (key) =>
+      commit(() =>
+        set((s) => {
           const next = { ...s.checked };
-          if (next[key]) delete next[key]; else next[key] = true;
+          if (next[key]) delete next[key];
+          else next[key] = true;
           return { checked: next };
-        }),
-        () => isOn
-          ? apiSend("DELETE", `/api/checked/${encodeURIComponent(key)}`)
-          : apiSend("PUT", `/api/checked/${encodeURIComponent(key)}`)
-      );
-    },
-
-    clearChecked: () =>
-      optimistic(
-        () => set({ checked: {} }),
-        () => apiSend("DELETE", "/api/checked")
+        })
       ),
+
+    clearChecked: () => commit(() => set({ checked: {} })),
 
     logWeight: (date, kg) =>
-      optimistic(
-        () => set((s) => ({ log: patchDay(s.log, date, (d) => ({ ...d, weightKg: kg })) })),
-        () => apiSend("PUT", `/api/days/${date}`, { weightKg: kg })
+      commit(() =>
+        set((s) => ({ log: patchDay(s.log, date, (d) => ({ ...d, weightKg: kg })) }))
       ),
 
-    toggleMeal: (date, index) => {
-      const isOn = !!get().log[date]?.meals?.[index];
-      optimistic(
-        () => set((s) => ({
+    toggleMeal: (date, index) =>
+      commit(() =>
+        set((s) => ({
           log: patchDay(s.log, date, (d) => {
             const meals = { ...(d.meals ?? {}) };
-            if (meals[index]) delete meals[index]; else meals[index] = true;
+            if (meals[index]) delete meals[index];
+            else meals[index] = true;
             return { ...d, meals };
           }),
-        })),
-        () => isOn
-          ? apiSend("DELETE", `/api/days/${date}/meals/${index}`)
-          : apiSend("PUT", `/api/days/${date}/meals/${index}`)
-      );
-    },
+        }))
+      ),
 
     setWorkoutDone: (date, done) =>
-      optimistic(
-        () => set((s) => ({ log: patchDay(s.log, date, (d) => ({ ...d, workoutDone: done })) })),
-        () => apiSend("PUT", `/api/days/${date}`, { workoutDone: done })
+      commit(() =>
+        set((s) => ({ log: patchDay(s.log, date, (d) => ({ ...d, workoutDone: done })) }))
       ),
 
-    addWater: (date, deltaMl) => {
-      const next = Math.max(0, (get().log[date]?.waterMl ?? 0) + deltaMl);
-      optimistic(
-        () => set((s) => ({ log: patchDay(s.log, date, (d) => ({ ...d, waterMl: next })) })),
-        () => apiSend("PUT", `/api/days/${date}`, { waterMl: next })
-      );
-    },
-
-    addExtra: (date, kcal, protein) => {
-      const cur = get().log[date]?.extra ?? { kcal: 0, protein: 0 };
-      const extra = {
-        kcal: Math.max(0, cur.kcal + kcal),
-        protein: Math.max(0, cur.protein + protein),
-      };
-      optimistic(
-        () => set((s) => ({ log: patchDay(s.log, date, (d) => ({ ...d, extra })) })),
-        () => apiSend("PUT", `/api/days/${date}`, {
-          extraKcal: extra.kcal, extraProtein: extra.protein,
+    addWater: (date, deltaMl) =>
+      commit(() =>
+        set((s) => {
+          const next = Math.max(0, (s.log[date]?.waterMl ?? 0) + deltaMl);
+          return { log: patchDay(s.log, date, (d) => ({ ...d, waterMl: next })) };
         })
-      );
-    },
+      ),
+
+    addExtra: (date, kcal, protein) =>
+      commit(() =>
+        set((s) => {
+          const cur = s.log[date]?.extra ?? { kcal: 0, protein: 0 };
+          const extra = {
+            kcal: Math.max(0, cur.kcal + kcal),
+            protein: Math.max(0, cur.protein + protein),
+          };
+          return { log: patchDay(s.log, date, (d) => ({ ...d, extra })) };
+        })
+      ),
 
     clearExtra: (date) =>
-      optimistic(
-        () => set((s) => ({
+      commit(() =>
+        set((s) => ({
           log: patchDay(s.log, date, (d) => {
-            const next = { ...d }; delete next.extra; return next;
+            const next = { ...d };
+            delete next.extra;
+            return next;
           }),
-        })),
-        () => apiSend("PUT", `/api/days/${date}`, { extraKcal: null, extraProtein: null })
+        }))
       ),
 
-    logSet: (date, exercise, index, kg, reps) => {
-      const arr = [...(get().log[date]?.lifts?.[exercise] ?? [])];
-      while (arr.length <= index) arr.push({ kg: 0, reps: 0 });
-      arr[index] = { kg, reps };
-      optimistic(
-        () => set((s) => ({
-          log: patchDay(s.log, date, (d) => ({
-            ...d, lifts: { ...(d.lifts ?? {}), [exercise]: arr },
-          })),
-        })),
-        () => apiSend("PUT", `/api/days/${date}/lifts/${encodeURIComponent(exercise)}`, { sets: arr })
-      );
-    },
+    logSet: (date, exercise, index, kg, reps) =>
+      commit(() =>
+        set((s) => {
+          const arr = [...(s.log[date]?.lifts?.[exercise] ?? [])];
+          while (arr.length <= index) arr.push({ kg: 0, reps: 0 });
+          arr[index] = { kg, reps };
+          return {
+            log: patchDay(s.log, date, (d) => ({
+              ...d,
+              lifts: { ...(d.lifts ?? {}), [exercise]: arr },
+            })),
+          };
+        })
+      ),
 
     clearLift: (date, exercise) =>
-      optimistic(
-        () => set((s) => {
+      commit(() =>
+        set((s) => {
           const cur = s.log[date];
           if (!cur?.lifts?.[exercise]) return {};
-          const lifts = { ...cur.lifts }; delete lifts[exercise];
+          const lifts = { ...cur.lifts };
+          delete lifts[exercise];
           return { log: patchDay(s.log, date, (d) => ({ ...d, lifts })) };
-        }),
-        () => apiSend("DELETE", `/api/days/${date}/lifts/${encodeURIComponent(exercise)}`)
+        })
       ),
 
-    startRest: (seconds) => set({ restEndsAt: Date.now() + seconds * 1000, restTotal: seconds }),
-    addRest: (seconds) => set((s) =>
-      s.restEndsAt
-        ? { restEndsAt: s.restEndsAt + seconds * 1000, restTotal: (s.restTotal ?? 0) + seconds }
-        : {}
-    ),
+    startRest: (seconds) =>
+      set({ restEndsAt: Date.now() + seconds * 1000, restTotal: seconds }),
+    addRest: (seconds) =>
+      set((s) =>
+        s.restEndsAt
+          ? { restEndsAt: s.restEndsAt + seconds * 1000, restTotal: (s.restTotal ?? 0) + seconds }
+          : {}
+      ),
     stopRest: () => set({ restEndsAt: null, restTotal: null }),
 
-    setProfileField: (field, value) => {
-      // ส่งเฉพาะ field ที่เปลี่ยน เพื่อป้องกัน lost-update เมื่อแก้หลาย field พร้อมกัน
-      optimistic(
-        () => set((s) => ({ profileOverride: { ...s.profileOverride, [field]: value } })),
-        () => apiSend("PUT", "/api/profile", { [field]: value })
-      );
-    },
+    setProfileField: (field, value) =>
+      commit(() =>
+        set((s) => ({ profileOverride: { ...s.profileOverride, [field]: value } }))
+      ),
   };
 });
