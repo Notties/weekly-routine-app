@@ -76,11 +76,11 @@ describe("weeklyIngredientGrams — กรัมรวมต่อสัปด�
     weeklyIngredientGrams(week, {}).map((t) => [t.name, t.grams])
   );
 
-  it("ไก่ 2,590 · หมู 400 · ไข่ 300 · ข้าวสวยสุก 2,920 · วอลนัท 105 · แอปเปิล 600", () => {
+  it("ไก่ 2,590 · หมู 400 · ไข่ 300 · ข้าวสวยสุก 1,800 (เฟสคัต) · วอลนัท 105 · แอปเปิล 600", () => {
     expect(totals.get("อกไก่")).toBe(2590);
     expect(totals.get("หมูสันใน")).toBe(400);
     expect(totals.get("ไข่ไก่")).toBe(300);
-    expect(totals.get("ข้าวหอมมะลิ")).toBe(2920);
+    expect(totals.get("ข้าวหอมมะลิ")).toBe(1800);
     expect(totals.get("วอลนัท")).toBe(105);
     expect(totals.get("แอปเปิล")).toBe(600);
   });

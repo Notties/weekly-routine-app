@@ -34,6 +34,8 @@ export type Profile = {
   goal: string;
   /** ช่วงเวลาออกกำลังประจำ เช่น "19:00–20:00" */
   workoutWindow: string;
+  /** %ไขมันจากเครื่องวัด (เช่น InBody) — มีค่าแล้วเป้าคำนวณด้วย Katch-McArdle แม่นกว่า */
+  bodyFatPct?: number;
 };
 
 export type Exercise = {
@@ -259,5 +261,5 @@ export type DayLog = {
 
 /** ค่าโปรไฟล์ที่ผู้ใช้แก้เอง (น้ำหนักไม่อยู่ที่นี่ — อยู่ใน log) */
 export type ProfileOverride = Partial<
-  Pick<Profile, "goal" | "heightCm" | "age" | "workoutWindow">
+  Pick<Profile, "goal" | "heightCm" | "age" | "workoutWindow" | "bodyFatPct">
 >;

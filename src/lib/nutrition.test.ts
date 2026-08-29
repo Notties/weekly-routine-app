@@ -36,26 +36,26 @@ describe("sumMacros", () => {
 });
 
 describe("recipeMacros", () => {
-  it("ln-chicken = 613/54/72/11 (ข้าวขาว USDA #168878 + บรอกโคลี/แครอท)", () => {
+  it("ln-chicken = 509/52/49/11 (เฟสคัต: ข้าว 140 ก.)", () => {
     const r = getRecipe("ln-chicken")!;
-    expect(recipeMacros(r)).toEqual({ kcal: 613, protein: 54, carb: 72, fat: 11 });
+    expect(recipeMacros(r)).toEqual({ kcal: 509, protein: 52, carb: 49, fat: 11 });
   });
 
-  it("po-whey-rice โปรตีนสูง (= 72 ก.)", () => {
+  it("po-whey-rice โปรตีนสูง (= 70 ก.)", () => {
     const r = getRecipe("po-whey-rice")!;
-    expect(recipeMacros(r).protein).toBe(72);
+    expect(recipeMacros(r).protein).toBe(70);
   });
 });
 
-describe("dailyTarget (ชาย 75 กก./167/25)", () => {
+describe("dailyTarget (InBody: 76.6 กก. · ไขมัน 31% → Katch-McArdle BMR ~1,512)", () => {
   it("วันเล่นเวต", () => {
-    expect(dailyTarget(profile, "weights")).toEqual({ kcal: 2200, protein: 150, carb: 265, fat: 60 });
+    expect(dailyTarget(profile, "weights")).toEqual({ kcal: 1900, protein: 153, carb: 185, fat: 61 });
   });
   it("วันคาร์ดิโอ", () => {
-    expect(dailyTarget(profile, "cardio")).toEqual({ kcal: 2050, protein: 150, carb: 228, fat: 60 });
+    expect(dailyTarget(profile, "cardio")).toEqual({ kcal: 1820, protein: 153, carb: 165, fat: 61 });
   });
   it("วันพัก", () => {
-    expect(dailyTarget(profile, "rest")).toEqual({ kcal: 1850, protein: 150, carb: 178, fat: 60 });
+    expect(dailyTarget(profile, "rest")).toEqual({ kcal: 1600, protein: 153, carb: 110, fat: 61 });
   });
 });
 

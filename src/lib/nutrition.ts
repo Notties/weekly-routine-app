@@ -52,13 +52,20 @@ export function recipeMacros(recipe: Recipe): Macros {
 // ── เป้าหมายต่อวัน ──
 /** ตัวคูณกิจกรรมต่อ BMR ตามชนิดวัน (เล่นเวตเผาเยอะสุด, พักน้อยสุด) */
 const ACTIVITY: Record<DayType, number> = { weights: 1.5, cardio: 1.45, rest: 1.3 };
-/** แคลอรี่ขาดดุลต่อวัน (หักจาก TDEE) — จูนให้แต่ละวันลงในกรอบเป้า */
-const DEFICIT: Record<DayType, number> = { weights: 310, cardio: 380, rest: 325 };
+/** แคลอรี่ขาดดุลต่อวัน (หักจาก TDEE) — เฟสลดไขมัน (InBody 31%) ~0.4 กก./สัปดาห์ */
+const DEFICIT: Record<DayType, number> = { weights: 370, cardio: 370, rest: 365 };
 const PROTEIN_PER_KG = 2.0; // รักษากล้ามระหว่างลดไขมัน
 const FAT_PER_KG = 0.8;
 
-/** BMR (Mifflin-St Jeor) */
+/**
+ * BMR — รู้ %ไขมัน (จากเครื่องวัดเช่น InBody) ใช้ Katch-McArdle จากมวลไร้ไขมัน
+ * (ให้ค่าตรงกับที่เครื่องรายงาน) · ไม่รู้ใช้ Mifflin-St Jeor จากน้ำหนัก/ส่วนสูง
+ */
 function bmr(p: Profile): number {
+  if (p.bodyFatPct != null && p.bodyFatPct > 0) {
+    const fatFreeMass = p.weightKg * (1 - p.bodyFatPct / 100);
+    return 370 + 21.6 * fatFreeMass;
+  }
   const sexConst = p.sex === "ชาย" ? 5 : -161;
   return 10 * p.weightKg + 6.25 * p.heightCm - 5 * p.age + sexConst;
 }
